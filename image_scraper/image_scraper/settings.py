@@ -6,6 +6,7 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import os
 
 BOT_NAME = "image_scraper"
 
@@ -29,4 +30,7 @@ IMAGES_THUMBS = {
     "small": (50, 50),
     "big": (270, 270),
 }
-IMAGES_STORE = "downloads"
+
+# Google cloud storage params
+IMAGES_STORE = f"gs://{os.environ['CATS_BUCKET_NAME']}/today/"
+GCS_PROJECT_ID = os.environ["PROJECT_ID"]

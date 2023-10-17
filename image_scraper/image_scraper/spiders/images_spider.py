@@ -6,7 +6,7 @@ from ..items import ImageItem
 class GoogleImagesSpider(scrapy.Spider):
     name = "google_images_spider"
     start_urls = [
-        "https://www.google.com/search?q=cats+images&tbm=isch",
+        "https://www.google.com/search?q=real+cats+images&tbm=isch&tbs=qdr:d",
     ]
 
     def parse(self, response, **kwargs):
