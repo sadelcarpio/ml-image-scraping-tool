@@ -32,7 +32,6 @@ class GoogleImagesSpider(scrapy.Spider):
             img_src = img_element.get_attribute('src')
             if not img_src.startswith('data:image'):
                 yield ImageItem(image_urls=[img_src])
-            print("HOLAAA")
 
         # TODO: Logic for handling infinite scrolling on results
         # next_page = response.xpath("//tbody/td/a/@href").get() or response.xpath(
