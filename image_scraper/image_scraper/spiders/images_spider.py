@@ -31,7 +31,6 @@ class GoogleImagesSpider(scrapy.Spider):
             img_element = driver.find_element(By.XPATH, f'{self.base_path}/div[3]/div[1]/a/img[1]')
             img_src = img_element.get_attribute('src')
             if not img_src.startswith('data:image'):
-                print(f"La url de mierda es: {img_src}")
                 yield ImageItem(image_urls=[img_src])
             print("HOLAAA")
 
