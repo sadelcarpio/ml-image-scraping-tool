@@ -26,11 +26,12 @@ ITEM_PIPELINES = {"image_scraper.pipelines.MyImagesPipeline": 300}
 IMAGES_URLS_FIELD = "image_urls"
 IMAGES_RESULT_FIELD = "images"
 IMAGES_EXPIRES = 30
-IMAGES_THUMBS = {
-    "small": (50, 50),
-    "big": (270, 270),
-}
 
 # Google cloud storage params
-IMAGES_STORE = f"gs://{os.environ['CATS_BUCKET_NAME']}/today/"
+IMAGES_STORE = f"gs://{os.environ['CATS_BUCKET_NAME']}/test-selenium/"
 GCS_PROJECT_ID = os.environ["PROJECT_ID"]
+
+# Selenium
+DOWNLOADER_MIDDLEWARES = {
+    'image_scraper.middlewares.SeleniumMiddleware': 300
+}
