@@ -38,7 +38,6 @@ class GoogleImagesSpider(scrapy.Spider):
                     thumbnail_img = driver.find_element(By.XPATH,
                                                         f'//*[@id="islrg"]/div[1]/div[{i}]/div[{j}]/a[1]/div[1]/img')
                     driver.execute_script('arguments[0].click()', thumbnail_img)
-                    # TODO: Add logic to guarantee clicked image is on full size and not loading
                     time.sleep(3)  # waits for image to be HD
                     img_element = driver.find_element(By.XPATH,
                                                       f'{self.base_path}//a/img[1]')
