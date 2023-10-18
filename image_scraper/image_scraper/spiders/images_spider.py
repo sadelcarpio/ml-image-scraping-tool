@@ -42,8 +42,6 @@ class GoogleImagesSpider(scrapy.Spider):
                     time.sleep(3)  # waits for image to be HD
                     img_element = driver.find_element(By.XPATH,
                                                       f'{self.base_path}//a/img[1]')
-                    # img_element = WebDriverWait(driver, 10).until(
-                    #     expected_conditions.element_to_be_clickable((By.XPATH, f'{self.base_path}//a/img[1]')))
                     img_src = img_element.get_attribute('src')
                     if not img_src.startswith('data:image'):
                         yield ImageItem(image_urls=[img_src])
@@ -52,8 +50,6 @@ class GoogleImagesSpider(scrapy.Spider):
                 time.sleep(3)
                 img_element = driver.find_element(By.XPATH,
                                                   f'{self.base_path}//a/img[1]')
-                # img_element = WebDriverWait(driver, 10).until(
-                #     expected_conditions.element_to_be_clickable((By.XPATH, f'{self.base_path}//a/img[1]')))
                 img_src = img_element.get_attribute('src')
                 if not img_src.startswith('data:image'):
                     yield ImageItem(image_urls=[img_src])
