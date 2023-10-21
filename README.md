@@ -1,2 +1,5 @@
 # ml-image-scraping-tool
-Projecto de Data Engineering para poder buscar imágenes de la web y subirlas a Google Cloud Storage para su uso en Vertex AI o algoritmos de ML
+Data Engineering project for image scraping and data labeling, preparing image data for future use on ML systems.
+
+## Architecture
+![architecture.png](imgs/architecture.png)
