@@ -1,0 +1,23 @@
+version: "3.9"
+
+name: image_scraper
+
+services:
+  scrapyd:
+    container_name: scrapyd
+    build:
+      context: .
+      dockerfile: scrapyd.Dockerfile
+    ports:
+      - "6800:6800"
+    environment:
+      CATS_BUCKET_NAME: ${CATS_BUCKET_NAME}
+      PROJECT_ID: ${PROJECT_ID}
+
+  scrapyd_deploy:
+    container_name: scrapyd_deploy
+    build:
+      context: .
+      dockerfile: scrapyd_deploy.Dockerfile
+    depends_on:
+      - scrapyd
