@@ -1,7 +1,8 @@
 # Image Scraping
-Subfolder dedicated to the image scraping for google images and, in the future, other web sources. The project uses mainly `scrapy` and `selenium` and the libraries specified in `requirements.txt`. It is deployed via `scrapyd` as an HTTP endpoint
+Subfolder dedicated to the image scraping for google images and, in the future, other web sources. The project uses mainly `scrapy` and `selenium` and the libraries specified in `requirements.txt`. It is deployed via `scrapyd` as an HTTP endpoint.
 
-## Installing requirements
+## Run without containers (locally)
+### Installing requirements
 On a virtual environment
 ```shell
 $ pip install -r requirements.txt
@@ -12,7 +13,7 @@ $ pip install pywin32
 ```
 for deploying.
 
-## Set env variables
+### Set env variables
 You'll need the following environment variables:
 ```shell
 CATS_BUCKET_NAME=my_bucket
@@ -23,14 +24,14 @@ Also, authenticate your GCP user with the gcloud SDK:
 $ gcloud auth application-default login
 ```
 
-## Run locally (without deploying)
+### Run locally (without deploying)
 To run only the spider (it will still load the images to GCS):
 ```shell
 $ cd image_scraper  # from ml-image-scraping-tool folder
 $ scrapy crawl google_images_spider
 ```
 
-## Deploy to scrapyd
+### Deploy to scrapyd
 Run the scrapyd server with:
 ```shell
 scrapyd
@@ -41,7 +42,7 @@ And deploy the scrapy code with:
 scrapyd-deploy
 ```
 
-## Running the deployed scraper
+### Running a spider on the deployed project
 In order to run the deployed scraper, you can send an HTTP request:
 ```python
 import requests
@@ -58,3 +59,9 @@ status = requests.get('http://localhost:6800/listjobs.json?project=image_scraper
 ```
 
 You can also use ```scrapyd-client``` ([docs](https://github.com/scrapy/scrapyd-client)), using the `ScrapydClient` class
+
+## Running on Docker Compose (faster setup, but more resources)
+
+* Create a `.env` file with the `CATS_BUCKET_NAME` and `PROJECT_ID` variables set.
+* Create a key for the `gcp-bucket-user` service account and save it as `service_account.json` on image_scraper folder.
+* Run `docker compose up -d` on image_scraper folder.
