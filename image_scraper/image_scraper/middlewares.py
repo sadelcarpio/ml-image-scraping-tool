@@ -6,15 +6,17 @@ from scrapy import signals
 
 from scrapy.http import HtmlResponse
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 
 
 class SeleniumMiddleware:
     def __init__(self):
-        options = Options()
-        options.add_argument('--headless')
-        options.add_argument('--window-size=1920,1080')
-        self.driver = webdriver.Chrome(options=options)
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--window-size=1920,1080')
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        self.driver = webdriver.Chrome(options=chrome_options)
 
     def process_request(self, request, spider):
         """It's called after start_requests but before parse method, making it possible to use Selenium

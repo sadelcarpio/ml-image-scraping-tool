@@ -2,21 +2,20 @@
 FROM python:3.10
 LABEL authors="sadelcarpio"
 
-# Install Chrome
-RUN apt-get update && apt-get install -y \
-  chromium \
-  libnss3 \
-  fontconfig \
-  && rm -rf /var/lib/apt/lists/*
+# install google chrome, no need for chromedriver
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+RUN apt-get -y update
+RUN apt-get install -y google-chrome-stable
 
-# Install ChromeDriver
-RUN wget https://chromedriver.storage.googleapis.com/2.41/chromedriver_linux64.zip \
-  && unzip chromedriver_linux64.zip -d /usr/bin \
-  && chmod +x /usr/bin/chromedriver \
-  && rm chromedriver_linux64.zip
+# set display port to avoid crash
+ENV DISPLAY=:99
 
 COPY scrapyd.conf /etc/scrapyd/scrapyd.conf
 COPY requirements.txt .
+COPY service_account.json .
+
+ENV GOOGLE_APPLICATION_CREDENTIALS /service_account.json
 
 RUN pip install -r requirements.txt
 
