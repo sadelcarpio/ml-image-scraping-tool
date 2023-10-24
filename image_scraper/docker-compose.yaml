@@ -13,6 +13,8 @@ services:
     environment:
       CATS_BUCKET_NAME: ${CATS_BUCKET_NAME}
       PROJECT_ID: ${PROJECT_ID}
+    networks:
+      - airflow_default
 
   scrapyd_deploy:
     container_name: scrapyd_deploy
@@ -21,3 +23,9 @@ services:
       dockerfile: scrapyd_deploy.Dockerfile
     depends_on:
       - scrapyd
+    networks:
+      - airflow_default
+
+networks:
+  airflow_default:
+    external: true
