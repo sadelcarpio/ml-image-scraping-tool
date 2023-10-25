@@ -27,10 +27,10 @@ venv:
 endif
 
 scrapy-devenv:
-	source .venv/bin/activate && pip install -r $(SCRAPY)/requirements.txt
+	. .venv/bin/activate && pip install -r $(SCRAPY)/requirements.txt
 
 airflow-devenv:  # should have a requirements file on airflow folder
-	source .venv/bin/activate && pip install apache-airflow
+	. .venv/bin/activate && pip install apache-airflow
 
 devenv: venv scrapy-devenv airflow-devenv
 
