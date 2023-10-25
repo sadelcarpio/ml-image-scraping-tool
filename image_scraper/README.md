@@ -13,6 +13,8 @@ $ pip install pywin32
 ```
 for deploying.
 
+You can also run `make scrapy-devenv` (WSL/Linux) or ` make scrapy-devenv-windows` (Windows) from the root folder
+
 ### Set env variables
 You'll need the following environment variables:
 ```shell
@@ -30,6 +32,8 @@ To run only the spider (it will still load the images to GCS):
 $ cd image_scraper  # from ml-image-scraping-tool folder
 $ scrapy crawl google_images_spider
 ```
+
+or run `make runspider` (WSL / Linux) , `make runspider-windows` (Windows)
 
 ### Deploy to scrapyd
 Run the scrapyd server with:
@@ -64,4 +68,4 @@ You can also use ```scrapyd-client``` ([docs](https://github.com/scrapy/scrapyd-
 
 * Create a `.env` file with the `CATS_BUCKET_NAME` and `PROJECT_ID` variables set.
 * Create a key for the `gcp-bucket-user` service account and save it as `service_account.json` on image_scraper folder.
-* Run `docker compose up -d` on image_scraper folder.
+* Run `docker compose up -d` on image_scraper folder, or `make scrapy-compose-run` on the root folder

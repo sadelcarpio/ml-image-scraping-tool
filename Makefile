@@ -1,14 +1,56 @@
-AIRFLOW_COMPOSE := airflow/docker-compose.yaml
-SCRAPYD_COMPOSE := image_scraper/docker-compose.yaml
+.PHONY: venv venv-windows
 
-airflow-run:
+AIRFLOW := airflow
+SCRAPY := image_scraper
+AIRFLOW_COMPOSE := $(AIRFLOW)/docker-compose.yaml
+SCRAPY_COMPOSE := $(SCRAPY)/docker-compose.yaml
+SPIDER := google_images_spider
+
+# Setup for windows
+ifeq ($(wildcard venv/.*),)
+venv-windows:
+	powershell.exe -c "python -m venv venv"
+endif
+
+scrapy-devenv-windows:
+	powershell.exe -c "venv/Scripts/pip install -r $(SCRAPY)/requirements.txt"
+
+airflow-devenv-windows:  # should have a requirements file on airflow folder
+	powershell.exe -c "venv/Scripts/pip install apache-airflow"
+
+devenv-windows: venv-windows scrapy-devenv-windows airflow-devenv-windows
+
+# Setup for WSL / Linux
+ifeq ($(wildcard .venv/*),)
+venv:
+	python3 -m venv .venv
+endif
+
+scrapy-devenv:
+	source .venv/bin/activate && pip install -r $(SCRAPY)/requirements.txt
+
+airflow-devenv:  # should have a requirements file on airflow folder
+	source .venv/bin/activate && pip install apache-airflow
+
+devenv: venv scrapy-devenv airflow-devenv
+
+# Run spider locally (Windows)
+runspider-windows:
+	cd $(SCRAPY) && powershell.exe -c "../venv/Scripts/scrapy crawl $(SPIDER)"
+
+# Run spider locally (WSL / Linux)
+runspider:
+	cd $(SCRAPY) && source ../.venv/bin/scrapy crawl $(SPIDER)
+
+# Run on Docker Compose
+airflow-compose-run:
 	docker compose -f $(AIRFLOW_COMPOSE) up -d
 
-scrapyd-run:
-	docker compose -f $(SCRAPYD_COMPOSE) up -d
+scrapy-compose-run:
+	docker compose -f $(SCRAPY_COMPOSE) up -d
 
-run: airflow-run scrapyd-run
+run: airflow-compose-run scrapy-compose-run
 
 down:
-	docker compose -f $(SCRAPYD_COMPOSE) down
+	docker compose -f $(SCRAPY_COMPOSE) down
 	docker compose -f $(AIRFLOW_COMPOSE) down
