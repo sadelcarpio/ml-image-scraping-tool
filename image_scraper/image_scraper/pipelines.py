@@ -1,7 +1,10 @@
+import hashlib
+
 import scrapy
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
 from scrapy.pipelines.images import ImagesPipeline
+from scrapy.utils.python import to_bytes
 
 
 class MyImagesPipeline(ImagesPipeline):
@@ -16,3 +19,7 @@ class MyImagesPipeline(ImagesPipeline):
         adapter = ItemAdapter(item)
         adapter["images"] = image_paths
         return item
+
+    def file_path(self, request, response=None, info=None, *, item=None):
+        image_guid = hashlib.sha1(to_bytes(request.url)).hexdigest()
+        return f"{image_guid}.jpg"
