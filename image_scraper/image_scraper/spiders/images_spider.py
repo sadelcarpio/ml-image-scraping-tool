@@ -55,11 +55,7 @@ class GoogleImagesSpider(scrapy.Spider):
                                                   f'{self.base_path}//a/img[1]')
                 img_src = img_element.get_attribute('src')
                 if not img_src.startswith('data:image'):
-                    if 'redd.it' in img_src:
-                        print("Reddittor Spotted")
                     yield ImageItem(image_urls=[img_src])
-                else:
-                    print(f"Base64 Image Spotted: {img_src.split(',')[0]}")
                 driver.find_element(By.XPATH, f'{self.base_path}//div[1]/div/div[2]/div[3]/button').click()
             finally:
                 if i >= initial_load:
