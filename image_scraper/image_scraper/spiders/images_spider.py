@@ -11,10 +11,16 @@ from ..items import ImageItem
 class GoogleImagesSpider(scrapy.Spider):
     name = "google_images_spider"
     # large images published on the last 24 hrs
-    start_urls = [
-        "https://www.google.com/search?q=cats+images&tbm=isch&tbs=qdr:d%2Cisz:l",
-    ]
+    search_params = "&tbm=isch&tbs=qdr:d%2Cisz:l"
     base_path = '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        start_url = kwargs.get('start_url', None)
+        if start_url is not None:
+            self.start_urls = [start_url]
+        else:
+            self.start_urls = ["https://www.google.com/search?q=cats+images&tbm=isch&tbs=qdr:d%2Cisz:l"]
 
     def parse(self, response, **kwargs):
         # Extract the image URLs from the Google Images page.
@@ -49,7 +55,11 @@ class GoogleImagesSpider(scrapy.Spider):
                                                   f'{self.base_path}//a/img[1]')
                 img_src = img_element.get_attribute('src')
                 if not img_src.startswith('data:image'):
+                    if 'redd.it' in img_src:
+                        print("Reddittor Spotted")
                     yield ImageItem(image_urls=[img_src])
+                else:
+                    print(f"Base64 Image Spotted: {img_src.split(',')[0]}")
                 driver.find_element(By.XPATH, f'{self.base_path}//div[1]/div/div[2]/div[3]/button').click()
             finally:
                 if i >= initial_load:
