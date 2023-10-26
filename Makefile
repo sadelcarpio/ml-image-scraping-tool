@@ -36,11 +36,11 @@ devenv: venv scrapy-devenv airflow-devenv
 
 # Run spider locally (Windows)
 runspider-windows:
-	cd $(SCRAPY) && powershell.exe -c "../venv/Scripts/scrapy crawl $(SPIDER)"
+	cd $(SCRAPY) && powershell.exe -c "../venv/Scripts/python -m scrapy crawl $(SPIDER)"
 
 # Run spider locally (WSL / Linux)
 runspider:
-	cd $(SCRAPY) && source ../.venv/bin/scrapy crawl $(SPIDER)
+	cd $(SCRAPY) && ../.venv/bin/python3 -m scrapy crawl $(SPIDER)
 
 # Run on Docker Compose
 airflow-compose-run:
