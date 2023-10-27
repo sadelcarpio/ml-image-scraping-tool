@@ -7,7 +7,7 @@ from scrapy.pipelines.images import ImagesPipeline
 from scrapy.utils.python import to_bytes
 
 
-class MyImagesPipeline(ImagesPipeline):
+class URLImagesPipeline(ImagesPipeline):
     def get_media_requests(self, item, info):
         for image_url in item["image_urls"]:  # handles field from Item
             yield scrapy.Request(image_url, meta={'dont_proxy': True})
