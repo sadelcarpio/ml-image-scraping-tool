@@ -23,7 +23,7 @@ TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
 # Image Pipeline
-ITEM_PIPELINES = {"image_scraper.pipelines.MyImagesPipeline": 300}
+ITEM_PIPELINES = {"image_scraper.pipelines.URLImagesPipeline": 300}
 IMAGES_URLS_FIELD = "image_urls"
 IMAGES_RESULT_FIELD = "images"
 IMAGES_EXPIRES = 30
