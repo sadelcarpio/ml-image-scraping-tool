@@ -14,14 +14,10 @@ class GoogleImagesSpider(scrapy.Spider):
     search_params = "&tbm=isch&tbs=qdr:d%2Cisz:l"
     base_path = '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div'
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, start_url="https://www.google.com/search?q=cats+images", *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.driver = None
-        start_url = kwargs.get('start_url', None)
-        if start_url is not None:
-            self.start_urls = [start_url]
-        else:
-            self.start_urls = ["https://www.google.com/search?q=cats+images&tbm=isch&tbs=qdr:d%2Cisz:l"]
+        self.start_urls = [start_url + self.search_params]
 
     def parse(self, response, **kwargs):
         # Extract the image URLs from the Google Images page.
