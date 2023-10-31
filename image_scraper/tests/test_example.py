@@ -6,7 +6,7 @@ class Spider:
         return "Crawling..."
 
     def stop(self):
-        return "Stopped"
+        return "Stopped."
 
 
 class SpiderTest(unittest.TestCase):
@@ -17,7 +17,7 @@ class SpiderTest(unittest.TestCase):
         self.assertEqual(self.spider.crawl(), "Crawling...")
 
     def test_stop(self):
-        self.assertEqual(self.spider.stop(), "Stopped")
+        self.assertEqual(self.spider.stop(), "Stopped.")
 
 
 if __name__ == "__main__":
