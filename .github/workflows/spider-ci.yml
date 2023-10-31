@@ -2,7 +2,7 @@ name: CI for Image Scraping
 on:
   push:
     paths:
-      - image_scraper/*
+      - image_scraper/**
   pull_request:
 
 jobs:
