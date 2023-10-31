@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -15,6 +15,10 @@ jobs:
       - name: Build scrapyd-deploy to run tests
         run: docker build image_scraper --file image_scraper/scrapyd_deploy.Dockerfile --tag scrapyd-deploy
 
+  test-scrapy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: Run tests in Docker container
         run: |
           docker run scrapyd-deploy python -m unittest discover tests
