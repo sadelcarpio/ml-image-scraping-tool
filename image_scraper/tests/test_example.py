@@ -18,7 +18,3 @@ class SpiderTest(unittest.TestCase):
 
     def test_stop(self):
         self.assertEqual(self.spider.stop(), "Stopped.")
-
-
-if __name__ == "__main__":
-    unittest.main()
