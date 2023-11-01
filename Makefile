@@ -44,10 +44,10 @@ runspider:
 
 # Run on Docker Compose
 airflow-compose-run:
-	docker compose -f $(AIRFLOW_COMPOSE) up -d
+	docker compose -f $(AIRFLOW_COMPOSE) up -d --build
 
 scrapy-compose-run:
-	docker compose -f $(SCRAPY_COMPOSE) up -d
+	docker compose -f $(SCRAPY_COMPOSE) up -d --build
 
 run: airflow-compose-run scrapy-compose-run
 
