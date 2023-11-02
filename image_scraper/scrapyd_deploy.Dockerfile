@@ -5,6 +5,7 @@ LABEL authors="sadelcarpio"
 WORKDIR src/
 
 COPY image_scraper ./image_scraper
+COPY tests ./tests
 COPY requirements.txt /src
 COPY scrapy.cfg /src
 

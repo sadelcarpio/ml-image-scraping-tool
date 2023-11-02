@@ -1,0 +1,28 @@
+import unittest
+from unittest.mock import patch
+
+from image_scraper.spiders.images_spider import GoogleImagesSpider
+
+
+# patching time.sleep in class scope may bring unexpected behavior while debugging
+@patch('time.sleep')
+class GoogleImagesSpiderTest(unittest.TestCase):
+
+    def setUp(self):
+        self.spider = GoogleImagesSpider()
+
+    def test_scrape_image_url(self, mock_time):
+        with patch.object(self.spider, 'driver'):
+            result = list(self.spider.scrape_image_url())
+            expected_calls = [('xpath', f'{self.spider.base_path}//a/img[1]'),
+                              ('xpath', f'{self.spider.base_path}//div[1]/div/div[2]/div[3]/button')]
+            actual_calls = [call_obj.args for call_obj in self.spider.driver.find_element.call_args_list]
+            self.assertEqual(expected_calls, actual_calls)
+
+    @patch('scrapy.http.HtmlResponse')
+    def test_parse(self, mock_response, mock_time):
+        with patch.object(self.spider, 'driver'), patch.object(self.spider, 'scrape_image_url'):
+            result = list(self.spider.parse(mock_response))
+            expected_calls = [3, 10, 10, 10, 10, 10]
+            actual_calls = [call_obj.args[0] for call_obj in mock_time.call_args_list]
+            self.assertEqual(expected_calls, actual_calls)

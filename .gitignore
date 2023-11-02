@@ -1,5 +1,8 @@
 # .gitignore general
 .idea/
+logs/
+dbs/
+eggs/
 .venv/
 venv/
 *.json
