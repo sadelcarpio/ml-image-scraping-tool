@@ -1,4 +1,6 @@
 import hashlib
+import logging
+import os
 
 import scrapy
 from itemadapter import ItemAdapter
@@ -6,18 +8,21 @@ from scrapy.exceptions import DropItem
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.utils.python import to_bytes
 
-from kafka.producer import KafkaProducer
+from image_scraper.kafka.producer import KafkaProducer
+
+logger = logging.getLogger(__name__)
 
 
 class URLImagesPipeline(ImagesPipeline):
-
     gcs_url_prefix = 'https://storage.googleapis.com'
     producer: KafkaProducer = None
 
     @classmethod
     def from_settings(cls, settings):
+        logger.debug("Setting up Kafka Producer ...")
         obj_from_settings = super().from_settings(settings)
-        obj_from_settings.producer = KafkaProducer(bootstrap_servers='localhost:9092', client_id='scrapyd')
+        obj_from_settings.producer = KafkaProducer(bootstrap_servers=os.environ['KAFKA_LISTENER'], client_id='scrapyd')
+        logger.debug("Kafka Producer set up.")
         return obj_from_settings
 
     def get_media_requests(self, item, info):
@@ -29,7 +34,9 @@ class URLImagesPipeline(ImagesPipeline):
         if not image_paths:
             raise DropItem("Item contains no images")
         adapter = ItemAdapter(item)
+        logger.debug(f"Sendind GCS URL for {image_paths} ...")
         self.producer.produce_urls(topic='google-images', filenames=image_paths, prefix=self.gcs_url_prefix)
+        logger.debug("GCS URLs send.")
         adapter["images"] = image_paths
         return item
 

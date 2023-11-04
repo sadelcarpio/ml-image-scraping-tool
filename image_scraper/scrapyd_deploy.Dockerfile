@@ -13,4 +13,4 @@ COPY scrapy.cfg /src
 RUN pip install -r requirements.txt
 
 # Start Scrapyd server when container is run
-CMD ["scrapyd-deploy"]
+CMD ["scrapyd-deploy", "docker"]
