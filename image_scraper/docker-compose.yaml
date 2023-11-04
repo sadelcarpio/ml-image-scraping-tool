@@ -13,8 +13,6 @@ services:
     environment:
       CATS_BUCKET_NAME: ${CATS_BUCKET_NAME}
       PROJECT_ID: ${PROJECT_ID}
-    networks:
-      - airflow_default
 
   scrapyd_deploy:
     container_name: scrapyd_deploy
@@ -23,8 +21,6 @@ services:
       dockerfile: scrapyd_deploy.Dockerfile
     depends_on:
       - scrapyd
-    networks:
-      - airflow_default
 
   # Kafka Server
   zookeeper-service:
@@ -34,8 +30,6 @@ services:
       - ZOOKEEPER_CLIENT_PORT=2181
     ports:
       - "2181:2181"
-    networks:
-      - airflow_default
 
   kafka-service:
     container_name: kafka-service
@@ -49,11 +43,5 @@ services:
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
     ports:
       - "9092:9092"
-    networks:
-      - airflow_default
     depends_on:
       - zookeeper-service
-
-networks:
-  airflow_default:
-    external: true
