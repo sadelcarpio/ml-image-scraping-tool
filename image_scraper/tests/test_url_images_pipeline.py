@@ -16,6 +16,9 @@ class TestURLImagesPipeline(unittest.TestCase):
         mock_settings = MagicMock()
         self.pipeline = URLImagesPipeline('my-gcs-bucket', settings=mock_settings)
 
+    def tearDown(self):
+        os.rmdir('./my-gcs-bucket')
+
     @patch('image_scraper.pipelines.KafkaProducer')
     @patch('image_scraper.pipelines.logger')
     @patch('builtins.super')
