@@ -18,7 +18,7 @@ class TestKafkaProducer(unittest.TestCase):
     def test_produce_urls(self, mock_super):
         filenames = ['a', 'b', 'c']
         self.producer.produce_urls('test-topic', filenames, 'gs:')
-        self.assertEqual(mock_super.call_count, len(filenames))
+        self.assertEqual(len(filenames), mock_super.call_count)
         mock_super().produce.assert_has_calls(
             [call(topic='test-topic', value=b'gs:/test-kafka/04-12-2023/a'),
              call(topic='test-topic', value=b'gs:/test-kafka/04-12-2023/b'),
