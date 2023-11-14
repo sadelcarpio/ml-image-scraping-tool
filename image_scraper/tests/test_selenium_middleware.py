@@ -12,7 +12,7 @@ class SeleniumMiddlewareTest(unittest.TestCase):
         mock_driver = MagicMock()
         mock_webdriver.return_value = mock_driver
         self.middleware = SeleniumMiddleware()
-        self.assertEqual(self.middleware.driver, mock_driver)
+        self.assertEqual(mock_driver, self.middleware.driver)
 
     @patch('image_scraper.middlewares.webdriver.ChromeOptions')
     @patch('selenium.webdriver.Chrome')
