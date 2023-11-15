@@ -34,7 +34,7 @@ class URLImagesPipeline(ImagesPipeline):
         if not image_paths:
             raise DropItem("Item contains no images")
         adapter = ItemAdapter(item)
-        logger.debug(f"Sendind GCS URL for {image_paths} ...")
+        logger.debug(f"Sending GCS URL for {image_paths} ...")
         self.producer.produce_urls(topic='google-images', filenames=image_paths, prefix=self.gcs_url_prefix)
         logger.debug("GCS URLs sent.")
         adapter["images"] = image_paths
