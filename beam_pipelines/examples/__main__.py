@@ -9,7 +9,7 @@ from apache_beam.io import fileio
 from apache_beam.options.pipeline_options import PipelineOptions
 from google.cloud import vision
 
-from beam_pipelines.image_processing.image_dofns import ReadImages
+from beam_pipelines.examples.image_dofns import ReadImages
 
 CATS_BUCKET_NAME = os.environ["CATS_BUCKET_NAME"]
 
