@@ -4,7 +4,6 @@ import re
 import apache_beam as beam
 import numpy as np
 import tensorflow as tf
-from PIL import Image
 from google.cloud.storage import Client
 
 
@@ -34,9 +33,8 @@ class ReadImagesDoFn(beam.DoFn):
     def process(self, element, *args, **kwargs):
         path, label = element
         blob = self.bucket.blob(path)
-        image_bytes = io.BytesIO(blob.download_as_bytes())
-        img = np.array(Image.open(image_bytes))
-        yield img, label
+        img_bytes = blob.download_as_bytes()
+        yield img_bytes, label
 
     def teardown(self):
         self.gcs_client.close()
@@ -48,14 +46,21 @@ class ImageToTfExampleDoFn(beam.DoFn):
     def _bytes_feature(value):
         return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
+    @staticmethod
+    def _int64_feature(value):
+        return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
+
     def process(self, element, *args, **kwargs):
-        img, label = element
-        img = img.astype(np.float32)
-        label = np.array(label, dtype=np.float32)
+        img_raw, label = element
+        image_shape = tf.io.decode_jpeg(img_raw).shape
+        label = np.array(label, dtype=np.int32)
         example = tf.train.Example(
             features=tf.train.Features(
-                feature={'image': self._bytes_feature(img.tostring()),
-                         'label': self._bytes_feature(label.tostring())}
+                feature={'height': self._int64_feature(image_shape[0]),
+                         'width': self._int64_feature(image_shape[1]),
+                         'depth': self._int64_feature(image_shape[2]),
+                         'image_raw': self._bytes_feature(img_raw),
+                         'label': self._int64_feature(label)}
             )
         )
         yield example

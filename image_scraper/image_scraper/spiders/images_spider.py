@@ -54,4 +54,4 @@ class GoogleImagesSpider(scrapy.Spider):
         img_src = img_element.get_attribute('src')
         if not img_src.startswith('data:image'):
             yield ImageItem(image_urls=[img_src])
-        self.driver.find_element(By.XPATH, f'{self.base_path}//div[1]/div/div[2]/div[3]/button').click()
+        self.driver.find_element(By.XPATH, f'{self.base_path}//div[1]/div/div[2]/div[2]/button').click()
