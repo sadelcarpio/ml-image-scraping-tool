@@ -8,7 +8,7 @@ from image_scraper.kafka.producer import KafkaProducer
 
 class TestKafkaProducer(unittest.TestCase):
 
-    @patch.dict(os.environ, {"CATS_BUCKET_NAME": "test-kafka", "PROJECT_ID": "test-id"})
+    @patch.dict(os.environ, {"IMAGES_BUCKET_NAME": "test-kafka", "PROJECT_ID": "test-id"})
     @patch("datetime.datetime")
     def setUp(self, mock_datetime):
         mock_datetime.now.return_value = datetime(2023, 12, 4)

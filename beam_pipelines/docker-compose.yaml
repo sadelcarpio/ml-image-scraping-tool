@@ -1,0 +1,14 @@
+version: "3.9"
+
+name: beam_pipelines
+
+services:
+  beam:
+    container_name: beam
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      IMAGES_BUCKET_NAME: ${IMAGES_BUCKET_NAME}
+      TFRECORD_BUCKET: ${TFRECORD_BUCKET}
+      LABELS_BUCKET: ${LABELS_BUCKET}

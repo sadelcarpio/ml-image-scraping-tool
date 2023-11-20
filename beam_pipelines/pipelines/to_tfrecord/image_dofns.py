@@ -1,4 +1,3 @@
-import io
 import re
 
 import apache_beam as beam
