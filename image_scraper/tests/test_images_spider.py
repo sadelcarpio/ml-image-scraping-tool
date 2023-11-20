@@ -15,7 +15,7 @@ class GoogleImagesSpiderTest(unittest.TestCase):
         with patch.object(self.spider, 'driver'):
             result = list(self.spider.scrape_image_url())
             expected_calls = [('xpath', f'{self.spider.base_path}//a/img[1]'),
-                              ('xpath', f'{self.spider.base_path}//div[1]/div/div[2]/div[3]/button')]
+                              ('xpath', f'{self.spider.base_path}//div[1]/div/div[2]/div[2]/button')]
             actual_calls = [call_obj.args for call_obj in self.spider.driver.find_element.call_args_list]
             self.assertEqual(expected_calls, actual_calls)
 
