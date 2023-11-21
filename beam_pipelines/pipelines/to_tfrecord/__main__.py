@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 import apache_beam as beam
-
+from datetime import datetime
 from pipelines.to_tfrecord.image_dofns import DecodeFromTextDoFn, ReadImagesDoFn, ImageToTfExampleDoFn
 
 IMAGES_BUCKET_NAME = os.environ["IMAGES_BUCKET_NAME"]
