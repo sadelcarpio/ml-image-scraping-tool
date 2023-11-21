@@ -12,3 +12,5 @@ services:
       IMAGES_BUCKET_NAME: ${IMAGES_BUCKET_NAME}
       TFRECORD_BUCKET: ${TFRECORD_BUCKET}
       LABELS_BUCKET: ${LABELS_BUCKET}
+    volumes:
+      - ./pipelines:/beam_pipelines/pipelines

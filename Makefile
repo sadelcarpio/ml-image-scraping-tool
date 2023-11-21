@@ -2,8 +2,10 @@
 
 AIRFLOW := airflow
 SCRAPY := image_scraper
+BEAM := beam_pipelines
 AIRFLOW_COMPOSE := $(AIRFLOW)/docker-compose.yaml
 SCRAPY_COMPOSE := $(SCRAPY)/docker-compose.yaml
+BEAM_COMPOSE := $(BEAM)/docker-compose.yaml
 SPIDER := google_images_spider
 
 # Setup for windows
@@ -54,3 +56,7 @@ run: airflow-compose-run scrapy-compose-run
 down:
 	docker compose --project-name mlist -f $(SCRAPY_COMPOSE) down
 	docker compose --project-name mlist -f $(AIRFLOW_COMPOSE) down
+
+beam-run:
+	docker compose -f $(BEAM_COMPOSE) up --build
+	docker compose -f $(BEAM_COMPOSE) down
