@@ -1,19 +1,15 @@
 import re
-
+from datetime import datetime
 import apache_beam as beam
-import numpy as np
 import tensorflow as tf
 from google.cloud.storage import Client
 
 
 class DecodeFromTextDoFn(beam.DoFn):
-    def __init__(self, bucket_name):
-        super().__init__()
-        self.bucket_name = bucket_name
 
     def process(self, element, *args, **kwargs):
         path, label = element.split(",")
-        path = re.split(rf"gs://{self.bucket_name}/", path)[1]
+        path = re.split(rf"(gs://.+?/)", path)[2]
         return [[path, label]]
 
 
@@ -52,14 +48,13 @@ class ImageToTfExampleDoFn(beam.DoFn):
     def process(self, element, *args, **kwargs):
         img_raw, label = element
         image_shape = tf.io.decode_jpeg(img_raw).shape
-        label = np.array(label, dtype=np.int32)
         example = tf.train.Example(
             features=tf.train.Features(
                 feature={'height': self._int64_feature(image_shape[0]),
                          'width': self._int64_feature(image_shape[1]),
                          'depth': self._int64_feature(image_shape[2]),
                          'image_raw': self._bytes_feature(img_raw),
-                         'label': self._int64_feature(label)}
+                         'label': self._int64_feature(int(label))}
             )
         )
         yield example

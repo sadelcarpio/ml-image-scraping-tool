@@ -3,7 +3,6 @@ LABEL authors="sergio.delcarpio"
 
 WORKDIR beam_pipelines/
 
-COPY pipelines ./pipelines
 COPY tests ./tests
 COPY requirements.txt .
 COPY service_account.json .
