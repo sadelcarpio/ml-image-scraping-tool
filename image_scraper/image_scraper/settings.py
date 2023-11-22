@@ -37,3 +37,5 @@ GCS_PROJECT_ID = os.environ["PROJECT_ID"]
 DOWNLOADER_MIDDLEWARES = {
     'image_scraper.middlewares.SeleniumMiddleware': 300
 }
+
+LOG_LEVEL = "INFO"
