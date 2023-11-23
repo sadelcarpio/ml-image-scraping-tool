@@ -14,3 +14,4 @@ services:
       LABELS_BUCKET: ${LABELS_BUCKET}
     volumes:
       - ./pipelines:/beam_pipelines/pipelines
+      - service_account.json:/beam_pipelines/service_account.json
