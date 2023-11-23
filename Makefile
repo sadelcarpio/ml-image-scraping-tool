@@ -58,5 +58,7 @@ down:
 	docker compose --project-name mlist -f $(AIRFLOW_COMPOSE) down
 
 beam-run:
-	docker compose -f $(BEAM_COMPOSE) up --build
+	docker compose -f $(BEAM_COMPOSE) up -d --build
+
+beam-down:
 	docker compose -f $(BEAM_COMPOSE) down

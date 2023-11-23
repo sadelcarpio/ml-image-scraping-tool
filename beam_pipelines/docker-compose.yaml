@@ -14,7 +14,7 @@ services:
       LABELS_BUCKET: ${LABELS_BUCKET}
     volumes:
       - ./pipelines:/beam_pipelines/pipelines
-      - ${PWD}/service_account.json:/beam_pipelines/service_account.json
+      - ${PWD}/beam_pipelines/service_account.json:/beam_pipelines/service_account.json
     depends_on:
       - spark
 
@@ -25,3 +25,5 @@ services:
     - SPARK_RPC_ENCRYPTION_ENABLED=no
     - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
     - SPARK_SSL_ENABLED=no
+    ports:
+      - "8080:8080"
