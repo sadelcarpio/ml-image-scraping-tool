@@ -4,6 +4,7 @@ LABEL authors="sergio.delcarpio"
 WORKDIR beam_pipelines/
 
 COPY tests ./tests
+COPY pipelines ./pipelines
 COPY requirements.txt .
 ENV GOOGLE_APPLICATION_CREDENTIALS /beam_pipelines/service_account.json
 
