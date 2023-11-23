@@ -14,4 +14,14 @@ services:
       LABELS_BUCKET: ${LABELS_BUCKET}
     volumes:
       - ./pipelines:/beam_pipelines/pipelines
-      - service_account.json:/beam_pipelines/service_account.json
+      - ${PWD}/service_account.json:/beam_pipelines/service_account.json
+    depends_on:
+      - spark
+
+  spark:
+    image: bitnami/spark:3
+    environment:
+    - SPARK_RPC_AUTHENTICATION_ENABLED=no
+    - SPARK_RPC_ENCRYPTION_ENABLED=no
+    - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+    - SPARK_SSL_ENABLED=no
