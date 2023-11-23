@@ -1,4 +1,4 @@
-name: CI for Image Scraping
+name: CI for Beam Pipelines
 on:
   push:
     paths:
@@ -18,4 +18,4 @@ jobs:
 
       - name: Run tests in Docker container
         run: |
-          docker run scrapyd-deploy python -m unittest discover tests
+          docker run pipelines python -m unittest discover tests

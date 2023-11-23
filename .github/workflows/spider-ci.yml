@@ -1,4 +1,4 @@
-name: CI for Beam Pipelines
+name: CI for Image Scraping
 on:
   push:
     paths:
