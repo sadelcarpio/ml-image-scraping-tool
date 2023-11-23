@@ -1,9 +1,9 @@
-name: CI for Beam Pipelines
+name: CI for Image Scraping
 on:
   push:
     paths:
-      - 'image_scraper/**'
-      - '.github/workflows/spider-ci.yml'
+      - 'beam_pipelines/**'
+      - '.github/workflows/beam-ci.yml'
   pull_request:
 
 jobs:
@@ -13,8 +13,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Build scrapyd-deploy to run tests
-        run: docker build image_scraper --file image_scraper/scrapyd_deploy.Dockerfile --tag scrapyd-deploy
+      - name: Build beam pipelines container to run tests
+        run: docker build beam_pipelines --file beam_pipelines/Dockerfile --tag pipelines
 
       - name: Run tests in Docker container
         run: |

@@ -31,7 +31,7 @@ class ReadImagesDoFn(beam.DoFn):
         path, label = element
         blob = self.bucket.blob(path)
         img_bytes = blob.download_as_bytes()
-        yield img_bytes, label
+        yield img_bytes, int(label)
 
     def teardown(self):
         self.gcs_client.close()
@@ -55,7 +55,7 @@ class ImageToTfExampleDoFn(beam.DoFn):
                 feature={'height': self._int64_feature(image_shape[1]),
                          'width': self._int64_feature(image_shape[0]),
                          'image_raw': self._bytes_feature(img_raw),
-                         'label': self._int64_feature(int(label))}
+                         'label': self._int64_feature(label)}
             )
         )
         yield example
