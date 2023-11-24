@@ -2,10 +2,10 @@
 FROM python:3.10
 LABEL authors="sadelcarpio"
 
-WORKDIR src/
+WORKDIR /src
 
-COPY image_scraper ./image_scraper
-COPY tests ./tests
+COPY image_scraper /src/image_scraper
+COPY tests /src/tests
 COPY requirements.txt /src
 COPY scrapy.cfg /src
 

@@ -20,6 +20,8 @@ services:
     build:
       context: .
       dockerfile: scrapyd_deploy.Dockerfile
+    volumes:
+      - ${PWD}/image_scraper/image_scraper:/src/image_scraper
     depends_on:
       - scrapyd
 
