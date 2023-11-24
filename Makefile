@@ -20,7 +20,10 @@ scrapy-devenv-windows:
 airflow-devenv-windows:  # should have a requirements file on airflow folder
 	powershell.exe -c "venv/Scripts/pip install apache-airflow"
 
-devenv-windows: venv-windows scrapy-devenv-windows airflow-devenv-windows
+beam-devenv-windows:
+	powershell.exe -c "venv/Scripts/pip install -r $(BEAM)/requirements.txt"
+
+devenv-windows: venv-windows scrapy-devenv-windows airflow-devenv-windows beam-devenv-windows
 
 # Setup for WSL / Linux
 ifeq ($(wildcard .venv/*),)
@@ -34,7 +37,10 @@ scrapy-devenv:
 airflow-devenv:  # should have a requirements file on airflow folder
 	. .venv/bin/activate && pip install apache-airflow
 
-devenv: venv scrapy-devenv airflow-devenv
+beam-devenv:
+	. .venv/bin/activate && pip install -r $(BEAM)/requirements.txt
+
+devenv: venv scrapy-devenv airflow-devenv beam-devenv
 
 # Run spider locally (Windows)
 runspider-windows:

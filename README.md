@@ -6,10 +6,13 @@ Data Engineering project for image scraping and data labeling, preparing image d
 
 ## Setup (Makefile)
 
-To launch the scrapy spiders (with airlfow) from docker compose
 ```shell
 # Install libraries locally for developing
 $ make devenv  # make devenv-windows for windows
+```
+
+To launch the scrapy spiders (with airflow) from docker compose
+```shell
 # Run the crawler for google images
 $ make runspider # make runspider-windows for windows
 # Run the whole project (docker compose)
