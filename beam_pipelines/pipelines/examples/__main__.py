@@ -9,9 +9,9 @@ from apache_beam.io import fileio
 from apache_beam.options.pipeline_options import PipelineOptions
 from google.cloud import vision
 
-from beam_pipelines.examples.image_dofns import ReadImages
+from pipelines.examples.image_dofns import ReadImages
 
-CATS_BUCKET_NAME = os.environ["CATS_BUCKET_NAME"]
+IMAGES_BUCKET_NAME = os.environ["IMAGES_BUCKET_NAME"]
 
 
 def run_pipeline(argv=None):
@@ -27,7 +27,7 @@ def run_pipeline(argv=None):
     with beam.Pipeline(options=pipeline_options) as p:
         path_processing = (
                 p
-                | "Match .jpg filenames from GCS folder" >> fileio.MatchFiles(f"gs://{CATS_BUCKET_NAME}/"
+                | "Match .jpg filenames from GCS folder" >> fileio.MatchFiles(f"gs://{IMAGES_BUCKET_NAME}/"
                                                                               f"{known_args.batch_date}/*.jpg")
                 | "Read said matches" >> fileio.ReadMatches()
                 | beam.Reshuffle()
@@ -38,8 +38,8 @@ def run_pipeline(argv=None):
 
         read_images = (
                 path_processing
-                | "Get only folder path (blob)" >> beam.Map(lambda x: re.split(rf"gs:\/\/{CATS_BUCKET_NAME}\/", x)[1])
-                | "Read images from gcs path" >> beam.ParDo(ReadImages(bucket_name=CATS_BUCKET_NAME))
+                | "Get only folder path (blob)" >> beam.Map(lambda x: re.split(rf"gs:\/\/{IMAGES_BUCKET_NAME}\/", x)[1])
+                | "Read images from gcs path" >> beam.ParDo(ReadImages(bucket_name=IMAGES_BUCKET_NAME))
         )
 
         # Direct processing with visionml

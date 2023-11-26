@@ -6,14 +6,24 @@ Data Engineering project for image scraping and data labeling, preparing image d
 
 ## Setup (Makefile)
 
-Run the make commands on WSL or cygwin/mingw
 ```shell
 # Install libraries locally for developing
 $ make devenv  # make devenv-windows for windows
+```
+
+To launch the scrapy spiders (with airflow) from docker compose
+```shell
 # Run the crawler for google images
 $ make runspider # make runspider-windows for windows
 # Run the whole project (docker compose)
 $ make run
 # Stop / remove containers
 $ make down
+```
+
+For beam `to_tfrecord` pipeline (running on spark standalone mode)
+```shell
+$ make beam-run
+# Stop and remove beam and spark containers
+$ make beam-down
 ```

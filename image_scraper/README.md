@@ -18,7 +18,7 @@ You can also run `make scrapy-devenv` (WSL/Linux) or ` make scrapy-devenv-window
 ### Set env variables
 You'll need the following environment variables:
 ```shell
-CATS_BUCKET_NAME=my_bucket
+IMAGES_BUCKET_NAME=my_bucket
 PROJECT_ID=my_project_id
 ```
 Also, authenticate your GCP user with the gcloud SDK:
@@ -66,6 +66,6 @@ You can also use ```scrapyd-client``` ([docs](https://github.com/scrapy/scrapyd-
 
 ## Running on Docker Compose (faster setup, but more resources)
 
-* Create a `.env` file with the `CATS_BUCKET_NAME`, `PROJECT_ID` and `KAFKA_LISTENER` variables set.
+* Create a `.env` file with the `IMAGES_BUCKET_NAME`, `PROJECT_ID` and `KAFKA_LISTENER` variables set.
 * Create a key for the `gcp-bucket-user` service account and save it as `service_account.json` on image_scraper folder.
 * Run `docker compose up -d` on image_scraper folder, or `make scrapy-compose-run` on the root folder

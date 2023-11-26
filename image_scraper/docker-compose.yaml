@@ -11,7 +11,7 @@ services:
     ports:
       - "6800:6800"
     environment:
-      CATS_BUCKET_NAME: ${CATS_BUCKET_NAME}
+      IMAGES_BUCKET_NAME: ${IMAGES_BUCKET_NAME}
       PROJECT_ID: ${PROJECT_ID}
       KAFKA_LISTENER: ${KAFKA_LISTENER}
 
@@ -20,6 +20,8 @@ services:
     build:
       context: .
       dockerfile: scrapyd_deploy.Dockerfile
+    volumes:
+      - ${PWD}/image_scraper/image_scraper:/src/image_scraper
     depends_on:
       - scrapyd
 
