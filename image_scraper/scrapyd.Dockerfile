@@ -10,17 +10,27 @@ RUN apt-get install -y google-chrome-stable
 
 # set display port to avoid crash
 ENV DISPLAY=:99
+ENV DEPLOY_ENV=cloudrun
 
+WORKDIR /src
+
+# In the future replace with dockerignore
+COPY image_scraper /src/image_scraper
+COPY tests /src/tests
+COPY requirements.txt /src
+COPY scrapy.cfg /src
 COPY scrapyd.conf /etc/scrapyd/scrapyd.conf
 COPY requirements.txt .
 COPY service_account.json .
+COPY entrypoint.sh /
 
-ENV GOOGLE_APPLICATION_CREDENTIALS /service_account.json
+ENV GOOGLE_APPLICATION_CREDENTIALS /src/service_account.json
 
 RUN pip install -r requirements.txt
+RUN chmod +x /entrypoint.sh
 
 # Expost default Scrapyd port 6800
 EXPOSE 6800
 
 # Start Scrapyd server when container is run
-CMD ["scrapyd"]
+CMD /entrypoint.sh $DEPLOY_ENV
