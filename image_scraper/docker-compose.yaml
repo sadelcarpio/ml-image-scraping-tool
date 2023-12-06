@@ -21,6 +21,8 @@ services:
       PROJECT_ID: ${PROJECT_ID}
       KAFKA_LISTENER: ${KAFKA_LISTENER}
       DEPLOY_ENV: "docker"
+    volumes:
+      - ${PWD}/image_scraper/service_account.json:/src/service_account.json
     depends_on:
       - scrapy-base
 

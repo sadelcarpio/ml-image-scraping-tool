@@ -19,7 +19,6 @@ COPY tests /src/tests
 COPY requirements.txt /src
 COPY scrapy.cfg /src
 COPY requirements.txt .
-COPY service_account.json .
 
 ENV GOOGLE_APPLICATION_CREDENTIALS /src/service_account.json
 RUN pip install -r requirements.txt
