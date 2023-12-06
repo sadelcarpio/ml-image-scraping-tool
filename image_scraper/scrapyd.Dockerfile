@@ -2,7 +2,7 @@ FROM mlist-scrapy-base:latest
 
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
-RUN pip install -r requirements.txt
+
 COPY scrapyd.conf /etc/scrapyd/scrapyd.conf
 
 # Expose default Scrapyd port 6800

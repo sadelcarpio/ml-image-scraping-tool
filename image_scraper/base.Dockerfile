@@ -22,3 +22,4 @@ COPY requirements.txt .
 COPY service_account.json .
 
 ENV GOOGLE_APPLICATION_CREDENTIALS /src/service_account.json
+RUN pip install -r requirements.txt
