@@ -23,6 +23,6 @@ class GoogleImagesSpiderTest(unittest.TestCase):
     def test_parse(self, mock_response, mock_time):
         with patch.object(self.spider, 'driver'), patch.object(self.spider, 'scrape_image_url'):
             result = list(self.spider.parse(mock_response))
-            expected_calls = [3, 10, 10, 10, 10, 10]
+            expected_calls = [5, 10, 10, 10, 10, 10]
             actual_calls = [call_obj.args[0] for call_obj in mock_time.call_args_list]
             self.assertEqual(expected_calls, actual_calls)
