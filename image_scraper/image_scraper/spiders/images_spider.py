@@ -11,13 +11,15 @@ from ..items import ImageItem
 class GoogleImagesSpider(scrapy.Spider):
     name = "google_images_spider"
     # large images published on the last 24 hrs
+    domain = "https://www.google.com/search?q="
     search_params = "&tbm=isch&tbs=qdr:d%2Cisz:l"
     base_path = '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div'
 
-    def __init__(self, start_url="https://www.google.com/search?q=cats+images", *args, **kwargs):
+    def __init__(self, start_urls="cats+images", *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.driver = None
-        self.start_urls = [start_url + self.search_params]
+        start_urls = start_urls.split(",")
+        self.start_urls = [self.domain + start_url + self.search_params for start_url in start_urls]
 
     def parse(self, response, **kwargs):
         # Extract the image URLs from the Google Images page.

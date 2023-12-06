@@ -3,6 +3,12 @@ version: "3.9"
 name: image_scraper
 
 services:
+  scrapy-base:
+    container_name: scrapy-base
+    build:
+      context: .
+      dockerfile: base.Dockerfile
+
   scrapyd:
     container_name: scrapyd
     build:
@@ -15,6 +21,8 @@ services:
       PROJECT_ID: ${PROJECT_ID}
       KAFKA_LISTENER: ${KAFKA_LISTENER}
       DEPLOY_ENV: "docker"
+    depends_on:
+      - scrapy-base
 
   # Kafka Server
   zookeeper-service:
