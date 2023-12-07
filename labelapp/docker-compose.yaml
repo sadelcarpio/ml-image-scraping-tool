@@ -1,0 +1,10 @@
+version: "3.9"
+
+name: labelapp
+
+services:
+  url-app:
+    container_name: url-app
+    build:
+      context: ./url_app
+      dockerfile: Dockerfile
