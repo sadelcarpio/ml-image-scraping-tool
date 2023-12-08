@@ -23,7 +23,7 @@ class GoogleImagesSpider(scrapy.Spider):
         self.driver = None
         start_urls = start_urls.split(",")
         self.start_urls = [self.domain + start_url + self.search_params for start_url in start_urls]
-        logger.debug(f"Scraping the following URLs: {self.start_urls}")
+        logger.info(f"Scraping the following URLs: {self.start_urls}")
 
     def parse(self, response, **kwargs):
         # Extract the image URLs from the Google Images page.
