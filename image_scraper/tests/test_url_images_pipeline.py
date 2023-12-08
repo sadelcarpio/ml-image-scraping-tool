@@ -41,6 +41,7 @@ class TestURLImagesPipeline(unittest.TestCase):
                                         call('http://example.com', meta={'dont_proxy': True})])
         self.assertEqual(2, len(mock_requests.call_args_list))
 
+    @patch.dict(os.environ, {'MSG_TOPIC': 'google-images'})
     @patch('image_scraper.pipelines.logger')
     def test_item_completed(self, mock_logger):
         mock_results = [(True, {'url': 'https://example.com/image1.jpg', 'path': 'abcdefg.jpg', 'checksum': '123456',

@@ -1,1 +1,4 @@
 confluent-kafka~=2.3.0
+cloud-sql-python-connector~=1.4.3
+sqlalchemy~=2.0.23
+pg8000~=1.30.3
