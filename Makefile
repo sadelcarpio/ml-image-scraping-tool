@@ -71,6 +71,10 @@ down:
 	docker compose --project-name mlist -f $(AIRFLOW_COMPOSE) down
 	docker compose --project-name mlist -f $(LABELAPP_COMPOSE) down
 
+down-no-airflow:
+	docker compose --project-name mlist -f $(SCRAPY_COMPOSE) down
+	docker compose --project-name mlist -f $(LABELAPP_COMPOSE) down
+
 beam-run:
 	docker compose -f $(BEAM_COMPOSE) up -d --build
 

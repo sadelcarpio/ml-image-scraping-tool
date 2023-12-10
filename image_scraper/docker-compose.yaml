@@ -16,11 +16,8 @@ services:
       dockerfile: scrapyd.Dockerfile
     ports:
       - "6800:6800"
-    environment:
-      IMAGES_BUCKET_NAME: ${IMAGES_BUCKET_NAME}
-      PROJECT_ID: ${PROJECT_ID}
-      KAFKA_LISTENER: ${KAFKA_LISTENER}
-      DEPLOY_ENV: "docker"
+    env_file:
+      - .env
     volumes:
       - ${PWD}/image_scraper/service_account.json:/src/service_account.json
     depends_on:

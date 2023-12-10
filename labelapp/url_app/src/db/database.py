@@ -23,6 +23,9 @@ class SQLSession:
             db.add(db_url)
             db.commit()
             db.refresh(db_url)
+        except exc.IntegrityError:
+            logger.error(f"The value already exists in the database.")
+            db.rollback()
         except exc.SQLAlchemyError as e:
             logger.error(f"Failed to upload: {e}")
             db.rollback()
