@@ -1,9 +1,7 @@
-import os
 import unittest
-from datetime import datetime
 from io import BytesIO
 from unittest.mock import Mock
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import apache_beam as beam
 import tensorflow as tf
@@ -11,7 +9,6 @@ from PIL import Image
 from apache_beam.testing.test_pipeline import TestPipeline
 from apache_beam.testing.util import assert_that, equal_to
 
-from pipelines.to_tfrecord.__main__ import ToTFRecordPipeline
 from pipelines.to_tfrecord.image_dofns import DecodeFromTextDoFn, ReadImagesDoFn, ImageToTfExampleDoFn
 
 
