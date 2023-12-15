@@ -1,9 +1,9 @@
-import hashlib
 import logging
 
 import confluent_kafka
 
 from src.db.database import SQLSession
+from src.utils import sha256_hash
 
 logger = logging.getLogger(__name__)
 
@@ -25,14 +25,9 @@ class KafkaConsumer(confluent_kafka.Consumer):
                     logger.warning(f"ERROR: {msg.error()}")
                 else:
                     gcs_url = msg.value().decode('utf-8')
-                    hashed_url = self.sha256_hash(gcs_url)
+                    hashed_url = sha256_hash(gcs_url)
                     logger.info(f"Consumed event from topic {self.topic}: value = "
                                 f"{gcs_url}")
                     self.db_session.upload_url(gcs_url=gcs_url, hashed_url=hashed_url)
         finally:
             self.close()
-
-    @staticmethod
-    def sha256_hash(url: str) -> str:
-        url_hash = hashlib.sha256(url.encode()).hexdigest()
-        return url_hash
