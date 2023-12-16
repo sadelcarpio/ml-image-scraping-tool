@@ -22,7 +22,7 @@ class ConsistentHashing:
                 break
             elif current == len(user_ids):
                 user_id = user_ring_positions[current - 1][0]
-                logger.info(f"Assigned {ring_position} to user {user_ring_positions[current - 1][0]}"
+                logger.info(f"Assigned GCS URL {ring_position} to user with ID {user_ring_positions[current - 1][0]}"
                             f" in position {user_ring_positions[current - 1][1]}")
             elif ring_position >= user_ring_positions[current][1]:
                 current += 1

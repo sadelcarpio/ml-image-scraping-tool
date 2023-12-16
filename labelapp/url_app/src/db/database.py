@@ -22,7 +22,6 @@ class SQLSession:
         try:
             user_ids = db.query(models.UserModel.id).all()
             user_id = dist_strategy.distribute_url(hashed_url, user_ids)
-            logger.info(f"Assigned GCS URL to ID: {user_id}")
             db_url = models.UrlModel(gcs_url=gcs_url, hashed_url=hashed_url, user_id=user_id)
             db.add(db_url)
             db.commit()
