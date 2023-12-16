@@ -3,6 +3,7 @@ import logging
 import confluent_kafka
 
 from src.db.database import SQLSession
+from src.url_dist import ConsistentHashing
 from src.utils import sha256_hash
 
 logger = logging.getLogger(__name__)
@@ -28,6 +29,8 @@ class KafkaConsumer(confluent_kafka.Consumer):
                     hashed_url = sha256_hash(gcs_url)
                     logger.info(f"Consumed event from topic {self.topic}: value = "
                                 f"{gcs_url}")
-                    self.db_session.upload_url(gcs_url=gcs_url, hashed_url=hashed_url)
+                    self.db_session.upload_url(gcs_url=gcs_url,
+                                               hashed_url=hashed_url,
+                                               dist_strategy=ConsistentHashing(n_hash_ring=1000))
         finally:
             self.close()
