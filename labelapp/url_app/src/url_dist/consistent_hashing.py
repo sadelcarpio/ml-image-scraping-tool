@@ -1,7 +1,5 @@
 import logging
 
-from sqlalchemy.orm.query import Query
-
 from src.utils import sha256_hash
 
 logger = logging.getLogger(__name__)

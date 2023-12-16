@@ -1,8 +1,7 @@
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from src.url_dist import ConsistentHashing
-from sqlalchemy import UUID
 
 
 class TestConsistentHashing(unittest.TestCase):
