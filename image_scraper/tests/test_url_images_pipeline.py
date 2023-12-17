@@ -28,7 +28,7 @@ class TestURLImagesPipeline(unittest.TestCase):
         mock_super().from_settings.return_value = MagicMock(spec=URLImagesPipeline)
         self.pipeline = URLImagesPipeline.from_settings(mock_settings)
         mock_super().from_settings.assert_called_with(mock_settings)
-        mock_logger.debug.assert_has_calls([call('Setting up Kafka Producer ...'), call('Kafka Producer set up.')])
+        mock_logger.info.assert_has_calls([call('Setting up Kafka Producer ...'), call('Kafka Producer set up.')])
         mock_producer.assert_called_with(bootstrap_servers='localhost:9092', client_id='scrapyd')
         self.assertIsInstance(self.pipeline, URLImagesPipeline)
 
@@ -41,6 +41,7 @@ class TestURLImagesPipeline(unittest.TestCase):
                                         call('http://example.com', meta={'dont_proxy': True})])
         self.assertEqual(2, len(mock_requests.call_args_list))
 
+    @patch.dict(os.environ, {'MSG_TOPIC': 'google-images'})
     @patch('image_scraper.pipelines.logger')
     def test_item_completed(self, mock_logger):
         mock_results = [(True, {'url': 'https://example.com/image1.jpg', 'path': 'abcdefg.jpg', 'checksum': '123456',
@@ -50,7 +51,7 @@ class TestURLImagesPipeline(unittest.TestCase):
                          'images': ['abcdefg.jpg']}
         self.pipeline.producer = MagicMock(spec=KafkaProducer)
         actual_item = self.pipeline.item_completed(results=mock_results, item=mock_item, info=MagicMock())
-        mock_logger.debug.assert_has_calls([call("Sending GCS URL for ['abcdefg.jpg'] ..."),
+        mock_logger.info.assert_has_calls([call("Sending GCS URL for ['abcdefg.jpg'] ..."),
                                             call("GCS URLs sent.")])
         self.pipeline.producer.produce_urls.assert_called_with(topic='google-images',
                                                                filenames=['abcdefg.jpg'],

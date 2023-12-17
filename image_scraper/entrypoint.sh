@@ -7,7 +7,7 @@ scrapyd > scrapyd.log 2>&1 &
 sleep 5
 
 # Run scrapyd-deploy
-scrapyd-deploy "$1"
+scrapyd-deploy docker
 
 # Tail the logs to hold foreground
 tail -f scrapyd.log

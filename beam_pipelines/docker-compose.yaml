@@ -8,10 +8,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      IMAGES_BUCKET_NAME: ${IMAGES_BUCKET_NAME}
-      TFRECORD_BUCKET: ${TFRECORD_BUCKET}
-      LABELS_BUCKET: ${LABELS_BUCKET}
+    env_file:
+      - .env
     volumes:
       - ./pipelines:/beam_pipelines/pipelines
       - ${PWD}/beam_pipelines/service_account.json:/beam_pipelines/service_account.json
