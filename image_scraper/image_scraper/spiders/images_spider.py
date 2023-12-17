@@ -1,3 +1,4 @@
+import logging
 import time
 
 import scrapy
@@ -7,23 +8,28 @@ from selenium.webdriver.common.by import By
 
 from ..items import ImageItem
 
+logger = logging.getLogger(__name__)
+
 
 class GoogleImagesSpider(scrapy.Spider):
     name = "google_images_spider"
     # large images published on the last 24 hrs
+    domain = "https://www.google.com/search?q="
     search_params = "&tbm=isch&tbs=qdr:d%2Cisz:l"
     base_path = '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div'
 
-    def __init__(self, start_url="https://www.google.com/search?q=cats+images", *args, **kwargs):
+    def __init__(self, start_urls="cats+images", *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.driver = None
-        self.start_urls = [start_url + self.search_params]
+        start_urls = start_urls.split(",")
+        self.start_urls = [self.domain + start_url + self.search_params for start_url in start_urls]
+        logger.info(f"Scraping the following URLs: {self.start_urls}")
 
     def parse(self, response, **kwargs):
         # Extract the image URLs from the Google Images page.
         # Scrape the image data.
         self.driver: WebDriver = response.meta['driver']
-        time.sleep(3)
+        time.sleep(5)
         initial_load = len(response.xpath('//*[@id="islrg"]/div[1]/div/a[1]/div[1]/img').getall())
         additional_scrolls = 5
         for i in range(1, initial_load + additional_scrolls + 1):  # more scrolls than this throw unrelated images
@@ -48,7 +54,7 @@ class GoogleImagesSpider(scrapy.Spider):
                     time.sleep(10)
 
     def scrape_image_url(self):
-        time.sleep(3)  # waits for image to be HD
+        time.sleep(5)  # waits for image to be HD
         img_element = self.driver.find_element(By.XPATH,
                                                f'{self.base_path}//a/img[1]')
         img_src = img_element.get_attribute('src')
