@@ -50,22 +50,7 @@ with airflow.DAG(
         bash_command="sleep 30",  # Espera 30 segundos, ajusta según sea necesario
         dag=dag,
     )
-
-    '''check_status_sensor = HttpSensor(
-        task_id='check_scraping_status_sensor',
-        http_conn_id="scrapyd_http_endpoint",
-        endpoint='jobs/{{ task_instance.xcom_pull(task_ids="schedule-spider") }}/status',
-        request_params={},
-        response_check=lambda response: response.json()['status'] == 'ok',
-        poke_interval=180,  # Intervalo entre verificaciones en segundos
-        timeout=600,  # Tiempo de espera máximo en segundos
-        mode='poke',
-        soft_fail=True,  
-        timeout_mode='poke',
-        poke_timeout=3600,  # Tiempo total máximo en modo poke
-        dag=dag,
-    )'''
-
+    
     check_status_task = PythonOperator(
         task_id='check_scraping_status',
         python_callable=check_status,
