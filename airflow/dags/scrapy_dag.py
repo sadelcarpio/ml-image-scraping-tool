@@ -25,13 +25,14 @@ def check_status():
             time.sleep(30)
         print("Web scraping finished", finished)
     except requests.exceptions.RequestException as e:
-        print("Error en la solicitud HTTP:", e)
+        print("Error on HTTP request:", e)
         return
 
 
 with airflow.DAG(
         "example_http_operator",
         default_args=default_args,
+        catchup=False
 ) as dag:
     task = SimpleHttpOperator(
         task_id="schedule-spider",
