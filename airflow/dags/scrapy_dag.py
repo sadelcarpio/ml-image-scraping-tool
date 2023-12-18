@@ -1,10 +1,7 @@
-import requests
-import time
 import airflow
-from airflow.providers.http.operators.http import SimpleHttpOperator
-from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
-#from airflow.operators.sensors.http_sensor import HttpSensor
+from airflow.operators.python import PythonOperator
+from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.utils.dates import days_ago
 
 default_args = {
@@ -15,6 +12,8 @@ default_args = {
 
 
 def check_status():
+    import time
+    import requests
     try:
         finished = []
         while not finished:
@@ -27,19 +26,18 @@ def check_status():
         print("Web scraping finished", finished)
     except requests.exceptions.RequestException as e:
         print("Error en la solicitud HTTP:", e)
-        return 
+        return
 
-        
 
 with airflow.DAG(
-    "example_http_operator",
-    default_args=default_args,
+        "example_http_operator",
+        default_args=default_args,
 ) as dag:
     task = SimpleHttpOperator(
         task_id="schedule-spider",
-        http_conn_id = "scrapyd_http_endpoint",
+        http_conn_id="scrapyd_http_endpoint",
         endpoint='schedule.json',
-        data="project=image_scraper&spider=google_images_spider&start_url=https://www.google.com/search?q=dogs+images",   # Any data you want to post
+        data="project=image_scraper&spider=google_images_spider&start_url=https://www.google.com/search?q=dogs+images",
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         method='POST',
         dag=dag,
@@ -50,7 +48,7 @@ with airflow.DAG(
         bash_command="sleep 30",  # Espera 30 segundos, ajusta según sea necesario
         dag=dag,
     )
-    
+
     check_status_task = PythonOperator(
         task_id='check_scraping_status',
         python_callable=check_status,
