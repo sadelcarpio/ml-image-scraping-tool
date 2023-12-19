@@ -1,4 +1,4 @@
-name: CI for Image Scraping
+name: CI for Airflow DAGs
 on:
   push:
     paths:
