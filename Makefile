@@ -37,7 +37,7 @@ scrapy-devenv:
 	. .venv/bin/activate && pip install -r $(SCRAPY)/requirements.txt
 
 airflow-devenv:  # should have a requirements file on airflow folder
-	. .venv/bin/activate && pip install apache-airflow
+	. .venv/bin/activate && pip install -r $(AIRFLOW)/requirements.txt
 
 beam-devenv:
 	. .venv/bin/activate && pip install -r $(BEAM)/requirements.txt

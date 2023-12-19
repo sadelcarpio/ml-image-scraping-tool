@@ -1,37 +1,22 @@
+from datetime import datetime
+
 import airflow
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
-from airflow.utils.dates import days_ago
+
+from utils.scrapyd_request import check_status
 
 default_args = {
     "owner": "airflow",
-    "depends_on_past": False,
-    "start_date": days_ago(2),
+    "depends_on_past": False
 }
-
-
-def check_status():
-    import time
-    import requests
-    try:
-        finished = []
-        while not finished:
-            response = requests.get('http://scrapyd:6800/listjobs.json', timeout=10)
-            response.raise_for_status()
-            finished = response.json()['finished']
-            running = response.json()['running']
-            print("Web scraping status:", running)
-            time.sleep(30)
-        print("Web scraping finished", finished)
-    except requests.exceptions.RequestException as e:
-        print("Error on HTTP request:", e)
-        return
-
 
 with airflow.DAG(
         "example_http_operator",
         default_args=default_args,
+        start_date=datetime(2023, 12, 1),
+        schedule_interval="@daily",
         catchup=False
 ) as dag:
     task = SimpleHttpOperator(
