@@ -16,7 +16,7 @@ with airflow.DAG(
         "example_http_operator",
         default_args=default_args,
         start_date=datetime(2023, 12, 1),
-        schedule_interval="@daily",
+        schedule="@daily",
         catchup=False
 ) as dag:
     task = SimpleHttpOperator(
@@ -38,7 +38,6 @@ with airflow.DAG(
     check_status_task = PythonOperator(
         task_id='check_scraping_status',
         python_callable=check_status,
-        provide_context=True,
         dag=dag,
     )
 
