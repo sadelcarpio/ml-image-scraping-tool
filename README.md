@@ -11,10 +11,12 @@ Data Engineering project for image scraping and data labeling, preparing image d
 $ make devenv  # make devenv-windows for windows
 ```
 
-To launch the scrapy spiders (with airflow) from docker compose
+To launch the containers
 ```shell
-# Run the crawler for google images
-$ make runspider # make runspider-windows for windows
+# Run without airflow
+$ make run-no-airflow # runs everything but airflow containers
+# Stop / remove containers
+$ make down-no-airflow
 # Run the whole project (docker compose)
 $ make run
 # Stop / remove containers

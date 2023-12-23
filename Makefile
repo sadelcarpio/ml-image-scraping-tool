@@ -44,14 +44,6 @@ beam-devenv:
 
 devenv: venv scrapy-devenv airflow-devenv beam-devenv
 
-# Run spider locally (Windows)
-runspider-windows:
-	cd $(SCRAPY) && powershell.exe -c "../venv/Scripts/python -m scrapy crawl $(SPIDER)"
-
-# Run spider locally (WSL / Linux)
-runspider:
-	cd $(SCRAPY) && ../.venv/bin/python3 -m scrapy crawl $(SPIDER)
-
 # Run on Docker Compose
 airflow-compose-run:
 	docker compose --project-name mlist -f $(AIRFLOW_COMPOSE) up -d --build
@@ -64,15 +56,15 @@ labelapp-run:
 
 run-no-airflow: scrapy-compose-run labelapp-run
 
-run: airflow-compose-run scrapy-compose-run labelapp-run
+run: airflow-compose-run run-no-airflow
+
+down-no-airflow:
+	docker compose --project-name mlist -f $(SCRAPY_COMPOSE) down
+	docker compose --project-name mlist -f $(LABELAPP_COMPOSE) down
 
 down:
 	docker compose --project-name mlist -f $(SCRAPY_COMPOSE) down
 	docker compose --project-name mlist -f $(AIRFLOW_COMPOSE) down
-	docker compose --project-name mlist -f $(LABELAPP_COMPOSE) down
-
-down-no-airflow:
-	docker compose --project-name mlist -f $(SCRAPY_COMPOSE) down
 	docker compose --project-name mlist -f $(LABELAPP_COMPOSE) down
 
 beam-run:
