@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from src.url_dist import ConsistentHashing
 
@@ -22,6 +22,19 @@ class TestConsistentHashing(unittest.TestCase):
 
         for hashed_url in hashed_urls:
             user_id = dist_strategy.distribute_url(hashed_url, user_mocks)
+            self.assertIsInstance(user_id, str)
+            self.assertIn(user_id, user_ids)
+
+    @patch.object(ConsistentHashing, '_get_sorted_ring_positions')
+    def test_user_id_assignment(self, mock_sort):
+        dist_strategy = ConsistentHashing(n_hash_ring=10)
+        hashed_urls = ['0', '2', '3', '4', '7', '8']
+        user_ids = ['uid1', 'uid2', 'uid3']
+        mock_sort.return_value = [('uid1', 2), ('uid2', 6), ('uid3', 8)]
+        expected_user_ids = ['uid3', 'uid1', 'uid1', 'uid1', 'uid2', 'uid3']
+        for hashed_urls, expected_user_id in zip(hashed_urls, expected_user_ids):
+            actual_user_id = dist_strategy.distribute_url(hashed_urls, user_ids)
+            self.assertEqual(expected_user_id, actual_user_id)
 
     def test_distribute_url_no_users(self):
         dist_strategy = ConsistentHashing(n_hash_ring=100)
