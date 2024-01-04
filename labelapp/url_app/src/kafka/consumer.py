@@ -15,6 +15,7 @@ class KafkaConsumer(confluent_kafka.Consumer):
         self.topic = topic
         self.subscribe([self.topic])
         self.db_session = db_session
+        self.strategy = ConsistentHashing(n_hash_ring=1000)
 
     def read_urls(self):
         try:
@@ -31,6 +32,6 @@ class KafkaConsumer(confluent_kafka.Consumer):
                                 f"{gcs_url}")
                     self.db_session.upload_url(gcs_url=gcs_url,
                                                hashed_url=hashed_url,
-                                               dist_strategy=ConsistentHashing(n_hash_ring=1000))
+                                               dist_strategy=self.strategy)
         finally:
             self.close()
