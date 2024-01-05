@@ -3,7 +3,7 @@ import logging
 import confluent_kafka
 
 from src.db.database import SQLSession
-from src.url_dist import ConsistentHashing
+from src.url_dist import VirtualNodesConsistentHashing
 from src.utils import sha256_hash
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ class KafkaConsumer(confluent_kafka.Consumer):
         self.topic = topic
         self.subscribe([self.topic])
         self.db_session = db_session
-        self.strategy = ConsistentHashing(n_hash_ring=1000)
+        self.strategy = VirtualNodesConsistentHashing(n_hash_ring=1000, num_replicas=10)
 
     def read_urls(self):
         try:

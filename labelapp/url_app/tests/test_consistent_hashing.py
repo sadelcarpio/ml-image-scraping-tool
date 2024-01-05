@@ -64,7 +64,6 @@ class TestConsistentHashing(unittest.TestCase):
             mock[0].configure_mock(hex=user_id)
         for hashed_url in hashed_urls:
             user_id = dist_strategy.distribute_url(hashed_url, user_mocks)
-            print(user_id)
             self.assertIsInstance(user_id, str)
             self.assertIn(user_id, user_ids)
 
