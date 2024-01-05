@@ -57,9 +57,11 @@ class SQLSession:
                 db.commit()
                 db.refresh(db_url)
         except exc.SQLAlchemyError as e:
-            logger.error(f"Failed to upload: {e}")
+            logger.error(f"Failed to update: {e}")
             db.rollback()
             raise
+        finally:
+            db.close()
 
 
 class SQLSessionCreator:
