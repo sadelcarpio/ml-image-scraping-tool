@@ -2,7 +2,7 @@ import logging
 
 import confluent_kafka
 
-from src.db.database import SQLSession
+from src.db.db_operations import SQLSession
 from src.url_dist import VirtualNodesConsistentHashing
 from src.utils import sha256_hash
 

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from sqlalchemy import exc
 
-from src.db.database import SQLSession
+from src.db.db_operations import SQLSession
 
 
 class TestSQLOperations(unittest.TestCase):
