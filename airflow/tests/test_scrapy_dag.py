@@ -1,10 +1,11 @@
 import json
 import unittest
+from sys import platform
 from unittest.mock import patch, MagicMock
 
 import requests
 from airflow.models import DagBag
-from sys import platform
+
 from dags.utils.scrapyd_request import check_status
 
 
