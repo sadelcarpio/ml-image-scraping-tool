@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, UUID
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, UUID, Boolean
 
 from src.db.base import Base
 
@@ -14,7 +14,8 @@ class UrlModel(Base):
     hashed_url = Column(String(64), nullable=False)
     created_at = Column(DateTime, index=True, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, index=True, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
+    labeled = Column(Boolean, default=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete="SET NULL"), nullable=True)
 
 
 class UserModel(Base):

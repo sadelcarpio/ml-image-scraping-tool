@@ -1,0 +1,19 @@
+name: CI for Airflow DAGs
+on:
+  push:
+    paths:
+      - 'airflow/**'
+      - '.github/workflows/airflow-ci.yml'
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Run tests on airflow:2.7.2
+        run: |
+          docker run -v ${PWD}/airflow/dags:/opt/airflow/dags -v ${PWD}/airflow/tests:/opt/airflow/tests \
+          apache/airflow:2.7.2 python -m unittest discover tests
