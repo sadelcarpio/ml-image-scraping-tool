@@ -13,8 +13,8 @@ class GoogleImagesSpiderTest(unittest.TestCase):
         cls.spider = GoogleImagesSpider(scraping_project='test-project')
 
     def test_scrape_image_url(self, mock_time):
-        self.assertTrue(hasattr(self.spider, 'job_timestamp'))
-        self.assertTrue(hasattr(self.spider, 'scraping_project'))
+        self.assertIsInstance(self.spider.scraping_project, str)
+        self.assertEqual("test-project", self.spider.scraping_project)
         with patch.object(self.spider, 'driver'):
             result = list(self.spider.scrape_image_url())
             expected_calls = [('xpath', f'{self.spider.base_path}//a/img[1]'),

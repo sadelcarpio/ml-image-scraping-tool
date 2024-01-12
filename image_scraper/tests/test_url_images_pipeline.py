@@ -15,8 +15,6 @@ class TestURLImagesPipeline(unittest.TestCase):
     def setUp(self, mock_producer):
         mock_settings = MagicMock()
         self.pipeline = URLImagesPipeline('my-gcs-bucket', settings=mock_settings)
-        self.pipeline.project_name = "test-project"
-        self.pipeline.spider_timestamp = "04-12-2024"
 
     def tearDown(self):
         os.rmdir('./my-gcs-bucket')
@@ -37,8 +35,11 @@ class TestURLImagesPipeline(unittest.TestCase):
     @patch('scrapy.Request')
     def test_get_media_requests(self, mock_requests):
         mock_item = {'image_urls': ['http://example.com/image1.jpg', 'http://example.com']}
-        mock_info = MagicMock()
+        spider = MagicMock(job_timestamp="2024-12-04", scraping_project="test-project")
+        mock_info = MagicMock(spider=spider)
         result = list(self.pipeline.get_media_requests(mock_item, mock_info))
+        self.assertEqual("test-project", self.pipeline.project_name)
+        self.assertEqual("2024-12-04", self.pipeline.spider_timestamp)
         mock_requests.assert_has_calls([call('http://example.com/image1.jpg', meta={'dont_proxy': True}),
                                         call('http://example.com', meta={'dont_proxy': True})])
         self.assertEqual(2, len(mock_requests.call_args_list))
@@ -52,6 +53,8 @@ class TestURLImagesPipeline(unittest.TestCase):
         expected_item = {'image_urls': ['https://example.com/image1.jpg'],
                          'images': ['abcdefg.jpg']}
         self.pipeline.producer = MagicMock(spec=KafkaProducer)
+        self.pipeline.spider_timestamp = "2024-01-12"
+        self.pipeline.project_name = "test-project"
         actual_item = self.pipeline.item_completed(results=mock_results, item=mock_item, info=MagicMock())
         mock_logger.info.assert_has_calls([call("Sending GCS URL for ['abcdefg.jpg'] ..."),
                                            call("GCS URLs sent.")])
