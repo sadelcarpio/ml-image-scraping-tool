@@ -1,5 +1,6 @@
 import logging
 import time
+from datetime import datetime
 
 import scrapy
 from selenium.common.exceptions import NoSuchElementException
@@ -18,9 +19,11 @@ class GoogleImagesSpider(scrapy.Spider):
     search_params = "&tbm=isch&tbs=qdr:d%2Cisz:l"
     base_path = '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div'
 
-    def __init__(self, start_urls="cats+images", *args, **kwargs):
+    def __init__(self, scraping_project, start_urls: str = "cats+images", *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.driver = None
+        self.job_timestamp = datetime.now().strftime('%d-%m-%Y')
+        self.scraping_project = scraping_project
         start_urls = start_urls.split(",")
         self.start_urls = [self.domain + start_url + self.search_params for start_url in start_urls]
         logger.info(f"Scraping the following URLs: {self.start_urls}")

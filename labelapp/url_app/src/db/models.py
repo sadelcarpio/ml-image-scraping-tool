@@ -16,9 +16,17 @@ class UrlModel(Base):
     updated_at = Column(DateTime, index=True, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     labeled = Column(Boolean, default=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete="SET NULL"), nullable=True)
+    project_id = Column(Integer, ForeignKey('projects.id', ondelete="SET NULL"), nullable=True)
 
 
 class UserModel(Base):
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+
+
+class ProjectModel(Base):
+    __tablename__ = "projects"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(64), nullable=False, unique=True)

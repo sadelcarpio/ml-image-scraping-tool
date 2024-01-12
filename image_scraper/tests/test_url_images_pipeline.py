@@ -15,6 +15,8 @@ class TestURLImagesPipeline(unittest.TestCase):
     def setUp(self, mock_producer):
         mock_settings = MagicMock()
         self.pipeline = URLImagesPipeline('my-gcs-bucket', settings=mock_settings)
+        self.pipeline.project_name = "test-project"
+        self.pipeline.spider_timestamp = "04-12-2024"
 
     def tearDown(self):
         os.rmdir('./my-gcs-bucket')
@@ -52,14 +54,16 @@ class TestURLImagesPipeline(unittest.TestCase):
         self.pipeline.producer = MagicMock(spec=KafkaProducer)
         actual_item = self.pipeline.item_completed(results=mock_results, item=mock_item, info=MagicMock())
         mock_logger.info.assert_has_calls([call("Sending GCS URL for ['abcdefg.jpg'] ..."),
-                                            call("GCS URLs sent.")])
+                                           call("GCS URLs sent.")])
         self.pipeline.producer.produce_urls.assert_called_with(topic='google-images',
                                                                filenames=['abcdefg.jpg'],
+                                                               scraping_project='test-project',
                                                                prefix='https://storage.googleapis.com')
         self.assertEqual(expected_item, actual_item)
 
     def test_filepath(self):
         mock_request = MagicMock(spec=scrapy.Request, url='https://example.com/image1.jpg')
-        expected_filepath = '15de8280f794673ca19a187bc85cd573cfdcf3ac.jpg'
+        expected_filepath = (f'{self.pipeline.project_name}/{self.pipeline.spider_timestamp}/'
+                             f'15de8280f794673ca19a187bc85cd573cfdcf3ac.jpg')
         actual_filepath = self.pipeline.file_path(mock_request)
         self.assertEqual(expected_filepath, actual_filepath)

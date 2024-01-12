@@ -8,10 +8,13 @@ from image_scraper.spiders.images_spider import GoogleImagesSpider
 @patch('time.sleep')
 class GoogleImagesSpiderTest(unittest.TestCase):
 
-    def setUp(self):
-        self.spider = GoogleImagesSpider()
+    @classmethod
+    def setUpClass(cls):
+        cls.spider = GoogleImagesSpider(scraping_project='test-project')
 
     def test_scrape_image_url(self, mock_time):
+        self.assertTrue(hasattr(self.spider, 'job_timestamp'))
+        self.assertTrue(hasattr(self.spider, 'scraping_project'))
         with patch.object(self.spider, 'driver'):
             result = list(self.spider.scrape_image_url())
             expected_calls = [('xpath', f'{self.spider.base_path}//a/img[1]'),

@@ -29,7 +29,7 @@ IMAGES_RESULT_FIELD = "images"
 IMAGES_EXPIRES = 30
 
 # Google cloud storage params
-GCS_FOLDER_PATH = f"{os.environ['IMAGES_BUCKET_NAME']}/{datetime.now().strftime('%d-%m-%Y')}"
+GCS_FOLDER_PATH = f"{os.environ['IMAGES_BUCKET_NAME']}"
 IMAGES_STORE = f"gs://{GCS_FOLDER_PATH}/"
 GCS_PROJECT_ID = os.environ["PROJECT_ID"]
 
