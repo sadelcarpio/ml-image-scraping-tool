@@ -1,4 +1,4 @@
-name: CI for URL App
+name: CI for Dag Info API
 on:
   push:
     paths:
