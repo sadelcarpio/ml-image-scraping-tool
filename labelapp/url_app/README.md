@@ -6,7 +6,7 @@ consistent hashing algorithm.
 ## Run locally (requires a postgres connection)
 
 ```shell
-$ python3 -m src.main
+$ python3 -m url_app.main
 ```
 
 Previously having set up environment variables: `DB_USER`, `DB_NAME`, `DB_PASSWORD`, `INSTANCE_NAME`, `MSG_TOPIC`. For

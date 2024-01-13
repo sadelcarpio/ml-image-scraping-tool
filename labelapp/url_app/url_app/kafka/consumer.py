@@ -3,9 +3,9 @@ import logging
 
 import confluent_kafka
 
-from src.db.db_operations import SQLSession
-from src.url_dist import VirtualNodesConsistentHashing
-from src.utils import sha256_hash
+from url_app.db.db_operations import SQLSession
+from url_app.url_dist import VirtualNodesConsistentHashing
+from url_app.utils import sha256_hash
 
 logger = logging.getLogger(__name__)
 

@@ -6,9 +6,9 @@ from google.cloud.sql.connector import Connector
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import sessionmaker
 
-from src.db import models
-from src.db.base import Base
-from src.url_dist import ConsistentHashing
+from url_app.db import models
+from url_app.db.base import Base
+from url_app.url_dist import ConsistentHashing
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +101,7 @@ class PostgreSQLSessionCreator(SQLSessionCreator):
     def create_session(self) -> SQLSession:
         """Creates a Session to connect to an arbitrary Postgres instance"""
         engine = create_engine(f"postgresql+pg8000://{os.environ['DB_USER']}:{os.environ['DB_PASSWORD']}"
-                               f"@{os.environ['INSTANCE_NAME']}/{os.environ['DB_NAME']}")
+                               f"@{os.environ['INSTANCE_NAME']}/{os.environ['DB_NAME']}", echo=True)
         Base.metadata.create_all(bind=engine)
         session = sessionmaker(bind=engine)
         return SQLSession(session)

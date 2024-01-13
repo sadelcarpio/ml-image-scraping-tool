@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, UUID, Boolean
 
-from src.db.base import Base
+from url_app.db.base import Base
 
 
 class UrlModel(Base):

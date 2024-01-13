@@ -4,7 +4,7 @@ import airflow
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
-from job_parameters.dag_data import dags_metadata
+from parameters.dag_data import dags_metadata
 
 from utils.scrapyd_request import check_status
 

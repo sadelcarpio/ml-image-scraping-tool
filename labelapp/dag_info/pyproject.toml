@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "dag-metadata-api"
+version = "0.1.0"
+description = "API for fetching data from Image Labeling projects"
+authors = ["sadelcarpio <sadelcarpioa@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+uvicorn = "^0.25.0"
+fastapi = "^0.109.0"
+sqlmodel = "^0.0.14"
+pg8000 = "^1.30.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from sqlalchemy import exc
 
-from src.db.db_operations import SQLSession
+from url_app.db.db_operations import SQLSession
 
 
 class TestSQLOperations(unittest.TestCase):
@@ -18,7 +18,7 @@ class TestSQLOperations(unittest.TestCase):
         self.db.query.return_value.filter_by.return_value.first.return_value.id = 1234
         self.db_session = SQLSession(session=mock_session)
 
-    @patch('src.db.models.UrlModel')
+    @patch('url_app.db.models.UrlModel')
     def test_upload_url(self, mock_url_model):
         self.db_session.upload_url('https://storage.googleapis/nolose.jpg',
                                    'abcdef',
