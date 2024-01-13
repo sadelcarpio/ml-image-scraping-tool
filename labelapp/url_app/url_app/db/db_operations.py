@@ -101,7 +101,7 @@ class PostgreSQLSessionCreator(SQLSessionCreator):
     def create_session(self) -> SQLSession:
         """Creates a Session to connect to an arbitrary Postgres instance"""
         engine = create_engine(f"postgresql+pg8000://{os.environ['DB_USER']}:{os.environ['DB_PASSWORD']}"
-                               f"@{os.environ['INSTANCE_NAME']}/{os.environ['DB_NAME']}", echo=True)
+                               f"@{os.environ['INSTANCE_NAME']}/{os.environ['DB_NAME']}")
         Base.metadata.create_all(bind=engine)
         session = sessionmaker(bind=engine)
         return SQLSession(session)
