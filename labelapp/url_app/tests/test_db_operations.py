@@ -14,7 +14,7 @@ class TestSQLOperations(unittest.TestCase):
         self.dist_strategy = MagicMock()
         self.dist_strategy.distribute_url.return_value = 'uid1'
         mock_session.return_value = self.db
-        self.db.query.return_value.all.return_value = ['uid1', 'uid2', 'uid3']
+        self.db.query.return_value.join.return_value.filter_by.return_value.all.return_value = ['uid1', 'uid2', 'uid3']
         self.db.query.return_value.filter_by.return_value.first.return_value.id = 1234
         self.db_session = SQLSession(session=mock_session)
 
@@ -65,7 +65,7 @@ class TestSQLOperations(unittest.TestCase):
                                    'test-project',
                                    self.dist_strategy)
         self.assertEqual(3, self.db_session.n_users)
-        self.db.query.return_value.all.return_value = ['uid1', 'uid3']
+        self.db.query.return_value.join.return_value.filter_by.return_value.all.return_value = ['uid1', 'uid3']
         self.db_session.upload_url('https://storage.googleapis/silose.jpg',
                                    '12345',
                                    'test-project',

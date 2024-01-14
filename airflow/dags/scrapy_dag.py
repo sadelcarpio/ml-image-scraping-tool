@@ -13,8 +13,6 @@ default_args = {
     "depends_on_past": False
 }
 
-domain = "https://www.google.com/search?q="
-
 for dag_params in dags_metadata:
     with airflow.DAG(
             dag_params["project"],
@@ -27,7 +25,8 @@ for dag_params in dags_metadata:
             task_id="schedule-spider",
             http_conn_id="scrapyd_http_endpoint",
             endpoint='schedule.json',
-            data=f"project=image_scraper&spider=google_images_spider&start_url={domain}{dag_params['keywords']}",
+            data=f"project=image_scraper&spider=google_images_spider&scraping_project={dag_params['name']}"
+                 f"&start_urls={dag_params['keywords']}",
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             method='POST',
             do_xcom_push=True,

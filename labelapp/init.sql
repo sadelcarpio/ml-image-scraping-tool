@@ -37,3 +37,13 @@ CREATE TABLE urls
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL,
     FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE SET NULL
 );
+
+
+CREATE TABLE users_projects (
+    id SERIAL NOT NULL,
+    user_id UUID,
+    project_id INTEGER,
+    PRIMARY KEY (id),
+    FOREIGN KEY(user_id) REFERENCES users (id),
+    FOREIGN KEY(project_id) REFERENCES projects (id)
+);
