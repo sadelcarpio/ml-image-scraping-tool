@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 class URLImagesPipeline(ImagesPipeline):
     gcs_url_prefix = 'https://storage.googleapis.com'
     producer: KafkaProducer = None
+    project_name = None
+    spider_timestamp = None
 
     @classmethod
     def from_settings(cls, settings):
@@ -26,6 +28,10 @@ class URLImagesPipeline(ImagesPipeline):
         return obj_from_settings
 
     def get_media_requests(self, item, info):
+        if self.project_name is None:
+            self.project_name = info.spider.scraping_project
+        if self.spider_timestamp is None:
+            self.spider_timestamp = info.spider.job_timestamp
         for image_url in item["image_urls"]:  # handles field from Item
             yield scrapy.Request(image_url, meta={'dont_proxy': True})
 
@@ -35,11 +41,14 @@ class URLImagesPipeline(ImagesPipeline):
             raise DropItem("Item contains no images")
         adapter = ItemAdapter(item)
         logger.info(f"Sending GCS URL for {image_paths} ...")
-        self.producer.produce_urls(topic=os.environ["MSG_TOPIC"], filenames=image_paths, prefix=self.gcs_url_prefix)
+        self.producer.produce_urls(topic=os.environ["MSG_TOPIC"],
+                                   filenames=image_paths,
+                                   scraping_project=self.project_name,
+                                   prefix=self.gcs_url_prefix)
         logger.info("GCS URLs sent.")
         adapter["images"] = image_paths
         return item
 
     def file_path(self, request, response=None, info=None, *, item=None):
         image_guid = hashlib.sha1(to_bytes(request.url)).hexdigest()
-        return f"{image_guid}.jpg"
+        return f"{self.project_name}/{self.spider_timestamp}/{image_guid}.jpg"

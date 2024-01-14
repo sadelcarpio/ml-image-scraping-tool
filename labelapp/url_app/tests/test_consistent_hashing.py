@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from src.url_dist import ConsistentHashing, VirtualNodesConsistentHashing
+from url_app.url_dist import ConsistentHashing, VirtualNodesConsistentHashing
 
 
 class TestConsistentHashing(unittest.TestCase):

@@ -6,9 +6,9 @@ from google.cloud.sql.connector import Connector
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import sessionmaker
 
-from src.db import models
-from src.db.base import Base
-from src.url_dist import ConsistentHashing
+from url_app.db import models
+from url_app.db.base import Base
+from url_app.url_dist import ConsistentHashing
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ class SQLSession:
         self.session = session
         self.n_users = None
 
-    def upload_url(self, gcs_url: str, hashed_url: str, dist_strategy: ConsistentHashing):
+    def upload_url(self, gcs_url: str, hashed_url: str, project_name: str, dist_strategy: ConsistentHashing):
         db = self.session()
         try:
             user_ids = db.query(models.UserModel.id).all()
@@ -31,7 +31,12 @@ class SQLSession:
                 logger.info("Orphan URLs reassigned.")
                 self.n_users = len(user_ids)
             user_id = dist_strategy.distribute_url(hashed_url, user_ids)
-            db_url = models.UrlModel(gcs_url=gcs_url, hashed_url=hashed_url, labeled=False, user_id=user_id)
+            project_id = db.query(models.ProjectModel).filter_by(name=project_name).first().id
+            db_url = models.UrlModel(gcs_url=gcs_url,
+                                     hashed_url=hashed_url,
+                                     labeled=False,
+                                     project_id=project_id,
+                                     user_id=user_id)
             db.add(db_url)
             db.commit()
             db.refresh(db_url)

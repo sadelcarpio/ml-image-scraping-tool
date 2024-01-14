@@ -7,7 +7,6 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import os
-from datetime import datetime
 
 BOT_NAME = "image_scraper"
 
@@ -29,7 +28,7 @@ IMAGES_RESULT_FIELD = "images"
 IMAGES_EXPIRES = 30
 
 # Google cloud storage params
-GCS_FOLDER_PATH = f"{os.environ['IMAGES_BUCKET_NAME']}/{datetime.now().strftime('%d-%m-%Y')}"
+GCS_FOLDER_PATH = f"{os.environ['IMAGES_BUCKET_NAME']}"
 IMAGES_STORE = f"gs://{GCS_FOLDER_PATH}/"
 GCS_PROJECT_ID = os.environ["PROJECT_ID"]
 
