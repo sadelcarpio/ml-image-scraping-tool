@@ -25,7 +25,7 @@ for dag_params in dags_metadata:
             task_id="schedule-spider",
             http_conn_id="scrapyd_http_endpoint",
             endpoint='schedule.json',
-            data=f"project=image_scraper&spider=google_images_spider&scraping_project={dag_params['name']}"
+            data=f"project=image_scraper&spider=google_images_spider&scraping_project={dag_params['project']}"
                  f"&start_urls={dag_params['keywords']}",
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             method='POST',
