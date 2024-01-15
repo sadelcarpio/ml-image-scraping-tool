@@ -18,7 +18,7 @@ def get_session_override():
         return session
 
 
-class TestGetInfoDb(TestCase):
+class TestGetDagInfo(TestCase):
     session = None
 
     @classmethod
@@ -45,6 +45,7 @@ class TestGetInfoDb(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls.session.close()
         app.dependency_overrides.clear()
 
     def test_fetch_project_information(self):
