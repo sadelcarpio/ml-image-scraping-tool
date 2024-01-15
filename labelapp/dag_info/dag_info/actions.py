@@ -1,5 +1,4 @@
-from sqlalchemy import create_engine
-from sqlmodel import Session, select, SQLModel
+from sqlmodel import Session, select
 
 from dag_info.models import ProjectModel, UserModel
 
