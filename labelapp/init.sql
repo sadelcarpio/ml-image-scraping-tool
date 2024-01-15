@@ -38,7 +38,6 @@ CREATE TABLE urls
     FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE SET NULL
 );
 
-
 CREATE TABLE users_projects (
     id SERIAL NOT NULL,
     user_id UUID,
