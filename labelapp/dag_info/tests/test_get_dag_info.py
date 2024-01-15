@@ -15,7 +15,7 @@ def get_session_override():
     engine = create_engine(f"sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
-        yield session
+        return session
 
 
 class TestGetInfoDb(TestCase):
@@ -23,7 +23,7 @@ class TestGetInfoDb(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.session = next(get_session_override())
+        cls.session = get_session_override()
 
         def get_mock_session():
             return cls.session
