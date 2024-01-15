@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from dag_info.actions import fetch_project_information
 from dag_info.db import get_session
-from dag_info.models import ProjectModel, UserModel
+from dag_info.models import UserModel
 from fastapi.testclient import TestClient
 
 
@@ -13,11 +13,9 @@ class TestGetInfo(TestCase):
     def test_fetch_project_information(self, mock_select):
         mock_session = MagicMock()
         user = UserModel(email='test@test.test')
-        project = ProjectModel(name='test-project',
-                               keywords='super,cool',
-                               owner_id=user.id)
+        project = [("test-project", "super,cool", "test@test.test")]
         user_result_mock = MagicMock()
-        mock_session.exec.side_effect = [[project], user_result_mock]
+        mock_session.exec.side_effect = [project]
         user_result_mock.first.return_value = user.email
         results = fetch_project_information(mock_session)
         self.assertEqual(1, len(results))
@@ -26,8 +24,8 @@ class TestGetInfo(TestCase):
             "keywords": "super,cool",
             "notify": "test@test.test"
         }, results[0])
-        self.assertEqual(2, len(mock_session.exec.call_args_list))
-        self.assertEqual(2, len(mock_select.call_args_list))
+        self.assertEqual(1, len(mock_session.exec.call_args_list))
+        self.assertEqual(1, len(mock_select.call_args_list))
 
     @patch('dag_info.actions.fetch_project_information')
     def test_get_dag_info(self, mock_fetch_project_information):
