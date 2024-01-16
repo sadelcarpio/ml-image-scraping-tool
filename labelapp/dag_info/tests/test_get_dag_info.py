@@ -1,4 +1,4 @@
-from unittest import TestCase
+import unittest
 
 from sqlalchemy import create_engine
 from sqlmodel import SQLModel, Session, select
@@ -18,7 +18,7 @@ def get_session_override():
         return session
 
 
-class TestGetDagInfo(TestCase):
+class TestGetDagInfo(unittest.TestCase):
     session = None
 
     @classmethod

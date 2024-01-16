@@ -2,9 +2,9 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from sqlalchemy import exc
+from sqlalchemy.orm.session import sessionmaker, Session
 
 from url_app.db.db_operations import SQLSession
-from sqlalchemy.orm.session import sessionmaker, Session
 
 
 class TestSQLOperations(unittest.TestCase):
