@@ -1,10 +1,11 @@
+import json
 import logging
 
 import confluent_kafka
 
-from src.db.db_operations import SQLSession
-from src.url_dist import VirtualNodesConsistentHashing
-from src.utils import sha256_hash
+from url_app.db.db_operations import SQLSession
+from url_app.url_dist import VirtualNodesConsistentHashing
+from url_app.utils import sha256_hash
 
 logger = logging.getLogger(__name__)
 
@@ -26,12 +27,13 @@ class KafkaConsumer(confluent_kafka.Consumer):
                 elif msg.error():
                     logger.warning(f"ERROR: {msg.error()}")
                 else:
-                    gcs_url = msg.value().decode('utf-8')
+                    decoded_msg = json.loads(msg.value().decode('utf-8'))
+                    gcs_url, project_name = decoded_msg['url'], decoded_msg['project']
                     hashed_url = sha256_hash(gcs_url)
-                    logger.info(f"Consumed event from topic {self.topic}: value = "
-                                f"{gcs_url}")
+                    logger.info(f"Consumed event from topic {self.topic}: url = {gcs_url}, project = {project_name}")
                     self.db_session.upload_url(gcs_url=gcs_url,
                                                hashed_url=hashed_url,
+                                               project_name=project_name,
                                                dist_strategy=self.strategy)
         finally:
             self.close()

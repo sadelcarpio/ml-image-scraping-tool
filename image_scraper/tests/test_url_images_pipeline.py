@@ -35,8 +35,11 @@ class TestURLImagesPipeline(unittest.TestCase):
     @patch('scrapy.Request')
     def test_get_media_requests(self, mock_requests):
         mock_item = {'image_urls': ['http://example.com/image1.jpg', 'http://example.com']}
-        mock_info = MagicMock()
+        spider = MagicMock(job_timestamp="2024-12-04", scraping_project="test-project")
+        mock_info = MagicMock(spider=spider)
         result = list(self.pipeline.get_media_requests(mock_item, mock_info))
+        self.assertEqual("test-project", self.pipeline.project_name)
+        self.assertEqual("2024-12-04", self.pipeline.spider_timestamp)
         mock_requests.assert_has_calls([call('http://example.com/image1.jpg', meta={'dont_proxy': True}),
                                         call('http://example.com', meta={'dont_proxy': True})])
         self.assertEqual(2, len(mock_requests.call_args_list))
@@ -50,16 +53,20 @@ class TestURLImagesPipeline(unittest.TestCase):
         expected_item = {'image_urls': ['https://example.com/image1.jpg'],
                          'images': ['abcdefg.jpg']}
         self.pipeline.producer = MagicMock(spec=KafkaProducer)
+        self.pipeline.spider_timestamp = "2024-01-12"
+        self.pipeline.project_name = "test-project"
         actual_item = self.pipeline.item_completed(results=mock_results, item=mock_item, info=MagicMock())
         mock_logger.info.assert_has_calls([call("Sending GCS URL for ['abcdefg.jpg'] ..."),
-                                            call("GCS URLs sent.")])
+                                           call("GCS URLs sent.")])
         self.pipeline.producer.produce_urls.assert_called_with(topic='google-images',
                                                                filenames=['abcdefg.jpg'],
+                                                               scraping_project='test-project',
                                                                prefix='https://storage.googleapis.com')
         self.assertEqual(expected_item, actual_item)
 
     def test_filepath(self):
         mock_request = MagicMock(spec=scrapy.Request, url='https://example.com/image1.jpg')
-        expected_filepath = '15de8280f794673ca19a187bc85cd573cfdcf3ac.jpg'
+        expected_filepath = (f'{self.pipeline.project_name}/{self.pipeline.spider_timestamp}/'
+                             f'15de8280f794673ca19a187bc85cd573cfdcf3ac.jpg')
         actual_filepath = self.pipeline.file_path(mock_request)
         self.assertEqual(expected_filepath, actual_filepath)

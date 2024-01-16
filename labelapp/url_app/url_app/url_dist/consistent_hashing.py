@@ -1,6 +1,6 @@
 import logging
 
-from src.utils import sha256_hash
+from url_app.utils import sha256_hash
 
 logger = logging.getLogger(__name__)
 

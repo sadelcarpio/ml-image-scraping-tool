@@ -1,0 +1,21 @@
+name: CI for Dag Info API
+on:
+  push:
+    paths:
+      - 'labelapp/dag_info/**'
+      - '.github/workflows/dag-info-ci.yml'
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Build dag-info to run tests
+        run: docker build labelapp/dag_info --file labelapp/dag_info/Dockerfile --tag dag-info
+
+      - name: Run tests in Docker container
+        run: |
+          docker run dag-info python -m unittest discover tests

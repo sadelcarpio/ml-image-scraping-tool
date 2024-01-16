@@ -1,5 +1,5 @@
-from src.url_dist import ConsistentHashing
-from src.utils import sha256_hash
+from url_app.url_dist import ConsistentHashing
+from url_app.utils import sha256_hash
 
 
 class VirtualNodesConsistentHashing(ConsistentHashing):

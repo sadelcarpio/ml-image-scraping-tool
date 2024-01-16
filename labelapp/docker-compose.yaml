@@ -14,6 +14,19 @@ services:
     env_file:
       - .env
 
+  dag-info:
+    container_name: dag-info
+    build:
+      context: ./dag_info
+      dockerfile: Dockerfile
+    depends_on:
+      labelapp-postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+
   labelapp-postgres:
     container_name: labelapp-postgres
     image: postgres:latest
@@ -24,6 +37,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
     environment:

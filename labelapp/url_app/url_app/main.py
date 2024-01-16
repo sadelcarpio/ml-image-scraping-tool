@@ -1,8 +1,8 @@
 import logging
 import os
 
-from src.db.db_operations import PostgreSQLSessionCreator
-from src.kafka.consumer import KafkaConsumer
+from url_app.db.session import PostgreSQLSessionCreator
+from url_app.kafka.consumer import KafkaConsumer
 
 logging.basicConfig(level=logging.INFO)
 

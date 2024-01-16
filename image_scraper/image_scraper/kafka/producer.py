@@ -1,3 +1,5 @@
+import json
+
 import confluent_kafka
 from scrapy.utils.project import get_project_settings
 
@@ -7,7 +9,7 @@ class KafkaProducer(confluent_kafka.Producer):
         self.gcs_folder_path = get_project_settings()["GCS_FOLDER_PATH"]
         super().__init__({'bootstrap.servers': bootstrap_servers, 'client.id': client_id})
 
-    def produce_urls(self, topic: str, filenames: list, prefix: str):
+    def produce_urls(self, topic: str, filenames: list, scraping_project: str, prefix: str):
         for filename in filenames:
-            url = f"{prefix}/{self.gcs_folder_path}/{filename}"
-            super().produce(topic=topic, value=bytes(url.encode('utf-8')))
+            msg = {"url": f"{prefix}/{self.gcs_folder_path}/{filename}", "project": scraping_project}
+            super().produce(topic=topic, value=bytes(json.dumps(msg).encode('utf-8')))

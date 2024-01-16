@@ -12,8 +12,10 @@ from dags.utils.scrapyd_request import check_status
 class TestScrapyDag(unittest.TestCase):
 
     @unittest.skipUnless(platform != "win32", "Disable only for Windows")
-    def test_dag_loads_with_no_errors(self):
+    @patch('requests.get')
+    def test_dag_loads_with_no_errors(self, mock_get):
         """Test the dag loads without any import errors"""
+        mock_get.return_value.json.return_value = []
         dag_bag = DagBag(include_examples=False)
         dag_bag.process_file('../dags/scrapy_dag.py')
         self.assertEqual(0, len(dag_bag.import_errors))
