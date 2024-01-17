@@ -1,6 +1,5 @@
 import os
 import unittest
-from datetime import datetime
 from unittest.mock import patch, call
 
 from image_scraper.kafka.producer import KafkaProducer

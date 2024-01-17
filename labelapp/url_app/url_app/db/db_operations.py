@@ -3,7 +3,7 @@ import logging
 from sqlalchemy import exc
 from sqlalchemy.orm import sessionmaker
 
-from url_app.db import models
+from url_app.db.models import UserModel, ProjectModel, UrlModel
 from url_app.url_dist import ConsistentHashing
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ class SQLSession:
     def upload_url(self, gcs_url: str, hashed_url: str, project_name: str, dist_strategy: ConsistentHashing):
         db = self.session()
         try:
-            user_ids = db.query(models.UserModel.id).join(models.UserModel.projects).filter_by(name=project_name).all()
+            user_ids = db.query(UserModel.id).join(UserModel.projects).filter_by(name=project_name).all()
             if self.n_users is None:
                 self.n_users = len(user_ids)
             if len(user_ids) < self.n_users:
@@ -27,12 +27,12 @@ class SQLSession:
                 logger.info("Orphan URLs reassigned.")
                 self.n_users = len(user_ids)
             user_id = dist_strategy.distribute_url(hashed_url, user_ids)
-            project_id = db.query(models.ProjectModel).filter_by(name=project_name).first().id
-            db_url = models.UrlModel(gcs_url=gcs_url,
-                                     hashed_url=hashed_url,
-                                     labeled=False,
-                                     project_id=project_id,
-                                     user_id=user_id)
+            project_id = db.query(ProjectModel.id).filter_by(name=project_name).first()
+            db_url = UrlModel(gcs_url=gcs_url,
+                              hashed_url=hashed_url,
+                              labeled=False,
+                              project_id=project_id,
+                              user_id=user_id)
             db.add(db_url)
             db.commit()
             db.refresh(db_url)
@@ -49,7 +49,7 @@ class SQLSession:
     def reassign_unlabeled_urls(self, user_ids: list, dist_strategy: ConsistentHashing):
         db = self.session()
         try:
-            unlabeled_urls = db.query(models.UrlModel).filter_by(labeled=False, user_id=None)
+            unlabeled_urls = db.query(UrlModel).filter_by(labeled=False, user_id=None)
             for db_url in unlabeled_urls:
                 user_id = dist_strategy.distribute_url(db_url.hashed_url, user_ids)
                 if user_id is None:

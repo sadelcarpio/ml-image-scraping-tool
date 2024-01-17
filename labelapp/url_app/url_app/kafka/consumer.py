@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 class KafkaConsumer(confluent_kafka.Consumer):
-    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, db_session: SQLSession):
+    def __init__(self, bootstrap_servers: str, group_id: str, topic: str, sql_session: SQLSession):
         super().__init__({'bootstrap.servers': bootstrap_servers, 'group.id': group_id})
         self.topic = topic
         self.subscribe([self.topic])
-        self.db_session = db_session
+        self.sql_session = sql_session
         self.strategy = VirtualNodesConsistentHashing(n_hash_ring=1000, num_replicas=10)
 
     def read_urls(self):
@@ -31,9 +31,9 @@ class KafkaConsumer(confluent_kafka.Consumer):
                     gcs_url, project_name = decoded_msg['url'], decoded_msg['project']
                     hashed_url = sha256_hash(gcs_url)
                     logger.info(f"Consumed event from topic {self.topic}: url = {gcs_url}, project = {project_name}")
-                    self.db_session.upload_url(gcs_url=gcs_url,
-                                               hashed_url=hashed_url,
-                                               project_name=project_name,
-                                               dist_strategy=self.strategy)
+                    self.sql_session.upload_url(gcs_url=gcs_url,
+                                                hashed_url=hashed_url,
+                                                project_name=project_name,
+                                                dist_strategy=self.strategy)
         finally:
             self.close()
