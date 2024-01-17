@@ -42,7 +42,7 @@ CREATE TABLE users_projects (
     id SERIAL NOT NULL,
     user_id UUID,
     project_id INTEGER,
-    PRIMARY KEY (id),
+    PRIMARY KEY (id, user_id, project_id),
     FOREIGN KEY(user_id) REFERENCES users (id),
     FOREIGN KEY(project_id) REFERENCES projects (id)
 );

@@ -24,8 +24,8 @@ UserProjectModel = Table(
     "users_projects",
     Base.metadata,
     Column('id', Integer, primary_key=True),
-    Column('user_id', UUID(as_uuid=True), ForeignKey('users.id')),
-    Column('project_id', Integer, ForeignKey('projects.id'))
+    Column('user_id', UUID(as_uuid=True), ForeignKey('users.id'), primary_key=True),
+    Column('project_id', Integer, ForeignKey('projects.id'), primary_key=True)
 )
 
 
