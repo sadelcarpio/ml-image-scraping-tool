@@ -1,7 +1,8 @@
 CREATE TABLE users
 (
     id UUID NOT NULL,
-    name VARCHAR(64) NOT NULL,
+    username VARCHAR(64) NOT NULL,
+    full_name VARCHAR(64) NOT NULL,
     email VARCHAR(64) NOT NULL,
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
@@ -39,10 +40,10 @@ CREATE TABLE urls
 );
 
 CREATE TABLE users_projects (
-    id SERIAL NOT NULL,
     user_id UUID,
     project_id INTEGER,
-    PRIMARY KEY (id),
+    assigned_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    PRIMARY KEY (user_id, project_id),
     FOREIGN KEY(user_id) REFERENCES users (id),
     FOREIGN KEY(project_id) REFERENCES projects (id)
 );
