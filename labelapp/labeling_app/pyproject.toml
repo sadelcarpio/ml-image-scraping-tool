@@ -12,6 +12,7 @@ uvicorn = {extras = ["standard"], version = "^0.25.0"}
 sqlmodel = "^0.0.14"
 pg8000 = "^1.30.4"
 pydantic-settings = "^2.1.0"
+pydantic = {extras = ["email"], version = "^2.5.3"}
 
 
 [build-system]

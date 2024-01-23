@@ -1,5 +1,4 @@
 from fastapi import Depends
-from sqlalchemy.sql.functions import current_user
 from sqlmodel import Session, select
 
 from typing import Generator, Annotated
@@ -15,6 +14,7 @@ def get_db() -> Generator:
 SessionDep = Annotated[Session, Depends(get_db)]
 
 
+# TODO: change with actual user authentication
 def get_current_user(session: SessionDep) -> UserModel:
     user = session.exec(select(UserModel)).first()
     return user

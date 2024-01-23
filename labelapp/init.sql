@@ -35,6 +35,7 @@ CREATE TABLE urls
     project_id INTEGER,
     PRIMARY KEY (id),
     UNIQUE (gcs_url),
+    UNIQUE (hashed_url),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL,
     FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE SET NULL
 );
@@ -43,7 +44,9 @@ CREATE TABLE users_projects (
     user_id UUID,
     project_id INTEGER,
     assigned_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    current_url INTEGER,
     PRIMARY KEY (user_id, project_id),
     FOREIGN KEY(user_id) REFERENCES users (id),
     FOREIGN KEY(project_id) REFERENCES projects (id)
+    FOREIGN KEY(current_url) REFERENCES urls (id)
 );
