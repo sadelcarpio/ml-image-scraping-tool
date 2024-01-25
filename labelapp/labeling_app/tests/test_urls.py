@@ -41,12 +41,14 @@ class TestUrlEndpoints(unittest.TestCase):
         self.test_client = TestClient(app)
 
     def test_current_url_no_unlabeled_urls_error(self):
+        """Tests 404 response in case of no unlabeled URLs found."""
         self.mock_db.exec.return_value.first.return_value = None
         response = self.test_client.get(f"{self.mock_settings.API_V1_STR}/urls/1/current-url")
         self.assertEqual("Didn't find any unlabeled urls.", response.json()["detail"])
         self.assertEqual(404, response.status_code)
 
     def test_submit_url_no_current_url(self):
+        """Tests that /submit endpoint called before /current-url gives an HTTP Exception."""
         self.mock_db.exec.return_value.first.return_value = None
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/urls/1/submit-url")
         self.assertEqual("Error in selecting URL to sumbit. Be sure to have called"
@@ -54,7 +56,7 @@ class TestUrlEndpoints(unittest.TestCase):
         self.assertEqual(404, response.status_code)
 
     def test_current_url_returned(self):
-        """Test Url is displayed correctly and updates current_url in user assignment"""
+        """Test Url is displayed correctly and updates current_url in user assignment."""
         url_to_return = UrlModel(id=1, gcs_url="https://test.jpg", hashed_url="abcdefg", labeled=False,
                                  user_id="uid1", project_id=1)
         user_assignment = UserProjectModel(user_id="uuid1", project_id=1)
@@ -68,7 +70,7 @@ class TestUrlEndpoints(unittest.TestCase):
         self.assertEqual(user_assignment.current_url, url_to_return.id)
 
     def test_submit_url(self):
-        """Test submit-url endpoint updates labeled status"""
+        """Test submit-url endpoint updates labeled status."""
         url_to_submit = UrlModel(id=1, gcs_url="https://test.jpg", hashed_url="abcdefg", labeled=False,
                                  user_id="uid1", project_id=1, updated_at="2024-01-10T00:00:00")
         self.mock_db.exec.return_value.first.return_value = url_to_submit
