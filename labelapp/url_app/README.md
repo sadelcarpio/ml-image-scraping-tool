@@ -9,5 +9,5 @@ consistent hashing algorithm.
 $ python3 -m url_app.main
 ```
 
-Previously having set up environment variables: `DB_USER`, `DB_NAME`, `DB_PASSWORD`, `INSTANCE_NAME`, `MSG_TOPIC`. For
+Previously having set up environment variables: `POSTGRES_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `INSTANCE_NAME`, `MSG_TOPIC`. For
 listening to a local kafka broker, additionally `KAFKA_LISTENER`

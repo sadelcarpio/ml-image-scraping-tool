@@ -2,8 +2,8 @@ import os
 
 from sqlmodel import create_engine, Session
 
-engine = create_engine(f"postgresql+pg8000://{os.environ.get('DB_USER')}:{os.environ.get('DB_PASSWORD')}"
-                       f"@{os.environ.get('INSTANCE_NAME')}/{os.environ.get('DB_NAME')}")
+engine = create_engine(f"postgresql+pg8000://{os.environ.get('POSTGRES_USER')}:{os.environ.get('POSTGRES_PASSWORD')}"
+                       f"@{os.environ.get('INSTANCE_NAME')}/{os.environ.get('POSTGRES_DB')}")
 
 
 def get_session():
