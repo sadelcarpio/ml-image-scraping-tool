@@ -1,0 +1,21 @@
+name: CI for Labeling App
+on:
+  push:
+    paths:
+      - 'labelapp/labeling_app/**'
+      - '.github/workflows/labeling-app-ci.yml'
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Build labeling-app to run tests
+        run: docker build labelapp/url_app --file labelapp/labeling_app/Dockerfile --tag labeling-app
+
+      - name: Run tests in Docker container
+        run: |
+          docker run labeling-app python -m unittest discover tests
