@@ -26,13 +26,17 @@ def get_current_url(project_id: int, session: SessionDep, current_user: CurrentU
     return current_url
 
 
-# TODO: include multipart containing the annotation
-@router.get("/{project_id}/submit", status_code=status.HTTP_201_CREATED, response_model=UrlUpdated)
+# TODO: include multipart containing the annotation, may need a different endpoint submit-x for different annotation
+#  types
+@router.put("/{project_id}/submit-url", status_code=status.HTTP_201_CREATED, response_model=UrlUpdated)
 def submit_url(project_id: int, session: SessionDep, current_user: CurrentUser):
     url_to_submit = session.exec(
         select(UrlModel).join(UserProjectModel, UserProjectModel.current_url == UrlModel.id).where(
             UserProjectModel.project_id == project_id,
             UserProjectModel.user_id == current_user.id)).first()
+    if url_to_submit is None:
+        raise HTTPException(status_code=404, detail="Error in selecting URL to sumbit. Be sure to have called"
+                                                    " /current-url endpoint first")
     url_to_submit.labeled = True
     session.add(url_to_submit)
     session.commit()

@@ -1,10 +1,12 @@
 from sqlmodel import Session
 
+from app import Settings
 from app.models import SQLModel, UserModel, ProjectModel, UserProjectModel, UrlModel
-from app.db.engine import engine
+from app.db.engine import get_engine
 
 
 def init_db():
+    engine = get_engine(settings=Settings())
     SQLModel.metadata.create_all(engine)
     # Just for testing
     with Session(engine) as session:

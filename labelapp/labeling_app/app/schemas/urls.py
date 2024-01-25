@@ -14,3 +14,11 @@ class UrlResponse(UrlBase):
 class UrlUpdated(UrlBase):
     id: int
     updated_at: datetime
+
+
+class LabeledImage(SQLModel):
+    format: str
+
+
+class LabeledImageCls(SQLModel):
+    value: int

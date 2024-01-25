@@ -1,3 +1,6 @@
+from typing import Annotated
+
+from fastapi import Depends
 from pydantic_core.core_schema import ValidationInfo
 from pydantic_settings import BaseSettings
 
@@ -29,4 +32,8 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 
-settings = Settings()
+def get_settings():
+    return Settings()
+
+
+SettingsDep = Annotated[Settings, Depends(get_settings)]

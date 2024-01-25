@@ -27,6 +27,19 @@ services:
     env_file:
       - .env
 
+  labeling-app:
+    container_name: labeling-app
+    build:
+      context: ./labeling_app
+      dockerfile: Dockerfile
+    depends_on:
+      labelapp-postgres:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env
+
   labelapp-postgres:
     container_name: labelapp-postgres
     image: postgres:latest

@@ -47,6 +47,6 @@ CREATE TABLE users_projects (
     current_url INTEGER,
     PRIMARY KEY (user_id, project_id),
     FOREIGN KEY(user_id) REFERENCES users (id),
-    FOREIGN KEY(project_id) REFERENCES projects (id)
+    FOREIGN KEY(project_id) REFERENCES projects (id),
     FOREIGN KEY(current_url) REFERENCES urls (id)
 );
