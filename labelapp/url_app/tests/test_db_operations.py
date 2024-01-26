@@ -20,7 +20,7 @@ class TestSQLOperations(unittest.TestCase):
     def test_upload_url(self, mock_url_model):
         self.db.query.return_value.join.return_value.filter_by.return_value.all.return_value = ['uid1', 'uid2', 'uid3']
         self.dist_strategy.distribute_url.return_value = 'uid1'
-        self.db.query.return_value.filter_by.return_value.first.return_value = 1234
+        self.db.query.return_value.filter_by.return_value.first.return_value.id = 1234
         self.sql_session.upload_url('https://storage.googleapis/nolose.jpg',
                                     'abcdef',
                                     'test-project',
