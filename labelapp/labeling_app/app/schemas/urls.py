@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from sqlmodel import SQLModel, Field
 
 
@@ -9,11 +7,6 @@ class UrlBase(SQLModel):
 
 class UrlResponse(UrlBase):
     id: int
-
-
-class UrlUpdated(UrlBase):
-    id: int
-    updated_at: datetime
 
 
 class LabeledImage(SQLModel):

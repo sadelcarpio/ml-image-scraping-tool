@@ -3,7 +3,7 @@ from sqlmodel import select
 
 from app.api.deps import SessionDep, CurrentUser
 from app.models import UrlModel, UserProjectModel
-from app.schemas.urls import UrlResponse, UrlUpdated
+from app.schemas.urls import UrlResponse
 
 router = APIRouter()
 
@@ -28,7 +28,7 @@ def get_current_url(project_id: int, session: SessionDep, current_user: CurrentU
 
 # TODO: include multipart containing the annotation, may need a different endpoint submit-x for different annotation
 #  types
-@router.put("/{project_id}/submit-url", status_code=status.HTTP_201_CREATED, response_model=UrlUpdated)
+@router.put("/{project_id}/submit-url", status_code=status.HTTP_204_NO_CONTENT)
 def submit_url(project_id: int, session: SessionDep, current_user: CurrentUser):
     url_to_submit = session.exec(
         select(UrlModel).join(UserProjectModel, UserProjectModel.current_url == UrlModel.id).where(
@@ -41,4 +41,3 @@ def submit_url(project_id: int, session: SessionDep, current_user: CurrentUser):
     session.add(url_to_submit)
     session.commit()
     session.refresh(url_to_submit)
-    return url_to_submit

@@ -72,16 +72,12 @@ class TestUrlEndpoints(unittest.TestCase):
     def test_submit_url(self):
         """Test submit-url endpoint updates labeled status."""
         url_to_submit = UrlModel(id=1, gcs_url="https://test.jpg", hashed_url="abcdefg", labeled=False,
-                                 user_id="uid1", project_id=1, updated_at="2024-01-10T00:00:00")
+                                 user_id="uid1", project_id=1)
         self.mock_db.exec.return_value.first.return_value = url_to_submit
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/urls/1/submit-url")
-        self.assertEqual(201, response.status_code)
+        self.assertEqual(204, response.status_code)
+        self.assertEqual(b'', response.content)
         self.assertTrue(url_to_submit.labeled)
         self.mock_db.add.assert_called_once_with(url_to_submit)
         self.mock_db.commit.assert_called_once()
         self.mock_db.refresh.assert_called_once_with(url_to_submit)
-
-        # can't test if the url updated_at field is modified because there is no db connection
-        self.assertEqual({"gcs_url": url_to_submit.gcs_url,
-                          "id": url_to_submit.id,
-                          "updated_at": url_to_submit.updated_at}, response.json())
