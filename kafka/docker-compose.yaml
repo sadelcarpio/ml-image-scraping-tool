@@ -1,6 +1,6 @@
 version: "3.9"
 
-name: image_scraper
+name: kafka
 services:
   # Kafka Server
   zookeeper-service:

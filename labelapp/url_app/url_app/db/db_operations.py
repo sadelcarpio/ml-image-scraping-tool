@@ -27,7 +27,7 @@ class SQLSession:
                 logger.info("Orphan URLs reassigned.")
                 self.n_users = len(user_ids)
             user_id = dist_strategy.distribute_url(hashed_url, user_ids)
-            project_id = db.query(ProjectModel.id).filter_by(name=project_name).first()
+            project_id = db.query(ProjectModel).filter_by(name=project_name).first().id
             db_url = UrlModel(gcs_url=gcs_url,
                               hashed_url=hashed_url,
                               labeled=False,

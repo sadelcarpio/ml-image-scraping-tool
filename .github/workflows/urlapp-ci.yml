@@ -19,3 +19,7 @@ jobs:
       - name: Run tests in Docker container
         run: |
           docker run url-app python -m unittest discover tests
+
+      - name: Run integration test
+        run: |
+          cd labelapp/url_app && ./integration_test/test.sh
