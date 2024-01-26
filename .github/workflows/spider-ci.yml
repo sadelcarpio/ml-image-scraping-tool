@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  build-and-test:
+  unit-test:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
