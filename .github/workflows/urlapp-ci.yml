@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  build-and-test:
+  unit-test:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -19,3 +19,13 @@ jobs:
       - name: Run tests in Docker container
         run: |
           docker run url-app python -m unittest discover tests
+
+  integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Run integration test
+        run: |
+          cd labelapp/url_app && ./integration_test/test.sh

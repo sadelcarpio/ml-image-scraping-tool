@@ -2,7 +2,7 @@ FROM python:3.9
 
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
+WORKDIR /url_app
 COPY url_app ./url_app
 COPY tests ./tests
 COPY requirements.txt .
