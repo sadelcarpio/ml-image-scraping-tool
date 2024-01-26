@@ -10,15 +10,16 @@ from url_app.db.session import PostgreSQLSessionCreator
 
 logger = logging.getLogger(__name__)
 
-sql_session = PostgreSQLSessionCreator().create_session()
-db = sql_session.session()
-
 
 class UrlAppIntegrationTest(unittest.TestCase):
 
+    def setUp(self):
+        sql_session = PostgreSQLSessionCreator().create_session()
+        self.db = sql_session.session()
+
     def test_url_in_db(self):
         try:
-            urls = db.query(UrlModel).all()
+            urls = self.db.query(UrlModel).all()
             for url, expected_url in zip(urls, EXPECTED_URLS):
                 self.assertEqual(expected_url, url.gcs_url)
                 self.assertIsNotNone(url.user_id)
@@ -29,4 +30,4 @@ class UrlAppIntegrationTest(unittest.TestCase):
             logger.error(f"Could not perform operations. {e}")
             raise
         finally:
-            db.close()
+            self.db.close()
