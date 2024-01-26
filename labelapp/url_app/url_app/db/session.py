@@ -30,9 +30,9 @@ class CloudSQLSessionCreator(SQLSessionCreator):
         conn = connector.connect(
             f"{os.environ['PROJECT_ID']}:{os.environ['DB_REGION']}:{os.environ['INSTANCE_NAME']}",
             "pg8000",
-            user=f"{os.environ['DB_USER']}",
-            password=f"{os.environ['DB_PASSWORD']}",
-            db=f"{os.environ['DB_NAME']}"
+            user=f"{os.environ['POSTGRES_USER']}",
+            password=f"{os.environ['POSTGRES_PASSWORD']}",
+            db=f"{os.environ['POSTGRES_DB']}"
         )
         return conn
 
@@ -40,8 +40,8 @@ class CloudSQLSessionCreator(SQLSessionCreator):
 class PostgreSQLSessionCreator(SQLSessionCreator):
     def create_session(self) -> SQLSession:
         """Creates a Session to connect to an arbitrary Postgres instance"""
-        engine = create_engine(f"postgresql+pg8000://{os.environ['DB_USER']}:{os.environ['DB_PASSWORD']}"
-                               f"@{os.environ['INSTANCE_NAME']}/{os.environ['DB_NAME']}")
+        engine = create_engine(f"postgresql+pg8000://{os.environ['POSTGRES_USER']}:{os.environ['POSTGRES_PASSWORD']}"
+                               f"@{os.environ['INSTANCE_NAME']}/{os.environ['POSTGRES_DB']}")
         Base.metadata.create_all(bind=engine)
         session = sessionmaker(bind=engine)
         return SQLSession(session)
