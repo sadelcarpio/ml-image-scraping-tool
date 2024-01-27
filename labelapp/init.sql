@@ -2,8 +2,10 @@ CREATE TABLE users
 (
     id UUID NOT NULL,
     username VARCHAR(64) NOT NULL,
+    password VARCHAR(64) NOT NULL,
     full_name VARCHAR(64) NOT NULL,
     email VARCHAR(64) NOT NULL,
+    is_admin BOOL NOT NULL,
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     PRIMARY KEY (id)

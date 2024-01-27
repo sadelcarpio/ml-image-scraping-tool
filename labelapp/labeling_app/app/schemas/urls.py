@@ -7,11 +7,3 @@ class UrlBase(SQLModel):
 
 class UrlResponse(UrlBase):
     id: int
-
-
-class LabeledImage(SQLModel):
-    format: str
-
-
-class LabeledImageCls(SQLModel):
-    value: int

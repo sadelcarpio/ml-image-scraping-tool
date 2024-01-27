@@ -5,7 +5,7 @@ from app.api.deps import SessionDep, CurrentUser
 from app.models import UrlModel, UserProjectModel
 from app.schemas.urls import UrlResponse
 
-router = APIRouter()
+router = APIRouter(tags=["URLs Endpoints"])
 
 
 @router.get("/{project_id}/current-url", status_code=status.HTTP_200_OK, response_model=UrlResponse)

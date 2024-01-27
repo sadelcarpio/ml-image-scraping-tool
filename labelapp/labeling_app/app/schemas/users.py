@@ -4,5 +4,16 @@ from sqlmodel import SQLModel, Field, AutoString
 
 class UserBase(SQLModel):
     username: str = Field(unique=True, nullable=False)
-    full_name: str
     email: EmailStr = Field(unique=True, nullable=False, sa_type=AutoString)
+    is_admin: bool = False
+
+
+class UserCreate(UserBase):
+    full_name: str
+    password: str
+
+
+class UserUpdate(UserBase):
+    username: str | None = None
+    email: EmailStr | None = None
+    password: str | None = None
