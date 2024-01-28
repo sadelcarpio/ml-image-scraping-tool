@@ -1,12 +1,18 @@
 from fastapi import APIRouter
 
+from app.api.deps import SessionDep
+from app.crud import CRUDProject
+from app.models import ProjectModel
+from app.schemas.read import ProjectRead
+
 router = APIRouter(tags=["Projects Endpoints"])
+project = CRUDProject(ProjectModel)
 
 
-@router.get("/{project_id}")
-def project_information(project_id: int):
+@router.get("/{project_id}", response_model=ProjectRead)
+def project_information(project_id: int, session: SessionDep):
     """Fetch information from a certain project."""
-    pass
+    return project.get(session, project_id)
 
 
 @router.get("/{project_id}/{user_id}/urls")
