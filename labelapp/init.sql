@@ -57,7 +57,7 @@ CREATE TABLE users_projects (
 CREATE TABLE labels (
     id SERIAL NOT NULL,
     project_id INTEGER,
-    label VARCHAR(64) NOT NULL,
+    name VARCHAR(64) NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
 );

@@ -1,9 +1,10 @@
+from sqlmodel import SQLModel
 from sqlmodel import Session
 
 from app import Settings
 from app.crud import CRUDUser, CRUDProject
 from app.db.engine import get_engine
-from app.models import SQLModel, UserModel, ProjectModel, LabelModel
+from app.models import UserModel, ProjectModel, LabelModel
 from app.schemas.projects import ProjectCreate
 from app.schemas.users import UserCreate
 
@@ -26,5 +27,6 @@ def init_db():
                                          obj_in=ProjectCreate(name="test",
                                                               keywords="test,test2",
                                                               description="This is a test",
+                                                              task_type="classification",
                                                               owner_id=my_user.id),
                                          labels=[label1, label2])

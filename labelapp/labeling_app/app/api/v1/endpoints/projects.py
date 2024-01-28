@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from app.api.deps import SessionDep
 from app.crud import CRUDProject
 from app.models import ProjectModel
-from app.schemas.read import ProjectRead
+from app.schemas.projects import ProjectRead
 
 router = APIRouter(tags=["Projects Endpoints"])
 project = CRUDProject(ProjectModel)
