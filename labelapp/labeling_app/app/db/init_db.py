@@ -2,8 +2,8 @@ from sqlmodel import Session
 
 from app import Settings
 from app.crud import CRUDUser, CRUDProject
-from app.models import SQLModel, UserModel, ProjectModel, UserProjectModel, UrlModel, LabelModel
 from app.db.engine import get_engine
+from app.models import SQLModel, UserModel, ProjectModel, LabelModel
 from app.schemas.projects import ProjectCreate
 from app.schemas.users import UserCreate
 
@@ -11,9 +11,9 @@ from app.schemas.users import UserCreate
 def init_db():
     engine = get_engine(settings=Settings())
     SQLModel.metadata.create_all(engine)
+    # Just for testing CRUD operations
     user_crud = CRUDUser(UserModel)
     projects_crud = CRUDProject(ProjectModel)
-    # Just for testing
     with Session(engine) as session:
         my_user = user_crud.create(session, obj_in=UserCreate(username="sergio",
                                                               email="sergio@gmail.com",
