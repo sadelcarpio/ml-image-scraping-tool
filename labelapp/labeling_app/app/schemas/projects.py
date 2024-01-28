@@ -1,3 +1,5 @@
+import uuid
+
 from sqlmodel import SQLModel, Field
 
 
@@ -8,7 +10,7 @@ class ProjectBase(SQLModel):
 
 
 class ProjectCreate(ProjectBase):
-    owner_id: str | None
+    owner_id: uuid.UUID | None
 
 
 class ProjectUpdate(ProjectBase):

@@ -52,3 +52,12 @@ class ProjectModel(ProjectBase, table=True):
     )
     owner_id: uuid.UUID = Field(default=None, foreign_key="users.id")
     users: list[UserModel] = Relationship(back_populates="projects", link_model=UserProjectModel)
+    labels: list["LabelModel"] = Relationship(back_populates="project")
+
+
+class LabelModel(SQLModel, table=True):
+    __tablename__ = "labels"
+    id: int | None = Field(default=None, primary_key=True)
+    project_id: int | None = Field(default=None, foreign_key="projects.id")
+    name: str
+    project: ProjectModel | None = Relationship(back_populates="labels")
