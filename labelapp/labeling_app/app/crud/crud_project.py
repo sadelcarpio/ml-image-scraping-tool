@@ -1,3 +1,5 @@
+import uuid
+
 from sqlmodel import Session, select
 
 from app.crud.base import CRUD
@@ -25,4 +27,14 @@ class CRUDProject(CRUD[ProjectModel, ProjectCreate, ProjectUpdate]):
         return urls
 
     def get_projects_by_owner(self, session: Session, owner_id: str):
+        """Get the projects owned by a given user."""
         pass
+
+    def create_with_users(self, session: Session, obj_in: ProjectCreate, user_ids: list[uuid.UUID]) -> ProjectModel:
+        created_project = self.create(session, obj_in)
+        project_users = session.exec(select(UserModel).where(UserModel.id.in_(user_ids))).all()
+        created_project.users = project_users
+        session.add(created_project)
+        session.commit()
+        session.refresh(created_project)
+        return created_project

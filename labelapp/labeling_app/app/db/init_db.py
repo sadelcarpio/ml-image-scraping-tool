@@ -27,13 +27,12 @@ def init_db():
         user = users_crud.get(session, my_user.id)
         label1 = LabelModel(name="cat")
         label2 = LabelModel(name="dog")
-        projects_crud.create(session, obj_in=ProjectCreate(name="test",
-                                                           keywords="test,test2",
-                                                           description="This is a test",
-                                                           task_type="classification",
-                                                           users=[user],
-                                                           labels=[label1, label2],
-                                                           owner_id=user.id))
+        projects_crud.create_with_users(session, obj_in=ProjectCreate(name="test",
+                                                                      keywords="test,test2",
+                                                                      description="This is a test",
+                                                                      task_type="classification",
+                                                                      labels=[label1, label2],
+                                                                      owner_id=user.id), user_ids=[user.id])
         project = projects_crud.get(session, 1)
         urls = [UrlModel(gcs_url=f"https://www.google.com/image_{i}",
                          hashed_url=f"abcdef{i}",

@@ -1,5 +1,6 @@
 import uuid
 
+from pydantic import field_validator
 from sqlmodel import SQLModel, Field
 
 from app.models.extras import LabelModel
@@ -20,8 +21,18 @@ class ProjectRead(ProjectBase):
 
 
 class ProjectCreate(ProjectRead):
-    users: list["UserModel"]
     labels: list["LabelModel"] = []
+
+
+class ProjectCreateWithUsers(ProjectCreate):
+    user_ids: list[uuid.UUID]
+
+    @field_validator("user_ids")
+    @classmethod
+    def validate_user_ids_notempty(cls, user_ids: list) -> list:
+        if not len(user_ids):
+            raise ValueError("Can't create a project without users.")
+        return user_ids
 
 
 class ProjectUpdate(ProjectBase):
