@@ -16,6 +16,7 @@ class CRUDProject(CRUD[ProjectModel, ProjectCreate, ProjectUpdate]):
         return urls
 
     def get_user_urls(self, session: Session, project_id: int, user_id: str, skip: int = 0, limit: int = 5):
+        """Get urls for a user in a project."""
         urls = session.exec(
             select(UrlModel).join(ProjectModel)
             .join(UserModel)

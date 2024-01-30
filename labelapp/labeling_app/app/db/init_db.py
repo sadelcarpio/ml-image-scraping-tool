@@ -16,15 +16,15 @@ def init_db():
     engine = get_engine(settings=Settings())
     SQLModel.metadata.create_all(engine)
     # Just for testing CRUD operations
-    user_crud = CRUDUser(UserModel)
+    users_crud = CRUDUser(UserModel)
     projects_crud = CRUDProject(ProjectModel)
     with Session(engine) as session:
-        my_user = user_crud.create(session, obj_in=UserCreate(username="sergio",
-                                                              email="sergio@gmail.com",
-                                                              is_admin=True,
-                                                              password="123456",
-                                                              full_name="Sergio"))
-        user = user_crud.get(session, my_user.id)
+        my_user = users_crud.create(session, obj_in=UserCreate(username="sergio",
+                                                               email="sergio@gmail.com",
+                                                               is_admin=True,
+                                                               password="123456",
+                                                               full_name="Sergio"))
+        user = users_crud.get(session, my_user.id)
         label1 = LabelModel(name="cat")
         label2 = LabelModel(name="dog")
         projects_crud.create(session, obj_in=ProjectCreate(name="test",
@@ -41,4 +41,3 @@ def init_db():
                          project_id=project.id) for i in range(10)]
         session.add_all(urls)
         session.commit()
-        my_urls = projects_crud.get_urls(session, 1)

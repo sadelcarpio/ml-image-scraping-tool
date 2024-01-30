@@ -8,6 +8,12 @@ class UserBase(SQLModel):
     is_admin: bool = False
 
 
+class UserRead(SQLModel):
+    username: str
+    email: EmailStr
+    full_name: str
+
+
 class UserCreate(UserBase):
     full_name: str
     password: str
