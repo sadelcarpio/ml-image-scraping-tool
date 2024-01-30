@@ -42,8 +42,7 @@ def read_users(project_id: int, session: SessionDep):
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProjectRead)
 def create_project(project: ProjectCreateWithUsers, session: SessionDep):
     """Create a new project."""
-    project_create = ProjectCreate.from_orm(project)
-    created_project = project_crud.create_with_users(session, project_create, project.user_ids)
+    created_project = project_crud.create_with_users(session, project)
     return created_project
 
 

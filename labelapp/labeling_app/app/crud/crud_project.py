@@ -6,7 +6,7 @@ from app.crud.base import CRUD
 from app.models.projects import ProjectModel
 from app.models.urls import UrlModel
 from app.models.users import UserModel
-from app.schemas.projects import ProjectCreate, ProjectUpdate
+from app.schemas.projects import ProjectCreate, ProjectUpdate, ProjectCreateWithUsers
 
 
 class CRUDProject(CRUD[ProjectModel, ProjectCreate, ProjectUpdate]):
@@ -30,8 +30,10 @@ class CRUDProject(CRUD[ProjectModel, ProjectCreate, ProjectUpdate]):
         """Get the projects owned by a given user."""
         pass
 
-    def create_with_users(self, session: Session, obj_in: ProjectCreate, user_ids: list[uuid.UUID]) -> ProjectModel:
-        created_project = self.create(session, obj_in)
+    def create_with_users(self, session: Session, obj_in: ProjectCreateWithUsers) -> ProjectModel:
+        project_create = ProjectCreate.from_orm(obj_in)
+        user_ids = obj_in.user_ids
+        created_project = self.create(session, project_create)
         project_users = session.exec(select(UserModel).where(UserModel.id.in_(user_ids))).all()
         created_project.users = project_users
         session.add(created_project)

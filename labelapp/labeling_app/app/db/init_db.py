@@ -8,7 +8,7 @@ from app.models.extras import LabelModel
 from app.models.projects import ProjectModel
 from app.models.urls import UrlModel
 from app.models.users import UserModel
-from app.schemas.projects import ProjectCreate
+from app.schemas.projects import ProjectCreate, ProjectCreateWithUsers
 from app.schemas.users import UserCreate
 
 
@@ -27,12 +27,14 @@ def init_db():
         user = users_crud.get(session, my_user.id)
         label1 = LabelModel(name="cat")
         label2 = LabelModel(name="dog")
-        projects_crud.create_with_users(session, obj_in=ProjectCreate(name="test",
-                                                                      keywords="test,test2",
-                                                                      description="This is a test",
-                                                                      task_type="classification",
-                                                                      labels=[label1, label2],
-                                                                      owner_id=user.id), user_ids=[user.id])
+        projects_crud.create_with_users(session, obj_in=ProjectCreateWithUsers(name="test",
+                                                                               keywords="test,test2",
+                                                                               description="This is a test",
+                                                                               task_type="classification",
+                                                                               labels=[label1, label2],
+                                                                               user_ids=[user.id],
+                                                                               owner_id=user.id))
+
         project = projects_crud.get(session, 1)
         urls = [UrlModel(gcs_url=f"https://www.google.com/image_{i}",
                          hashed_url=f"abcdef{i}",
