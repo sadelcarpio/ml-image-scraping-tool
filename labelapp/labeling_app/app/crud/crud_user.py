@@ -1,7 +1,7 @@
 from sqlmodel import Session
 
 from app.crud.base import CRUD
-from app.models import UserModel
+from app.models.users import UserModel
 from app.schemas.users import UserCreate, UserUpdate
 
 

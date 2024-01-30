@@ -16,7 +16,7 @@ class CRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return session.exec(select(self.Model).where(self.Model.id == id)).first()
 
     def create(self, session: Session, obj_in: CreateSchemaType) -> ModelType:
-        obj_in_data = jsonable_encoder(obj_in)
+        obj_in_data = {key: value for key, value in obj_in if value is not None}
         db_obj = self.Model(**obj_in_data)
         session.add(db_obj)
         session.commit()

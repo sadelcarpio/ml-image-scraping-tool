@@ -2,8 +2,9 @@ from fastapi import APIRouter
 
 from app.api.deps import SessionDep
 from app.crud import CRUDProject
-from app.models import ProjectModel
+from app.models.projects import ProjectModel
 from app.schemas.projects import ProjectRead
+from app.schemas.urls import UrlRead
 
 router = APIRouter(tags=["Projects Endpoints"])
 project = CRUDProject(ProjectModel)
@@ -16,15 +17,17 @@ def project_information(project_id: int, session: SessionDep):
 
 
 @router.get("/{project_id}/{user_id}/urls")
-def read_user_urls(project_id: int, user_id: int):
+def read_user_urls(project_id: int, user_id: str, session: SessionDep, skip: int = 0, limit: int = 5):
     """Fetch urls assigned to a certain user in the project."""
-    pass
+    urls = project.get_urls(session, project_id, skip=skip, limit=limit).all()
+    return urls
 
 
-@router.get("/{project_id}/urls")
-def read_project_urls(project_id: int):
+@router.get("/{project_id}/urls", response_model=list[UrlRead])
+def read_project_urls(project_id: int, session: SessionDep, skip: int = 0, limit: int = 5):
     """Fetch all urls assigned to a given project."""
-    pass
+    urls = project.get_urls(session, project_id, skip=skip, limit=limit).all()
+    return urls
 
 
 @router.get("/{project_id}/users")

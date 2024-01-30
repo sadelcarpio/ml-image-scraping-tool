@@ -1,4 +1,5 @@
 import unittest
+import uuid
 from unittest.mock import MagicMock
 
 from sqlmodel import Session
@@ -7,7 +8,9 @@ from starlette.testclient import TestClient
 from app import create_app
 from app.api.deps import get_db, get_current_user
 from app.core.config import Settings, get_settings
-from app.models import UserModel, UrlModel, UserProjectModel
+from app.models.extras import UserProjectModel
+from app.models.urls import UrlModel
+from app.models.users import UserModel
 
 
 class TestUrlEndpoints(unittest.TestCase):
@@ -57,16 +60,20 @@ class TestUrlEndpoints(unittest.TestCase):
 
     def test_current_url_returned(self):
         """Test Url is displayed correctly and updates current_url in user assignment."""
+        user_id = uuid.uuid4()
         url_to_return = UrlModel(id=1, gcs_url="https://test.jpg", hashed_url="abcdefg", labeled=False,
-                                 user_id="uid1", project_id=1)
-        user_assignment = UserProjectModel(user_id="uuid1", project_id=1)
+                                 user_id=user_id, project_id=1)
+        user_assignment = UserProjectModel(user_id=user_id, project_id=1)
         self.mock_db.exec.return_value.first.side_effect = [url_to_return, user_assignment]
         response = self.test_client.get(f"{self.mock_settings.API_V1_STR}/urls/1/current-url")
         self.assertEqual(1, user_assignment.current_url)
         self.mock_db.add.assert_called_once_with(user_assignment)
         self.mock_db.commit.assert_called_once()
         self.assertEqual(200, response.status_code)
-        self.assertEqual({"gcs_url": url_to_return.gcs_url, "id": url_to_return.id}, response.json())
+        self.assertEqual({"gcs_url": url_to_return.gcs_url,
+                          "id": url_to_return.id,
+                          "labeled": False,
+                          "user_id": str(user_id)}, response.json())
         self.assertEqual(user_assignment.current_url, url_to_return.id)
 
     def test_submit_url(self):

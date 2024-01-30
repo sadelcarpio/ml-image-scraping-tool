@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING, Optional
 
 from sqlmodel import SQLModel, Field, Relationship
 
+from app.schemas.extras import LabelRead
+
 if TYPE_CHECKING:
     from app.models.projects import ProjectModel
 
@@ -16,9 +18,8 @@ class UserProjectModel(SQLModel, table=True):
     current_url: int | None = Field(default=None, foreign_key="urls.id")
 
 
-class LabelModel(SQLModel, table=True):
+class LabelModel(LabelRead, table=True):
     __tablename__ = "labels"
     id: int | None = Field(default=None, primary_key=True)
     project_id: int | None = Field(default=None, foreign_key="projects.id")
-    name: str
     project: Optional["ProjectModel"] = Relationship(back_populates="labels")
