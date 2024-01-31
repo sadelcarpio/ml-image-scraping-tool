@@ -14,5 +14,8 @@ class CRUDUser(CRUD[UserModel, UserCreate, UserUpdate]):
 
     def get_users_by_project(self, session: Session, project_id: int):
         """Get all users that belong to a project."""
-        users = session.exec(select(UserModel).join(UserProjectModel).where(ProjectModel.id == project_id))
+        users = session.exec(select(UserModel)
+                             .join(UserProjectModel)
+                             .join(ProjectModel)
+                             .where(ProjectModel.id == project_id))
         return users
