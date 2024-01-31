@@ -8,7 +8,7 @@ from app.models.extras import LabelModel
 from app.models.projects import ProjectModel
 from app.models.urls import UrlModel
 from app.models.users import UserModel
-from app.schemas.projects import ProjectCreate, ProjectCreateWithUsers
+from app.schemas.projects import ProjectCreateWithUsers
 from app.schemas.users import UserCreate
 
 

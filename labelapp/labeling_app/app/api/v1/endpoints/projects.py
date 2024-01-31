@@ -4,7 +4,7 @@ from app.api.deps import SessionDep
 from app.crud import CRUDProject, CRUDUser
 from app.models.projects import ProjectModel
 from app.models.users import UserModel
-from app.schemas.projects import ProjectRead, ProjectCreate, ProjectCreateWithUsers
+from app.schemas.projects import ProjectRead, ProjectCreateWithUsers
 from app.schemas.urls import UrlRead
 from app.schemas.users import UserRead
 
