@@ -24,7 +24,13 @@ def init_db():
                                                                is_admin=True,
                                                                password="123456",
                                                                full_name="Sergio"))
+        my_label_user = users_crud.create(session, obj_in=UserCreate(username="sadel",
+                                                                  email="sadel@gmail.com",
+                                                                  is_admin=False,
+                                                                  password="xd",
+                                                                  full_name="Sergio"))
         user = users_crud.get(session, my_user.id)
+        label_user = users_crud.get(session, my_label_user.id)
         label1 = LabelModel(name="cat")
         label2 = LabelModel(name="dog")
         projects_crud.create_with_users(session, obj_in=ProjectCreateWithUsers(name="test",
@@ -32,13 +38,14 @@ def init_db():
                                                                                description="This is a test",
                                                                                task_type="classification",
                                                                                labels=[label1, label2],
-                                                                               user_ids=[user.id],
+                                                                               user_ids=[label_user.id],
                                                                                owner_id=user.id))
 
         project = projects_crud.get(session, 1)
         urls = [UrlModel(gcs_url=f"https://www.google.com/image_{i}",
                          hashed_url=f"abcdef{i}",
-                         user_id=my_user.id,
+                         user_id=label_user.id,
                          project_id=project.id) for i in range(10)]
         session.add_all(urls)
         session.commit()
+        print("debug")

@@ -21,4 +21,5 @@ class UserModel(UserBase, table=True):
     updated_at: datetime = Field(
         sa_column=Column(DateTime, index=True, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     )
-    projects: list["ProjectModel"] = Relationship(back_populates="users", link_model=UserProjectModel)
+    projects: list["ProjectModel"] = Relationship(back_populates="users",
+                                                  link_model=UserProjectModel)

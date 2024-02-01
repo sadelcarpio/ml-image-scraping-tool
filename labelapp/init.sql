@@ -8,7 +8,9 @@ CREATE TABLE users
     is_admin BOOL NOT NULL,
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE (username),
+	UNIQUE (email)
 );
 
 CREATE TABLE projects
@@ -40,7 +42,7 @@ CREATE TABLE urls
     UNIQUE (gcs_url),
     UNIQUE (hashed_url),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL,
-    FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE SET NULL
+    FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
 );
 
 CREATE TABLE users_projects (

@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from sqlalchemy import Column, ForeignKey, UUID, Integer
 from sqlmodel import SQLModel, Field, Relationship
 
 from app.schemas.extras import LabelRead
@@ -21,5 +22,7 @@ class UserProjectModel(SQLModel, table=True):
 class LabelModel(LabelRead, table=True):
     __tablename__ = "labels"
     id: int | None = Field(default=None, primary_key=True)
-    project_id: int | None = Field(default=None, foreign_key="projects.id")
+    project_id: int | None = Field(sa_column=Column('project_id',
+                                                    Integer,
+                                                    ForeignKey("projects.id", ondelete="CASCADE")))
     project: Optional["ProjectModel"] = Relationship(back_populates="labels")

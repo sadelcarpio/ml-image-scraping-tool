@@ -8,7 +8,7 @@ from app.core.config import SettingsDep
 
 
 def get_engine(settings: SettingsDep) -> Engine:
-    engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
+    engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI), echo=True)
     return engine
 
 
