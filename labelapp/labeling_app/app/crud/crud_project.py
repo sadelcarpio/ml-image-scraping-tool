@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlmodel import Session, select
 
 from app.crud.base import CRUD
@@ -18,10 +20,9 @@ class CRUDProject(CRUD[ProjectModel, ProjectCreate, ProjectUpdate]):
     def get_user_urls(self, session: Session, project_id: int, user_id: str, skip: int = 0, limit: int = 5):
         """Get urls for a user in a project."""
         urls = session.exec(
-            select(UrlModel).join(ProjectModel)
-            .join(UserModel)
-            .where(ProjectModel.id == project_id,
-                   UserModel.id == user_id).limit(limit).offset(skip))
+            select(UrlModel)
+            .where(UrlModel.project_id == project_id,
+                   UrlModel.user_id == user_id).limit(limit).offset(skip))
         return urls
 
     def get_projects_by_owner(self, session: Session, owner_id: str):

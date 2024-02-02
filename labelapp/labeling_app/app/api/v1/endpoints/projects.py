@@ -52,7 +52,7 @@ def update_project(project_id: int):
     pass
 
 
-@router.delete("/{project_id}")
-def delete_project(project_id: int):
+@router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_project(project_id: int, session: SessionDep):
     """Delete a project."""
-    pass
+    project_crud.remove(session, project_id)

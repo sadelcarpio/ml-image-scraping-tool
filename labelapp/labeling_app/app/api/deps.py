@@ -18,7 +18,7 @@ SessionDep = Annotated[Session, Depends(get_db)]
 
 # TODO: change with actual user authentication
 def get_current_user(session: SessionDep) -> UserModel:
-    user = session.exec(select(UserModel)).first()
+    user = session.exec(select(UserModel).where(UserModel.is_admin == False)).first()
     if user is None:
         raise HTTPException(status_code=404, detail="Current user not found.")
     return user

@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Column, ForeignKey, UUID, Integer
+from sqlalchemy import Column, ForeignKey, Integer
 from sqlmodel import SQLModel, Field, Relationship
 
 from app.schemas.extras import LabelRead

@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, UUID
+from sqlalchemy import Column, DateTime, ForeignKey
 from sqlmodel import Field
 
 from app.schemas.urls import UrlBase

@@ -25,10 +25,10 @@ def init_db():
                                                                password="123456",
                                                                full_name="Sergio"))
         my_label_user = users_crud.create(session, obj_in=UserCreate(username="sadel",
-                                                                  email="sadel@gmail.com",
-                                                                  is_admin=False,
-                                                                  password="xd",
-                                                                  full_name="Sergio"))
+                                                                     email="sadel@gmail.com",
+                                                                     is_admin=False,
+                                                                     password="xd",
+                                                                     full_name="Sergio"))
         user = users_crud.get(session, my_user.id)
         label_user = users_crud.get(session, my_label_user.id)
         label1 = LabelModel(name="cat")
@@ -48,4 +48,3 @@ def init_db():
                          project_id=project.id) for i in range(10)]
         session.add_all(urls)
         session.commit()
-        print("debug")
