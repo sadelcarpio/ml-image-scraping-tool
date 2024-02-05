@@ -20,7 +20,7 @@ class ProjectModel(ProjectBase, table=True):
     updated_at: datetime = Field(
         sa_column=Column(DateTime, index=True, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     )
-    owner_id: uuid.UUID = Field(sa_column=Column('user_id', ForeignKey("users.id", ondelete="CASCADE")))
+    owner_id: uuid.UUID = Field(sa_column=Column('owner_id', ForeignKey("users.id", ondelete="CASCADE")))
     users: list[UserModel] = Relationship(back_populates="projects", link_model=UserProjectModel)
     labels: list["LabelModel"] = Relationship(back_populates="project",
                                               sa_relationship_kwargs={"cascade": "all, delete-orphan"})
