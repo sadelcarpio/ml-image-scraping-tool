@@ -17,17 +17,17 @@ def read_own_user_projects():
 
 @router.get("/{user_id}/projects")
 def read_user_projects(user_id: int):
-    """Get the projects related to own user."""
+    """Get the projects related to a given user."""
     pass
 
 
-@router.put("/users/me")
+@router.put("/me")
 def update_own_user():
     """Edit own user."""
     pass
 
 
-@router.delete("/users/me")
+@router.delete("/me")
 def delete_own_user():
     """Delete my current user."""
     pass

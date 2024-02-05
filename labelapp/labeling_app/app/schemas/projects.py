@@ -4,7 +4,6 @@ from pydantic import field_validator
 from sqlmodel import SQLModel, Field
 
 from app.models.extras import LabelModel
-from app.models.users import UserModel
 from app.schemas.extras import LabelRead
 
 
@@ -35,8 +34,6 @@ class ProjectCreateWithUsers(ProjectCreate):
         return user_ids
 
 
-class ProjectUpdate(ProjectBase):
+class ProjectUpdate(SQLModel):
     name: str | None = None
-    keywords: str | None = None
     description: str | None = None
-    users: list["UserModel"] | None = None

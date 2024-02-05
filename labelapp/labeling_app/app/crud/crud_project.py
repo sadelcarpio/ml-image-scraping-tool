@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from sqlmodel import Session, select
 
 from app.crud.base import CRUD
@@ -39,3 +37,19 @@ class CRUDProject(CRUD[ProjectModel, ProjectCreate, ProjectUpdate]):
         session.commit()
         session.refresh(created_project)
         return created_project
+
+    def add_user(self, session: Session, user_crud: CRUD, project_id: int, user_id: str):
+        project = self.get(session, project_id)
+        user = user_crud.get(session, user_id)
+        project.users.append(user)
+        session.add(project)
+        session.commit()
+        session.refresh(project)
+
+    def remove_user(self, session: Session, user_crud: CRUD, project_id: int, user_id: str):
+        project = self.get(session, project_id)
+        user = user_crud.get(session, user_id)
+        project.users.remove(user)
+        session.add(project)
+        session.commit()
+        session.refresh(user)
