@@ -1,7 +1,8 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status
 
 from app.api.deps import SessionDep
-from app.crud import CRUDProject, CRUDUser
+from app.crud.crud_project import CRUDProjectDep
+from app.crud.crud_user import CRUDUserDep
 from app.exceptions.projects import ProjectNotFound
 from app.exceptions.users import UserNotFound
 from app.models.projects import ProjectModel
@@ -12,84 +13,100 @@ from app.schemas.urls import UrlRead
 from app.schemas.users import UserRead
 
 router = APIRouter(tags=["Projects Endpoints"])
-project_crud = CRUDProject(ProjectModel)
-users_crud = CRUDUser(UserModel)
 
 
 @router.get("/{project_id}", status_code=status.HTTP_200_OK, response_model=ProjectRead)
-def project_information(project_id: int, session: SessionDep) -> ProjectModel:
+def project_information(project_id: int, projects_crud: CRUDProjectDep) -> ProjectModel:
     """Fetch information from a certain project."""
-    project = project_crud.get(session, project_id)
+    project = projects_crud.get(project_id)
     if project is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
     return project
 
 
 @router.get("/{project_id}/{user_id}/urls", status_code=status.HTTP_200_OK, response_model=list[UrlRead])
-def read_user_urls(project_id: int, user_id: str, session: SessionDep, skip: int = 0, limit: int = 5) -> list[UrlModel]:
+def read_user_urls(project_id: int,
+                   user_id: str,
+                   projects_crud: CRUDProjectDep,
+                   skip: int = 0,
+                   limit: int = 5) -> list[UrlModel]:
     """Fetch urls assigned to a certain user in the project."""
-    urls = project_crud.get_user_urls(session, project_id, user_id, skip=skip, limit=limit).all()
+    urls = projects_crud.get_user_urls(project_id, user_id, skip=skip, limit=limit).all()
     return urls
 
 
 @router.get("/{project_id}/urls", status_code=status.HTTP_200_OK, response_model=list[UrlRead])
-def read_project_urls(project_id: int, session: SessionDep, skip: int = 0, limit: int = 5) -> list[UrlModel]:
+def read_project_urls(project_id: int,
+                      projects_crud: CRUDProjectDep,
+                      skip: int = 0,
+                      limit: int = 5) -> list[UrlModel]:
     """Fetch all urls assigned to a given project."""
-    urls = project_crud.get_urls(session, project_id, skip=skip, limit=limit).all()
+    urls = projects_crud.get_urls(project_id, skip=skip, limit=limit).all()
     return urls
 
 
 @router.get("/{project_id}/users", status_code=status.HTTP_200_OK, response_model=list[UserRead])
-def read_users(project_id: int, session: SessionDep, skip: int = 0, limit: int = 5) -> list[UserModel]:
+def read_users(project_id: int,
+               projects_crud: CRUDProjectDep,
+               skip: int = 0,
+               limit: int = 5) -> list[UserModel]:
     """Fetch all users assigned to a given project."""
-    users = project_crud.get_users_by_project(session, project_id, skip=skip, limit=limit).all()
+    users = projects_crud.get_users_by_project(project_id, skip=skip, limit=limit).all()
     return users
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProjectReadWithUsers)
-def create_project(project: ProjectCreateWithUsers, session: SessionDep) -> ProjectModel:
+def create_project(project: ProjectCreateWithUsers, projects_crud: CRUDProjectDep) -> ProjectModel:
     """Create a new project."""
-    created_project = project_crud.create_with_users(session, project)
+    created_project = projects_crud.create_with_users(project)
     return created_project
 
 
 @router.put("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
-def update_project(project_id: int, project_updates: ProjectUpdate, session: SessionDep):
+def update_project(project_id: int,
+                   project_updates: ProjectUpdate,
+                   projects_crud: CRUDProjectDep):
     """Edit some properties of a project"""
-    project_to_update = project_crud.get(session, project_id)
+    project_to_update = projects_crud.get(project_id)
     if project_to_update is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
-    project_crud.update(session, project_to_update, project_updates)
+    projects_crud.update(project_to_update, project_updates)
 
 
 @router.put("/{project_id}/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def add_user(project_id: int, user_id: str, session: SessionDep):
+def add_user(project_id: int,
+             user_id: str,
+             projects_crud: CRUDProjectDep,
+             users_crud: CRUDUserDep):
     """Add a user to the project"""
-    project = project_crud.get(session, project_id)
+    project = projects_crud.get(project_id)
     if project is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
-    user = users_crud.get(session, user_id)
+    user = users_crud.get(user_id)
     if user is None:
         raise UserNotFound(detail=f"No user found with id: {user_id}")
-    project_crud.add_user(session, project, user)
+    projects_crud.add_user(project, user)
 
 
 @router.delete("/{project_id}/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_user(project_id: int, user_id: str, session: SessionDep):
+def remove_user(project_id: int,
+                user_id: str,
+                projects_crud: CRUDProjectDep,
+                users_crud: CRUDUserDep):
     """Remove a user from the project"""
-    project = project_crud.get(session, project_id)
+    project = projects_crud.get(project_id)
     if project is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
-    user = users_crud.get(session, user_id)
+    user = users_crud.get(user_id)
     if user is None:
         raise UserNotFound(detail=f"No user found with id: {user_id}")
-    project_crud.remove_user(session, project, user)
+    projects_crud.remove_user(project, user)
 
 
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_project(project_id: int, session: SessionDep):
+def delete_project(project_id: int, projects_crud: CRUDProjectDep):
     """Delete a project."""
-    project = session.get(ProjectModel, project_id)
+    project = projects_crud.get(project_id)
     if project is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
-    project_crud.remove(session, project)
+    projects_crud.remove(project)

@@ -16,37 +16,37 @@ def init_db():
     engine = get_engine(settings=Settings())
     SQLModel.metadata.create_all(engine)
     # Just for testing CRUD operations
-    users_crud = CRUDUser(UserModel)
-    projects_crud = CRUDProject(ProjectModel)
     with Session(engine) as session:
-        my_user = users_crud.create(session, obj_in=UserCreate(username="sergio",
-                                                               email="sergio@gmail.com",
-                                                               is_admin=True,
-                                                               password="123456",
-                                                               full_name="Sergio"))
-        user_1 = users_crud.create(session, obj_in=UserCreate(username="sadel",
-                                                              email="sadel@gmail.com",
-                                                              is_admin=False,
-                                                              password="xd",
-                                                              full_name="Sergio"))
-        user_2 = users_crud.create(session, obj_in=UserCreate(username="sadel2",
-                                                              email="sadel2@gmail.com",
-                                                              is_admin=False,
-                                                              password="xd",
-                                                              full_name="Sergio"))
-        user = users_crud.get(session, my_user.id)
-        user_1 = users_crud.get(session, user_1.id)
+        users_crud = CRUDUser(UserModel, session)
+        projects_crud = CRUDProject(ProjectModel, session)
+        my_user = users_crud.create(obj_in=UserCreate(username="sergio",
+                                                      email="sergio@gmail.com",
+                                                      is_admin=True,
+                                                      password="123456",
+                                                      full_name="Sergio"))
+        user_1 = users_crud.create(obj_in=UserCreate(username="sadel",
+                                                     email="sadel@gmail.com",
+                                                     is_admin=False,
+                                                     password="xd",
+                                                     full_name="Sergio"))
+        user_2 = users_crud.create(obj_in=UserCreate(username="sadel2",
+                                                     email="sadel2@gmail.com",
+                                                     is_admin=False,
+                                                     password="xd",
+                                                     full_name="Sergio"))
+        user = users_crud.get(my_user.id)
+        user_1 = users_crud.get(user_1.id)
         label1 = LabelModel(name="cat")
         label2 = LabelModel(name="dog")
-        projects_crud.create_with_users(session, obj_in=ProjectCreateWithUsers(name="test",
-                                                                               keywords="test,test2",
-                                                                               description="This is a test",
-                                                                               task_type="classification",
-                                                                               labels=[label1, label2],
-                                                                               user_ids=[user_1.id],
-                                                                               owner_id=user.id))
+        projects_crud.create_with_users(obj_in=ProjectCreateWithUsers(name="test",
+                                                                      keywords="test,test2",
+                                                                      description="This is a test",
+                                                                      task_type="classification",
+                                                                      labels=[label1, label2],
+                                                                      user_ids=[user_1.id],
+                                                                      owner_id=user.id))
 
-        project = projects_crud.get(session, 1)
+        project = projects_crud.get(1)
         urls = [UrlModel(gcs_url=f"https://www.google.com/image_{i}",
                          hashed_url=f"abcdef{i}",
                          user_id=user_1.id,
