@@ -1,10 +1,9 @@
 from typing import Annotated
 
 from fastapi import Depends
+from pydantic import PostgresDsn, field_validator
 from pydantic_core.core_schema import ValidationInfo
 from pydantic_settings import BaseSettings
-
-from pydantic import PostgresDsn, field_validator
 
 
 class Settings(BaseSettings):

@@ -2,13 +2,14 @@ from fastapi import APIRouter, status, HTTPException
 from sqlmodel import select
 
 from app.api.deps import SessionDep, CurrentUser
-from app.models import UrlModel, UserProjectModel
-from app.schemas.urls import UrlResponse
+from app.models.extras import UserProjectModel
+from app.models.urls import UrlModel
+from app.schemas.urls import UrlRead
 
-router = APIRouter()
+router = APIRouter(tags=["URLs Endpoints"])
 
 
-@router.get("/{project_id}/current-url", status_code=status.HTTP_200_OK, response_model=UrlResponse)
+@router.get("/{project_id}/current-url", status_code=status.HTTP_200_OK, response_model=UrlRead)
 def get_current_url(project_id: int, session: SessionDep, current_user: CurrentUser):
     current_url = session.exec(
         select(UrlModel).where(UrlModel.project_id == project_id,

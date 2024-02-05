@@ -1,44 +1,55 @@
+from sqlmodel import SQLModel
 from sqlmodel import Session
 
 from app import Settings
-from app.models import SQLModel, UserModel, ProjectModel, UserProjectModel, UrlModel
+from app.crud import CRUDUser, CRUDProject
 from app.db.engine import get_engine
+from app.models.extras import LabelModel
+from app.models.projects import ProjectModel
+from app.models.urls import UrlModel
+from app.models.users import UserModel
+from app.schemas.projects import ProjectCreateWithUsers
+from app.schemas.users import UserCreate
 
 
 def init_db():
     engine = get_engine(settings=Settings())
     SQLModel.metadata.create_all(engine)
-    # Just for testing
+    # Just for testing CRUD operations
     with Session(engine) as session:
-        first_user = UserModel(username="sadelcarpio", full_name="Sergio DC",
-                               email="sdelcarpio")
-        session.add(first_user)
-        session.commit()
-        session.refresh(first_user)
-        first_project = ProjectModel(name="test-project", keywords="test,testing,fastapi",
-                                     description="Jajaja", owner_id=first_user.id)
-        second_project = ProjectModel(name="test-project-2", keywords="test,testing,fastapi",
-                                      description="XDDD", owner_id=first_user.id)
-        session.add(first_project)
-        session.add(second_project)
-        session.commit()
-        session.refresh(first_project)
-        session.refresh(second_project)
-        user_assignment1 = UserProjectModel(user_id=first_user.id, project_id=first_project.id)
-        user_assignment2 = UserProjectModel(user_id=first_user.id, project_id=second_project.id)
-        session.add(user_assignment1)
-        session.add(user_assignment2)
-        session.commit()
-        session.refresh(user_assignment1)
-        session.refresh(user_assignment2)
-        urls_project_1 = [UrlModel(gcs_url=f"https://storage.googleapis.com/project_1_img_{i}.jpg",
-                                   hashed_url=f"abcdefgh{i}",
-                                   user_id=first_user.id,
-                                   project_id=first_project.id) for i in range(3)]
-        urls_project_2 = [UrlModel(gcs_url=f"https://storage.googleapis.com/project_2_img_{i}.jpg",
-                                   hashed_url=f"abcdefg{i}",
-                                   user_id=first_user.id,
-                                   project_id=second_project.id) for i in range(3)]
-        session.add_all(urls_project_1)
-        session.add_all(urls_project_2)
+        users_crud = CRUDUser(UserModel, session)
+        projects_crud = CRUDProject(ProjectModel, session)
+        my_user = users_crud.create(obj_in=UserCreate(username="sergio",
+                                                      email="sergio@gmail.com",
+                                                      is_admin=True,
+                                                      password="123456",
+                                                      full_name="Sergio"))
+        user_1 = users_crud.create(obj_in=UserCreate(username="sadel",
+                                                     email="sadel@gmail.com",
+                                                     is_admin=False,
+                                                     password="xd",
+                                                     full_name="Sergio"))
+        user_2 = users_crud.create(obj_in=UserCreate(username="sadel2",
+                                                     email="sadel2@gmail.com",
+                                                     is_admin=False,
+                                                     password="xd",
+                                                     full_name="Sergio"))
+        user = users_crud.get(my_user.id)
+        user_1 = users_crud.get(user_1.id)
+        label1 = LabelModel(name="cat")
+        label2 = LabelModel(name="dog")
+        projects_crud.create_with_users(obj_in=ProjectCreateWithUsers(name="test",
+                                                                      keywords="test,test2",
+                                                                      description="This is a test",
+                                                                      task_type="classification",
+                                                                      labels=[label1, label2],
+                                                                      user_ids=[user_1.id],
+                                                                      owner_id=user.id))
+
+        project = projects_crud.get(1)
+        urls = [UrlModel(gcs_url=f"https://www.google.com/image_{i}",
+                         hashed_url=f"abcdef{i}",
+                         user_id=user_1.id,
+                         project_id=project.id) for i in range(10)]
+        session.add_all(urls)
         session.commit()
