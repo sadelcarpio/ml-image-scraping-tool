@@ -1,6 +1,7 @@
 from sqlmodel import Session, select
 
 from app.crud.base import CRUD
+from app.models.extras import UserProjectModel
 from app.models.projects import ProjectModel
 from app.models.urls import UrlModel
 from app.models.users import UserModel
@@ -23,9 +24,15 @@ class CRUDProject(CRUD[ProjectModel, ProjectCreate, ProjectUpdate]):
                    UrlModel.user_id == user_id).limit(limit).offset(skip))
         return urls
 
-    def get_projects_by_owner(self, session: Session, owner_id: str):
-        """Get the projects owned by a given user."""
-        pass
+    def get_users_by_project(self, session: Session, project_id: int, skip: int = 0, limit: int = 5):
+        """Get all users that belong to a project."""
+        users = session.exec(select(UserModel)
+                             .join(UserProjectModel)
+                             .join(ProjectModel)
+                             .where(ProjectModel.id == project_id)
+                             .limit(limit)
+                             .offset(skip))
+        return users
 
     def create_with_users(self, session: Session, obj_in: ProjectCreateWithUsers) -> ProjectModel:
         project_create = ProjectCreate.from_orm(obj_in)
@@ -38,18 +45,14 @@ class CRUDProject(CRUD[ProjectModel, ProjectCreate, ProjectUpdate]):
         session.refresh(created_project)
         return created_project
 
-    def add_user(self, session: Session, user_crud: CRUD, project_id: int, user_id: str):
-        project = self.get(session, project_id)
-        user = user_crud.get(session, user_id)
+    def add_user(self, session: Session, project: ProjectModel, user: UserModel):
         project.users.append(user)
         session.add(project)
         session.commit()
         session.refresh(project)
 
-    def remove_user(self, session: Session, user_crud: CRUD, project_id: int, user_id: str):
-        project = self.get(session, project_id)
-        user = user_crud.get(session, user_id)
+    def remove_user(self, session: Session, project: ProjectModel, user: UserModel):
         project.users.remove(user)
         session.add(project)
         session.commit()
-        session.refresh(user)
+        session.refresh(project)

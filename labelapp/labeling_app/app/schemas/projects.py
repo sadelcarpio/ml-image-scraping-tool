@@ -5,6 +5,7 @@ from sqlmodel import SQLModel, Field
 
 from app.models.extras import LabelModel
 from app.schemas.extras import LabelRead
+from app.schemas.users import UserRead
 
 
 class ProjectBase(SQLModel):
@@ -17,6 +18,10 @@ class ProjectBase(SQLModel):
 class ProjectRead(ProjectBase):
     owner_id: uuid.UUID
     labels: list["LabelRead"] = []
+
+
+class ProjectReadWithUsers(ProjectRead):
+    users: list["UserRead"]
 
 
 class ProjectCreate(ProjectRead):

@@ -37,8 +37,7 @@ class CRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         session.refresh(db_obj)
         return db_obj
 
-    def remove(self, session: Session, id: any) -> ModelType:
-        obj = session.get(self.Model, id)
+    def remove(self, session: Session, obj: ModelType) -> ModelType:
         session.delete(obj)
         session.commit()
         return obj
