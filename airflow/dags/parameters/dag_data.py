@@ -1,3 +1,5 @@
+from typing import List
+
 import requests
 from pydantic import BaseModel, TypeAdapter
 
@@ -9,5 +11,5 @@ class DagMetaData(BaseModel):
 
 
 response = requests.get('http://dag-info:3000')
-ta = TypeAdapter(list[DagMetaData])
+ta = TypeAdapter(List[DagMetaData])
 dags_metadata = ta.validate_python(response.json())
