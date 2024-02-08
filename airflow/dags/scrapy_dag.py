@@ -8,16 +8,17 @@ from parameters.dag_data import dags_metadata
 
 from utils.scrapyd_request import check_status
 
-default_args = {
-    "owner": "airflow",
-    "depends_on_past": False,
-    "email_on_failure": True,
-    "email": ["sadelcarpioa@gmail.com"]
-}
-
 for dag_params in dags_metadata:
+
+    default_args = {
+        "owner": "airflow",
+        "depends_on_past": False,
+        "email_on_failure": True,
+        "email": dag_params.notify
+    }
+
     with airflow.DAG(
-            dag_params["project"],
+            dag_params.project,
             default_args=default_args,
             start_date=datetime(2023, 12, 1),
             schedule="@daily",
@@ -27,8 +28,8 @@ for dag_params in dags_metadata:
             task_id="schedule-spider",
             http_conn_id="scrapyd_http_endpoint",
             endpoint='schedule.json',
-            data=f"project=image_scraper&spider=google_images_spider&scraping_project={dag_params['project']}"
-                 f"&start_urls={dag_params['keywords']}",
+            data=f"project=image_scraper&spider=google_images_spider&scraping_project={dag_params.project}"
+                 f"&start_urls={dag_params.keywords}",
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             method='POST',
             do_xcom_push=True,
@@ -37,7 +38,7 @@ for dag_params in dags_metadata:
 
         wait_task = BashOperator(
             task_id="wait",
-            bash_command="sleep 30",  # Espera 30 segundos, ajusta según sea necesario
+            bash_command="sleep 30",
             dag=dag,
         )
 
