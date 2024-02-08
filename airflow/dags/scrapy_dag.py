@@ -10,7 +10,8 @@ from utils.scrapyd_request import check_status
 
 default_args = {
     "owner": "airflow",
-    "depends_on_past": False
+    "depends_on_past": False,
+    "email_on_failure": True
 }
 
 for dag_params in dags_metadata:
