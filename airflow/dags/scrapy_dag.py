@@ -2,6 +2,7 @@ from datetime import datetime
 
 import airflow
 from airflow.operators.bash import BashOperator
+from airflow.operators.email import EmailOperator
 from airflow.operators.python import PythonOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
 from parameters.dag_data import dags_metadata
@@ -24,6 +25,7 @@ for dag_params in dags_metadata:
             schedule="@daily",
             catchup=False
     ) as dag:
+
         schedule_spider_task = SimpleHttpOperator(
             task_id="schedule-spider",
             http_conn_id="scrapyd_http_endpoint",
@@ -48,4 +50,11 @@ for dag_params in dags_metadata:
             dag=dag,
         )
 
-    schedule_spider_task >> wait_task >> check_status_task
+        email_notification = EmailOperator(
+            task_id="email_notification",
+            to=dag_params.notify,
+            subject=f"Dag for {dag_params.project} completed",
+            html_content=f"Dag finished successfully!"
+        )
+
+    schedule_spider_task >> wait_task >> check_status_task >> email_notification
