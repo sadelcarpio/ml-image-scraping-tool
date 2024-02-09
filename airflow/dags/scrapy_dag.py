@@ -1,13 +1,9 @@
 from datetime import datetime
 
-import airflow
-from airflow.operators.bash import BashOperator
-from airflow.operators.email import EmailOperator
-from airflow.operators.python import PythonOperator
-from airflow.providers.http.operators.http import SimpleHttpOperator
-from parameters.dag_data import dags_metadata
+import requests
+from airflow.decorators import dag, task
 
-from utils.scrapyd_request import check_status
+from utils.dag_data import dags_metadata
 
 for dag_params in dags_metadata:
 
@@ -18,43 +14,67 @@ for dag_params in dags_metadata:
         "email": dag_params.notify
     }
 
-    with airflow.DAG(
-            dag_params.project,
-            default_args=default_args,
-            start_date=datetime(2023, 12, 1),
-            schedule="@daily",
-            catchup=False
-    ) as dag:
 
-        schedule_spider_task = SimpleHttpOperator(
-            task_id="schedule-spider",
-            http_conn_id="scrapyd_http_endpoint",
-            endpoint='schedule.json',
-            data=f"project=image_scraper&spider=google_images_spider&scraping_project={dag_params.project}"
-                 f"&start_urls={dag_params.keywords}",
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-            method='POST',
-            do_xcom_push=True,
-            dag=dag,
-        )
+    @dag(
+        dag_params.project + "_scraping",
+        default_args=default_args,
+        start_date=datetime(2023, 12, 1),
+        schedule="@daily",
+        catchup=False,
+        tags=["image_scraping"]
+    )
+    def image_scraping_dag():
 
-        wait_task = BashOperator(
-            task_id="wait",
-            bash_command="sleep 30",
-            dag=dag,
-        )
+        @task()
+        def schedule_spider():
+            response_status = requests.post("http://scrapyd:6800/schedule.json",
+                                            headers={"Content-Type": "application/x-www-form-urlencoded"},
+                                            data={"project": "image_scraper",
+                                                  "spider": "google_images_spider",
+                                                  "scraping_project": dag_params.project,
+                                                  "start_urls": dag_params.keywords})
+            return response_status.json()
 
-        check_status_task = PythonOperator(
-            task_id='check_scraping_status',
-            python_callable=check_status,
-            dag=dag,
-        )
+        @task()
+        def wait():
+            import time
+            time.sleep(30)
 
-        email_notification = EmailOperator(
-            task_id="email_notification",
-            to=dag_params.notify,
-            subject=f"Dag for {dag_params.project} completed",
-            html_content=f"Dag finished successfully!"
-        )
+        @task()
+        def check_scraping_status(*, ti=None):
+            import time
+            import requests
+            import logging
 
-    schedule_spider_task >> wait_task >> check_status_task >> email_notification
+            logger = logging.getLogger(__name__)
+            response_status = ti.xcom_pull(task_ids="schedule_spider")
+            job_id = response_status["jobid"]
+            try:
+                job_finished_status = []
+                while not job_finished_status:
+                    response = requests.get('http://scrapyd:6800/listjobs.json', timeout=10)
+                    response.raise_for_status()
+                    finished = response.json()['finished']
+                    running = response.json()['running']
+                    job_finished_status = list(filter(lambda job: job["id"] == job_id, finished))
+                    if job_finished_status:
+                        logger.info(f"Web scraping finished: {job_finished_status[0]}")
+                        return
+                    job_running_status = list(filter(lambda job: job["id"] == job_id, running))
+                    logger.info(f"Web scraping status: {job_running_status[0]}")
+                    time.sleep(30)
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Error on HTTP request: {e}")
+                return
+
+        @task()
+        def notify_owner():
+            from airflow.utils.email import send_email
+            send_email(to=dag_params.notify,
+                       subject=f"Dag for {dag_params.project} completed",
+                       html_content=f"Dag finished successfully!")
+
+        schedule_spider() >> wait() >> check_scraping_status() >> notify_owner()
+
+
+    image_scraping_dag()
