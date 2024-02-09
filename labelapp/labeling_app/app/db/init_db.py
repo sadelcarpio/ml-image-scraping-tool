@@ -38,8 +38,8 @@ def init_db():
         user_1 = users_crud.get(user_1.id)
         label1 = LabelModel(name="cat")
         label2 = LabelModel(name="dog")
-        projects_crud.create_with_users(obj_in=ProjectCreateWithUsers(name="test",
-                                                                      keywords="test,test2",
+        projects_crud.create_with_users(obj_in=ProjectCreateWithUsers(name="test-project-full",
+                                                                      keywords="gatitos+chidos",
                                                                       description="This is a test",
                                                                       task_type="classification",
                                                                       labels=[label1, label2],

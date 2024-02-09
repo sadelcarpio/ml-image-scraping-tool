@@ -1,4 +1,3 @@
-import json
 import unittest
 from sys import platform
 from unittest.mock import patch, MagicMock
@@ -6,7 +5,7 @@ from unittest.mock import patch, MagicMock
 import requests
 from airflow.models import DagBag
 
-from dags.utils.scrapyd_request import check_status
+from dags.tasks import check_scraping_status
 
 
 class TestScrapyDag(unittest.TestCase):
@@ -15,7 +14,7 @@ class TestScrapyDag(unittest.TestCase):
     @patch('requests.get')
     def test_dag_loads_with_no_errors(self, mock_get):
         """Test the dag loads without any import errors"""
-        mock_get.return_value.json.return_value = []
+        mock_get.return_value.json.return_value = [{"project": "test", "keywords": "test", "notify": "a@b.com"}]
         dag_bag = DagBag(include_examples=False)
         dag_bag.process_file('../dags/scrapy_dag.py')
         self.assertEqual(0, len(dag_bag.import_errors))
@@ -25,7 +24,7 @@ class TestScrapyDag(unittest.TestCase):
     @patch('logging.getLogger')
     def test_check_status(self, mock_getlogger, mock_get):
         mock_ti = MagicMock()
-        mock_ti.xcom_pull.return_value = json.dumps({"jobid": "1234", "status": "ok"})
+        mock_ti.xcom_pull.return_value = {"jobid": "1234", "status": "ok"}
         mock_logger = MagicMock()
         mock_getlogger.return_value = mock_logger
         running_response = MagicMock()
@@ -36,7 +35,7 @@ class TestScrapyDag(unittest.TestCase):
         finished_response.json.return_value = {'running': [{'id': '4321'}], 'finished': [{'id': '1234'}, {'id': 'abc'}]}
         # Get running status 3 times and finishes with a finished status
         mock_get.side_effect = [running_response, running_response, running_response, finished_response]
-        check_status(mock_ti)
+        check_scraping_status.function(ti=mock_ti)
         self.assertEqual(4, len(mock_get.call_args_list))
         self.assertEqual(6, len(running_response.json.call_args_list))
         self.assertEqual(2, len(finished_response.json.call_args_list))
@@ -51,5 +50,5 @@ class TestScrapyDag(unittest.TestCase):
         error_response = MagicMock()
         error_response.raise_for_status.side_effect = requests.exceptions.RequestException
         mock_get.return_value = error_response
-        check_status(mock_ti)
+        check_scraping_status.function(ti=mock_ti)
         error_response.raise_for_status.assert_called_once()
