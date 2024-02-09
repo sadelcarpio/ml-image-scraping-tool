@@ -6,7 +6,6 @@ import requests
 from airflow.models import DagBag
 
 from dags.tasks import check_scraping_status
-from dags.utils.schemas import DagMetaData
 
 
 class TestScrapyDag(unittest.TestCase):
@@ -15,7 +14,7 @@ class TestScrapyDag(unittest.TestCase):
     @patch('requests.get')
     def test_dag_loads_with_no_errors(self, mock_get):
         """Test the dag loads without any import errors"""
-        mock_get.return_value.json.return_value = [DagMetaData(project="test", keywords="test", notify="a@b.com")]
+        mock_get.return_value.json.return_value = [{"project": "test", "keywords": "test", "notify": "a@b.com"}]
         dag_bag = DagBag(include_examples=False)
         dag_bag.process_file('../dags/scrapy_dag.py')
         self.assertEqual(0, len(dag_bag.import_errors))
