@@ -3,7 +3,7 @@ from datetime import datetime
 from airflow.decorators import dag
 
 from dags.tasks import schedule_spider, wait, check_scraping_status, notify_owner
-from utils.dag_data import get_dag_metadata
+from dags.utils.dag_data import get_dag_metadata
 
 for dag_params in get_dag_metadata():
 
