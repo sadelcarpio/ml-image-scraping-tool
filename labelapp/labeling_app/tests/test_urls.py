@@ -2,8 +2,8 @@ import unittest
 import uuid
 from unittest.mock import MagicMock
 
-from sqlmodel import Session
 from fastapi.testclient import TestClient
+from sqlmodel import Session
 
 from app import create_app
 from app.api.deps import get_db, get_current_user

@@ -1,33 +1,57 @@
 from fastapi import APIRouter
+from fastapi import status
+
+from app.api.deps import CurrentUser, CurrentAdminUser
+from app.crud.crud_user import CRUDUserDep
+from app.models.projects import ProjectModel
+from app.schemas.projects import ProjectRead
+from app.schemas.users import UserUpdate, UserRead
 
 router = APIRouter(tags=["Users Endpoints"])
 
 
-@router.get("/me")
-def read_own_user():
+@router.get("/me", status_code=status.HTTP_200_OK, response_model=UserRead)
+def read_own_user(current_user: CurrentUser):
     """Gets own user."""
-    pass
+    return current_user
 
 
-@router.get("/me/project")
-def read_own_user_projects():
-    """Get the projects related to own user."""
-    pass
+@router.get("/me/projects-owned", status_code=status.HTTP_200_OK, response_model=list[ProjectRead])
+def read_own_user_projects_owned(
+        current_user: CurrentAdminUser,
+        users_crud: CRUDUserDep,
+        skip: int = 0,
+        limit: int = 5) -> list[ProjectModel]:
+    """Get the projects owned by own user."""
+    projects = users_crud.get_projects_by_owner(current_user.id, skip=skip, limit=limit).all()
+    return projects
 
 
-@router.get("/{user_id}/projects")
-def read_user_projects(user_id: int):
-    """Get the projects related to a given user."""
-    pass
+@router.get("/me/projects", status_code=status.HTTP_200_OK, response_model=list[ProjectRead])
+def read_own_user_projects(
+        current_user: CurrentUser,
+        users_crud: CRUDUserDep,
+        skip: int = 0,
+        limit: int = 5) -> list[ProjectModel]:
+    """Get the projects assigned to own user."""
+    projects = users_crud.get_assigned_projects(current_user.id, skip=skip, limit=limit).all()
+    return projects
 
 
-@router.put("/me")
-def update_own_user():
+@router.get("/{user_id}/projects", status_code=status.HTTP_200_OK, response_model=list[ProjectRead])
+def read_user_projects(user_id: str, users_crud: CRUDUserDep, skip: int = 0, limit: int = 5) -> list[ProjectModel]:
+    """Get the projects assigned to a given user."""
+    projects = users_crud.get_assigned_projects(user_id, skip=skip, limit=limit).all()
+    return projects
+
+
+@router.put("/me", status_code=status.HTTP_204_NO_CONTENT)
+def update_own_user(current_user: CurrentUser, users_crud: CRUDUserDep, to_update: UserUpdate):
     """Edit own user."""
-    pass
+    users_crud.update(current_user, to_update)
 
 
-@router.delete("/me")
-def delete_own_user():
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+def delete_own_user(current_user: CurrentUser, users_crud: CRUDUserDep):
     """Delete my current user."""
-    pass
+    users_crud.remove(current_user)
