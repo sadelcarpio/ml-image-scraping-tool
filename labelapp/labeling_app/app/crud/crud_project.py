@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends
-from sqlmodel import Session, select
+from sqlmodel import select
 
 from app.api.deps import SessionDep
 from app.crud.base import CRUD

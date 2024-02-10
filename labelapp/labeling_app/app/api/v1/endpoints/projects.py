@@ -1,6 +1,5 @@
 from fastapi import APIRouter, status
 
-from app.api.deps import SessionDep
 from app.crud.crud_project import CRUDProjectDep
 from app.crud.crud_user import CRUDUserDep
 from app.exceptions.projects import ProjectNotFound
