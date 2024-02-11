@@ -1,6 +1,6 @@
 from airflow.decorators import task
 
-from dags.utils.dag_data import DagMetaData
+from utils.dag_data import DagMetaData
 
 
 @task()

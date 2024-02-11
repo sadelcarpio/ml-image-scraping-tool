@@ -3,7 +3,7 @@ from typing import List
 import requests
 from pydantic import TypeAdapter
 
-from dags.utils.schemas import DagMetaData
+from utils.schemas import DagMetaData
 
 
 def get_dag_metadata():
