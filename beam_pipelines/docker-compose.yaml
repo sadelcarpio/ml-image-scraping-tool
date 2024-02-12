@@ -12,7 +12,7 @@ services:
       - .env
     volumes:
       - ./pipelines:/beam_pipelines/pipelines
-      - ${PWD}/beam_pipelines/service_account.json:/beam_pipelines/service_account.json
+      - ./service_account.json:/beam_pipelines/service_account.json
     depends_on:
       - spark
 

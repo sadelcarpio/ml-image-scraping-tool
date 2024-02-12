@@ -19,6 +19,6 @@ services:
     env_file:
       - .env
     volumes:
-      - ${PWD}/image_scraper/service_account.json:/src/service_account.json
+      - ./service_account.json:/src/service_account.json
     depends_on:
       - scrapy-base
