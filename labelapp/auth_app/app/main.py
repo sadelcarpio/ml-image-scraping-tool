@@ -8,7 +8,7 @@ from app.db import SessionDep
 from app.deps import CurrentUser, get_current_user
 from app.models import UserModel
 from app.schemas import Token, UserRead, UserCreate
-from app.security import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, pwd_context
+from app.security import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_password_hash
 
 app = FastAPI()
 
@@ -39,7 +39,7 @@ async def read_users_me(current_user: CurrentUser):
 @app.post("/users", status_code=status.HTTP_201_CREATED, response_model=UserRead)
 def create_user(user: UserCreate, session: SessionDep):
     user_dict = {key: value for key, value in user if key != "password"}
-    hashed_password = pwd_context.hash(user.password)
+    hashed_password = get_password_hash(user.password)
     db_user = UserModel(**user_dict, hashed_password=hashed_password)
     session.add(db_user)
     session.commit()
