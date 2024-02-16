@@ -17,12 +17,11 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token",
-                                     scopes={"me": "Read information about the current user.", "items": "Read items."})
+                                     scopes={"admin": "Admin functionalities"})
 
 
 def verify_password(plain_password, hashed_password):
-    # return pwd_context.verify(plain_password, hashed_password)
-    return plain_password == hashed_password  # For fast testing
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password):
