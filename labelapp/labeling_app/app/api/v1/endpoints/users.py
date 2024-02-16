@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi import status
 
-from app.api.deps import CurrentUser, CurrentAdminUser
+from app.security import CurrentUser, CurrentAdminUser
 from app.crud.crud_user import CRUDUserDep
 from app.models.projects import ProjectModel
 from app.schemas.projects import ProjectRead

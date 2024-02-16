@@ -1,10 +1,11 @@
 from fastapi import APIRouter, status, HTTPException
 from sqlmodel import select
 
-from app.api.deps import SessionDep, CurrentUser
+from app.api.deps import SessionDep
 from app.models.extras import UserProjectModel
 from app.models.urls import UrlModel
 from app.schemas.urls import UrlRead
+from app.security import CurrentUser
 
 router = APIRouter(tags=["URLs Endpoints"])
 
