@@ -46,7 +46,12 @@ def read_own_user_projects(
 
 
 @router.get("/{user_id}/projects", status_code=status.HTTP_200_OK, response_model=list[ProjectRead])
-def read_user_projects(user_id: str, users_crud: CRUDUserDep, skip: int = 0, limit: int = 5) -> list[ProjectModel]:
+def read_user_projects(
+        user_id: str,
+        users_crud: CRUDUserDep,
+        current_user: CurrentAdminUser,
+        skip: int = 0,
+        limit: int = 5) -> list[ProjectModel]:
     """Get the projects assigned to a given user."""
     projects = users_crud.get_assigned_projects(user_id, skip=skip, limit=limit).all()
     return projects
