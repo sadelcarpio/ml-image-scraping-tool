@@ -1,43 +1,24 @@
 from datetime import timedelta, datetime, timezone
 from typing import Annotated
 
-from fastapi import Depends, Security, HTTPException
-from fastapi import status
-from fastapi.security import OAuth2PasswordBearer, SecurityScopes
+from fastapi import Depends, HTTPException, Security
+from fastapi.security import SecurityScopes, OAuth2PasswordBearer
 from jose import jwt, JWTError
-from passlib.context import CryptContext
 from pydantic import ValidationError
-from sqlmodel import select
+from starlette import status
 
-from app.api.deps import SessionDep
+from app.crud.crud_user import CRUDUserDep
 from app.models.users import UserModel
 from app.schemas.token import TokenData
+from app.security.passwords import verify_password
 
 SECRET_KEY = "546fc0304773380edc8f1171636ceaf47f9660ad54f26d7a3c935daf645ee5a3"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token",
-                                     scopes={"admin": "Admin functionalities"})
 
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-
-# Temporarily then pass it to CRUDUser
-def get_user(session: SessionDep, username: str):
-    user = session.exec(select(UserModel).where(UserModel.username == username)).first()
-    return user
-
-
-def authenticate_user(session: SessionDep, username: str, password: str):
-    user = get_user(session, username)
+def authenticate_user(users_crud: CRUDUserDep, username: str, password: str):
+    user = users_crud.get_by_username(username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -56,10 +37,12 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token",
+                                     scopes={"admin": "Admin functionalities"})
 TokenDep = Annotated[TokenData, Depends(oauth2_scheme)]
 
 
-async def get_current_user(security_scopes: SecurityScopes, token: TokenDep, session: SessionDep):
+async def get_current_user(security_scopes: SecurityScopes, token: TokenDep, users_crud: CRUDUserDep):
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
     else:
@@ -78,7 +61,7 @@ async def get_current_user(security_scopes: SecurityScopes, token: TokenDep, ses
         token_data = TokenData(scopes=token_scopes, username=username)
     except (JWTError, ValidationError):
         raise credentials_exception
-    user = get_user(session, token_data.username)
+    user = users_crud.get_by_username(token_data.username)
     if user is None:
         raise credentials_exception
     for scope in security_scopes.scopes:

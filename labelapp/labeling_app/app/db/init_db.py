@@ -19,21 +19,21 @@ def init_db():
     with Session(engine) as session:
         users_crud = CRUDUser(UserModel, session)
         projects_crud = CRUDProject(ProjectModel, session)
-        my_user = users_crud.create(obj_in=UserCreate(username="sergio",
-                                                      email="sergio@gmail.com",
-                                                      is_admin=True,
-                                                      password="123456",
-                                                      full_name="Sergio"))
-        user_1 = users_crud.create(obj_in=UserCreate(username="sadel",
-                                                     email="sadel@gmail.com",
-                                                     is_admin=False,
-                                                     password="xd",
-                                                     full_name="Sergio"))
-        user_2 = users_crud.create(obj_in=UserCreate(username="sadel2",
-                                                     email="sadel2@gmail.com",
-                                                     is_admin=False,
-                                                     password="xd",
-                                                     full_name="Sergio"))
+        my_user = users_crud.create_with_pwd_hashing(obj_in=UserCreate(username="sergio",
+                                                                       email="sergio@gmail.com",
+                                                                       is_admin=True,
+                                                                       password="sacarracatelas",
+                                                                       full_name="Sergio"))
+        user_1 = users_crud.create_with_pwd_hashing(obj_in=UserCreate(username="sadel",
+                                                                      email="sadel@gmail.com",
+                                                                      is_admin=False,
+                                                                      password="sacarracatelas",
+                                                                      full_name="Sergio"))
+        user_2 = users_crud.create_with_pwd_hashing(obj_in=UserCreate(username="sadel2",
+                                                                      email="sadel2@gmail.com",
+                                                                      is_admin=False,
+                                                                      password="sacarracatelas",
+                                                                      full_name="Sergio"))
         user = users_crud.get(my_user.id)
         user_1 = users_crud.get(user_1.id)
         label1 = LabelModel(name="cat")

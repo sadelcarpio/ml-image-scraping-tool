@@ -7,7 +7,7 @@ from sqlmodel import Session
 
 from app import create_app
 from app.api.deps import get_db
-from app.security import get_current_user
+from app.security.auth import get_current_user
 from app.core.config import Settings, get_settings
 from app.models.extras import UserProjectModel
 from app.models.urls import UrlModel

@@ -8,7 +8,7 @@ from sqlmodel import Session
 
 from app import create_app
 from app.api.deps import get_db
-from app.security import get_current_user
+from app.security.auth import get_current_user
 from app.core.config import Settings, get_settings
 from app.crud import CRUDUser
 from app.crud.crud_project import get_projects_crud, CRUDProject

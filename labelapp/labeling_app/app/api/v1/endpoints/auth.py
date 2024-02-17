@@ -5,9 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi import status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.api.deps import SessionDep
+from app.crud.crud_user import CRUDUserDep
 from app.schemas.token import Token
-from app.security import authenticate_user, ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
+from app.security.auth import authenticate_user, ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 
 router = APIRouter(tags=["Authentication"])
 
@@ -15,8 +15,8 @@ router = APIRouter(tags=["Authentication"])
 @router.post("/token")
 async def login_for_access_token(
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-        session: SessionDep) -> Token:
-    user = authenticate_user(session, form_data.username, form_data.password)
+        users_crud: CRUDUserDep) -> Token:
+    user = authenticate_user(users_crud, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

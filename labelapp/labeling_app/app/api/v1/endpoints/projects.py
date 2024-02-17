@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Depends
 
 from app.crud.crud_project import CRUDProjectDep
 from app.crud.crud_user import CRUDUserDep
@@ -10,8 +10,9 @@ from app.models.users import UserModel
 from app.schemas.projects import ProjectRead, ProjectCreateWithUsers, ProjectUpdate, ProjectReadWithUsers
 from app.schemas.urls import UrlRead
 from app.schemas.users import UserRead
+from app.security.auth import get_current_user
 
-router = APIRouter(tags=["Projects Endpoints"])
+router = APIRouter(tags=["Projects Endpoints"], dependencies=[Depends(get_current_user)])
 
 
 @router.get("/{project_id}", status_code=status.HTTP_200_OK, response_model=ProjectRead)
@@ -55,7 +56,8 @@ def read_users(project_id: int,
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProjectReadWithUsers)
-def create_project(project: ProjectCreateWithUsers, projects_crud: CRUDProjectDep) -> ProjectModel:
+def create_project(project: ProjectCreateWithUsers,
+                   projects_crud: CRUDProjectDep) -> ProjectModel:
     """Create a new project."""
     created_project = projects_crud.create_with_users(project)
     return created_project

@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 from fastapi import status
 
-from app.security import CurrentUser, CurrentAdminUser
 from app.crud.crud_user import CRUDUserDep
 from app.models.projects import ProjectModel
 from app.schemas.projects import ProjectRead
-from app.schemas.users import UserUpdate, UserRead
+from app.schemas.users import UserUpdate, UserRead, UserCreate
+from app.security.auth import CurrentUser, CurrentAdminUser
 
 router = APIRouter(tags=["Users Endpoints"])
 
@@ -14,6 +14,13 @@ router = APIRouter(tags=["Users Endpoints"])
 def read_own_user(current_user: CurrentUser):
     """Gets own user."""
     return current_user
+
+
+@router.get("", status_code=status.HTTP_200_OK, response_model=UserRead)
+def create_user(user: UserCreate, users_crud: CRUDUserDep):
+    """Creates a new user"""
+    created_user = users_crud.create_with_pwd_hashing(user)
+    return created_user
 
 
 @router.get("/me/projects-owned", status_code=status.HTTP_200_OK, response_model=list[ProjectRead])

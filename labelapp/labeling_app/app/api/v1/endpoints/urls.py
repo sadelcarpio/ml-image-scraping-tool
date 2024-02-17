@@ -5,13 +5,13 @@ from app.api.deps import SessionDep
 from app.models.extras import UserProjectModel
 from app.models.urls import UrlModel
 from app.schemas.urls import UrlRead
-from app.security import CurrentUser
+from app.security.auth import CurrentUser
 
 router = APIRouter(tags=["URLs Endpoints"])
 
 
 @router.get("/{project_id}/current-url", status_code=status.HTTP_200_OK, response_model=UrlRead)
-def get_current_url(project_id: int, session: SessionDep, current_user: CurrentUser):
+def get_current_url(project_id: int, session: SessionDep, current_user: CurrentUser) -> UrlModel:
     current_url = session.exec(
         select(UrlModel).where(UrlModel.project_id == project_id,
                                UrlModel.user_id == current_user.id,
