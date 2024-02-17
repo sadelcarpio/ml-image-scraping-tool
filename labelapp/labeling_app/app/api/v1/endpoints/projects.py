@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Security
 
 from app.crud.crud_project import CRUDProjectDep
 from app.crud.crud_user import CRUDUserDep
@@ -12,7 +12,7 @@ from app.schemas.urls import UrlRead
 from app.schemas.users import UserRead
 from app.security.auth import get_current_user
 
-router = APIRouter(tags=["Projects Endpoints"], dependencies=[Depends(get_current_user)])
+router = APIRouter(tags=["Projects Endpoints"], dependencies=[Security(get_current_user, scopes=["admin"])])
 
 
 @router.get("/{project_id}", status_code=status.HTTP_200_OK, response_model=ProjectRead)

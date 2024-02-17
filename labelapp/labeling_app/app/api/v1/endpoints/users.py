@@ -16,7 +16,7 @@ def read_own_user(current_user: CurrentUser):
     return current_user
 
 
-@router.get("", status_code=status.HTTP_200_OK, response_model=UserRead)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=UserRead)
 def create_user(user: UserCreate, users_crud: CRUDUserDep):
     """Creates a new user"""
     created_user = users_crud.create_with_pwd_hashing(user)
