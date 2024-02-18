@@ -3,6 +3,7 @@ from pydantic import ValidationError, create_model
 from sqlmodel import select
 
 from app.api.deps import SessionDep, validate_labels
+from app.core.uploader import ObjectStorageUploader
 from app.models.extras import UserProjectModel, LabelModel
 from app.models.projects import ProjectModel
 from app.models.urls import UrlModel
@@ -37,6 +38,7 @@ def get_current_url(project_id: int, session: SessionDep, current_user: CurrentU
 async def submit_url(project_id: int,
                      session: SessionDep,
                      current_user: CurrentUser,
+                     uploader: ObjectStorageUploader,
                      labels: dict = Body(...)):
     url_to_submit = session.exec(
         select(UrlModel).join(UserProjectModel, UserProjectModel.current_url == UrlModel.id).where(
@@ -45,6 +47,7 @@ async def submit_url(project_id: int,
     if url_to_submit is None:
         raise HTTPException(status_code=404, detail="Error in selecting URL to sumbit. Be sure to have called"
                                                     " /current-url endpoint first")
+    uploader.upload_label(url_to_submit, labels)
     url_to_submit.labeled = True
     session.add(url_to_submit)
     session.commit()
