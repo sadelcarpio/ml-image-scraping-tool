@@ -7,11 +7,11 @@ from sqlmodel import Session
 
 from app import create_app
 from app.api.deps import get_db
-from app.security.auth import get_current_user
 from app.core.config import Settings, get_settings
 from app.models.extras import UserProjectModel
 from app.models.urls import UrlModel
 from app.models.users import UserModel
+from app.security.auth import get_current_user
 
 
 class TestUrlEndpoints(unittest.TestCase):
@@ -57,7 +57,7 @@ class TestUrlEndpoints(unittest.TestCase):
         self.mock_db.exec.return_value.first.side_effect = ["multilabel_classification", None]
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/urls/1/submit-url",
                                         json={"cat": 1, "dog": 0})
-        self.assertEqual("Error in selecting URL to sumbit. Be sure to have called"
+        self.assertEqual("Error in selecting URL to submit. Be sure to have called"
                          " /current-url endpoint first", response.json()["detail"])
         self.assertEqual(404, response.status_code)
 

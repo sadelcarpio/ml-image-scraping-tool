@@ -1,13 +1,10 @@
-from fastapi import APIRouter, status, HTTPException, Request, Body, Depends
-from pydantic import ValidationError, create_model
+from fastapi import APIRouter, status, HTTPException, Body, Depends
 from sqlmodel import select
 
 from app.api.deps import SessionDep, validate_labels
 from app.core.uploader import ObjectStorageUploader
-from app.models.extras import UserProjectModel, LabelModel
-from app.models.projects import ProjectModel
+from app.models.extras import UserProjectModel
 from app.models.urls import UrlModel
-from app.schemas.extras import TaskType
 from app.schemas.urls import UrlRead
 from app.security.auth import CurrentUser
 
