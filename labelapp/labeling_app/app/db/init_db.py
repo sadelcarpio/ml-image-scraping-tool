@@ -8,6 +8,7 @@ from app.models.extras import LabelModel
 from app.models.projects import ProjectModel
 from app.models.urls import UrlModel
 from app.models.users import UserModel
+from app.schemas.extras import TaskType
 from app.schemas.projects import ProjectCreateWithUsers
 from app.schemas.users import UserCreate
 
@@ -38,14 +39,22 @@ def init_db():
         user_1 = users_crud.get(user_1.id)
         label1 = LabelModel(name="cat")
         label2 = LabelModel(name="dog")
+        label3 = LabelModel(name="inclination")
+        label4 = LabelModel(name="elevation")
         projects_crud.create_with_users(obj_in=ProjectCreateWithUsers(name="test-project-full",
                                                                       keywords="gatitos+chidos",
                                                                       description="This is a test",
-                                                                      task_type="classification",
+                                                                      task_type=TaskType.sparse,
                                                                       labels=[label1, label2],
                                                                       user_ids=[user_1.id],
                                                                       owner_id=user.id))
-
+        projects_crud.create_with_users(obj_in=ProjectCreateWithUsers(name="Airlplane Properties Prediction",
+                                                                      keywords="airplanes",
+                                                                      description="This is a test",
+                                                                      task_type=TaskType.regression,
+                                                                      labels=[label3, label4],
+                                                                      user_ids=[user_1.id, user_2.id],
+                                                                      owner_id=user.id))
         project = projects_crud.get(1)
         urls = [UrlModel(gcs_url=f"https://www.google.com/image_{i}",
                          hashed_url=f"abcdef{i}",
