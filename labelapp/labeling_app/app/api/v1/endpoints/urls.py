@@ -1,11 +1,12 @@
-from fastapi import APIRouter, status, HTTPException, Request, Body
-from pydantic import ValidationError
+from fastapi import APIRouter, status, HTTPException, Request, Body, Depends
+from pydantic import ValidationError, create_model
 from sqlmodel import select
 
-from app.api.deps import SessionDep
+from app.api.deps import SessionDep, validate_labels
 from app.models.extras import UserProjectModel, LabelModel
 from app.models.projects import ProjectModel
 from app.models.urls import UrlModel
+from app.schemas.extras import TaskType
 from app.schemas.urls import UrlRead
 from app.security.auth import CurrentUser
 
@@ -30,12 +31,13 @@ def get_current_url(project_id: int, session: SessionDep, current_user: CurrentU
     return current_url
 
 
-@router.put("/{project_id}/submit-url", status_code=status.HTTP_204_NO_CONTENT)
-async def submit_url(project_id: int, session: SessionDep, current_user: CurrentUser, labels: dict = Body(...)):
-    allowed_labels = session.exec(select(LabelModel.name).where(LabelModel.project_id == project_id)).all()
-    # TODO: Add data type validation, like not allowing to use floats for classification and so
-    if set(allowed_labels) != set(labels.keys()):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Labels not allowed.")
+@router.put("/{project_id}/submit-url",
+            status_code=status.HTTP_204_NO_CONTENT,
+            dependencies=[Depends(validate_labels)])
+async def submit_url(project_id: int,
+                     session: SessionDep,
+                     current_user: CurrentUser,
+                     labels: dict = Body(...)):
     url_to_submit = session.exec(
         select(UrlModel).join(UserProjectModel, UserProjectModel.current_url == UrlModel.id).where(
             UserProjectModel.project_id == project_id,

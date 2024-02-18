@@ -54,7 +54,7 @@ class TestUrlEndpoints(unittest.TestCase):
     def test_submit_url_no_current_url(self):
         """Tests that /submit endpoint called before /current-url gives an HTTP Exception."""
         self.mock_db.exec.return_value.all.return_value = {"cat": 1, "dog": 0}
-        self.mock_db.exec.return_value.first.return_value = None
+        self.mock_db.exec.return_value.first.side_effect = ["multilabel_classification", None]
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/urls/1/submit-url",
                                         json={"cat": 1, "dog": 0})
         self.assertEqual("Error in selecting URL to sumbit. Be sure to have called"
@@ -84,7 +84,7 @@ class TestUrlEndpoints(unittest.TestCase):
         url_to_submit = UrlModel(id=1, gcs_url="https://test.jpg", hashed_url="abcdefg", labeled=False,
                                  user_id="uid1", project_id=1)
         self.mock_db.exec.return_value.all.return_value = {"cat": 1, "dog": 0}
-        self.mock_db.exec.return_value.first.return_value = url_to_submit
+        self.mock_db.exec.return_value.first.side_effect = ["multilabel_classification", url_to_submit]
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/urls/1/submit-url",
                                         json={"cat": 1, "dog": 0})
         self.assertEqual(204, response.status_code)
@@ -97,8 +97,8 @@ class TestUrlEndpoints(unittest.TestCase):
     def test_submit_labels_not_allowed(self):
         """Tests that /submit endpoint with wrong labels raises a 400 error"""
         self.mock_db.exec.return_value.all.return_value = {"cat": 1, "dog": 0}
-        self.mock_db.exec.return_value.first.return_value = None
+        self.mock_db.exec.return_value.first.side_effect = ["multilabel_classification", None]
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/urls/1/submit-url",
                                         json={"rex": 1, "bird": 0})
-        self.assertEqual("Labels not allowed.", response.json()["detail"])
+        self.assertEqual("Labels not allowed. Valid labels are {'cat': 1, 'dog': 0}", response.json()["detail"])
         self.assertEqual(400, response.status_code)
