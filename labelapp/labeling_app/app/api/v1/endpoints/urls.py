@@ -1,8 +1,10 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Request, Body
+from pydantic import ValidationError
 from sqlmodel import select
 
 from app.api.deps import SessionDep
-from app.models.extras import UserProjectModel
+from app.models.extras import UserProjectModel, LabelModel
+from app.models.projects import ProjectModel
 from app.models.urls import UrlModel
 from app.schemas.urls import UrlRead
 from app.security.auth import CurrentUser
@@ -28,10 +30,12 @@ def get_current_url(project_id: int, session: SessionDep, current_user: CurrentU
     return current_url
 
 
-# TODO: include multipart containing the annotation, may need a different endpoint submit-x for different annotation
-#  types
 @router.put("/{project_id}/submit-url", status_code=status.HTTP_204_NO_CONTENT)
-def submit_url(project_id: int, session: SessionDep, current_user: CurrentUser):
+async def submit_url(project_id: int, session: SessionDep, current_user: CurrentUser, labels: dict = Body(...)):
+    allowed_labels = session.exec(select(LabelModel.name).where(LabelModel.project_id == project_id)).all()
+    # TODO: Add data type validation, like not allowing to use floats for classification and so
+    if set(allowed_labels) != set(labels.keys()):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Labels not allowed.")
     url_to_submit = session.exec(
         select(UrlModel).join(UserProjectModel, UserProjectModel.current_url == UrlModel.id).where(
             UserProjectModel.project_id == project_id,
