@@ -45,7 +45,7 @@ async def submit_url(project_id: int,
             UserProjectModel.project_id == project_id,
             UserProjectModel.user_id == current_user.id)).first()
     if url_to_submit is None:
-        raise HTTPException(status_code=404, detail="Error in selecting URL to sumbit. Be sure to have called"
+        raise HTTPException(status_code=404, detail="Error in selecting URL to submit. Be sure to have called"
                                                     " /current-url endpoint first")
     uploader.upload_label(url_to_submit, labels)
     url_to_submit.labeled = True
