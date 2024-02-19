@@ -10,7 +10,7 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      postgres-test:
+      test-postgres:
         condition: service_healthy
     ports:
       - "4000:4000"
