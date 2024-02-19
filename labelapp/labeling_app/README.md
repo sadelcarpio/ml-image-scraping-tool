@@ -4,3 +4,9 @@ Microservice used for managing users and projects, made in FastAPI. The followin
 is used:
 
 ![erd.png](../../imgs/erd.png)
+
+Run app:
+```shell
+# Setup app for testing
+$ docker compose up -d
+```
