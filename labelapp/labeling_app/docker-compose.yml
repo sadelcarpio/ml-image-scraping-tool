@@ -17,8 +17,8 @@ services:
     env_file:
       - ../.env.test
 
-  postgres-test:
-    container_name: postgres-test
+  test-postgres:
+    container_name: test-postgres
     image: postgres:latest
     privileged: true
     restart: always
