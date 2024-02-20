@@ -9,4 +9,6 @@ Run app:
 ```shell
 # Setup app for testing
 $ docker compose up -d
+# Remove containers
+$ docker compose down
 ```
