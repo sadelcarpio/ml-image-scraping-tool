@@ -1,0 +1,35 @@
+version: "3.9"
+
+name: test-labeling-app
+
+services:
+
+  labeling-app-test:
+    container_name: labeling-app-test
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      test-postgres:
+        condition: service_healthy
+    volumes:
+      - ./app/:/labeling_app/app/
+    ports:
+      - "4000:4000"
+    env_file:
+      - ../.env.test
+
+  test-postgres:
+    container_name: test-postgres
+    image: postgres:latest
+    privileged: true
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    env_file:
+      - ../.env.test

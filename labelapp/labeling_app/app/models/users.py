@@ -15,8 +15,8 @@ if TYPE_CHECKING:
 class UserModel(UserBase, table=True):
     __tablename__ = "users"
     id: uuid.UUID | None = Field(default_factory=uuid.uuid4, primary_key=True)
-    password: str
-    full_name: str
+    hashed_password: str = Field(nullable=False)
+    full_name: str = Field(nullable=False)
     created_at: datetime = Field(index=True, default_factory=datetime.utcnow, nullable=False)
     updated_at: datetime = Field(
         sa_column=Column(DateTime, index=True, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

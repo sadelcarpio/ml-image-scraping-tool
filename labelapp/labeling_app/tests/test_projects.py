@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session
 
 from app import create_app
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_db
 from app.core.config import Settings, get_settings
 from app.crud import CRUDUser
 from app.crud.crud_project import get_projects_crud, CRUDProject
@@ -15,6 +15,7 @@ from app.crud.crud_user import get_users_crud
 from app.models.projects import ProjectModel
 from app.models.users import UserModel
 from app.schemas.projects import ProjectRead
+from app.security.auth import get_current_user
 
 
 class TestProjectEndpoints(unittest.TestCase):

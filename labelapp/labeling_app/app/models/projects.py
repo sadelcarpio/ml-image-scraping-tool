@@ -3,10 +3,11 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, DateTime, ForeignKey
-from sqlmodel import Field, Relationship
+from sqlmodel import Field, Relationship, Enum
 
 from app.models.extras import UserProjectModel
 from app.models.users import UserModel
+from app.schemas.extras import TaskType
 from app.schemas.projects import ProjectBase
 
 if TYPE_CHECKING:
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
 class ProjectModel(ProjectBase, table=True):
     __tablename__ = "projects"
     id: int | None = Field(default=None, primary_key=True, index=True)
+    task_type: str = Field(sa_column=Column(Enum(TaskType)))
     created_at: datetime = Field(index=True, default_factory=datetime.utcnow, nullable=False)
     updated_at: datetime = Field(
         sa_column=Column(DateTime, index=True, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

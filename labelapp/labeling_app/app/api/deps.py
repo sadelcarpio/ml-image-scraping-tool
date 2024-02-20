@@ -1,11 +1,12 @@
 from typing import Generator, Annotated
 
-from fastapi import Depends
-from fastapi import HTTPException
+from fastapi import Depends, Body, HTTPException
 from sqlmodel import Session, select
 
 from app.db.engine import EngineDep
-from app.models.users import UserModel
+from app.models.extras import LabelModel
+from app.models.projects import ProjectModel
+from app.schemas.extras import TaskType
 
 
 def get_db(engine: EngineDep) -> Generator:
@@ -16,22 +17,11 @@ def get_db(engine: EngineDep) -> Generator:
 SessionDep = Annotated[Session, Depends(get_db)]
 
 
-# TODO: change with actual user authentication
-def get_current_user(session: SessionDep) -> UserModel:
-    user = session.exec(select(UserModel).where(UserModel.is_admin == False)).first()
-    if user is None:
-        raise HTTPException(status_code=404, detail="Current user not found.")
-    return user
-
-
-# TODO: change with actual admin user auth
-def get_current_admin_user(session: SessionDep) -> UserModel:
-    user = session.exec(select(UserModel).where(UserModel.is_admin == True)).first()
-    if user is None:
-        raise HTTPException(status_code=404, detail="Current admin user not found.")
-    return user
-
-
-# TODO: Have one dep to verify token and two deps to check user, and admin user
-CurrentUser = Annotated[UserModel, Depends(get_current_user)]
-CurrentAdminUser = Annotated[UserModel, Depends(get_current_admin_user)]
+def validate_labels(project_id: int, session: SessionDep, labels: dict = Body(...)):
+    task_type = session.exec(select(ProjectModel.task_type).where(ProjectModel.id == project_id)).first()
+    allowed_labels = session.exec(select(LabelModel.name).where(LabelModel.project_id == project_id)).all()
+    data_type = {TaskType.sparse: int, TaskType.regression: float | int, TaskType.multilabel: int}.get(task_type)
+    if not all(isinstance(value, data_type) for value in labels.values()):
+        raise HTTPException(status_code=400, detail="Invalid data types for labels.")
+    if set(allowed_labels) != set(labels.keys()):
+        raise HTTPException(status_code=400, detail=f"Labels not allowed. Valid labels are {allowed_labels}")
