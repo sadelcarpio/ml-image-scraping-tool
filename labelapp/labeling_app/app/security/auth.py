@@ -42,7 +42,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token",
 TokenDep = Annotated[TokenData, Depends(oauth2_scheme)]
 
 
-async def get_current_user(security_scopes: SecurityScopes, token: TokenDep, users_crud: CRUDUserDep):
+def get_current_user(security_scopes: SecurityScopes, token: TokenDep, users_crud: CRUDUserDep):
     if security_scopes.scopes:
         authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
     else:
