@@ -12,6 +12,8 @@ services:
     depends_on:
       test-postgres:
         condition: service_healthy
+    volumes:
+      - ./app/:/labeling_app/app/
     ports:
       - "4000:4000"
     env_file:
