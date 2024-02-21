@@ -74,7 +74,7 @@ def update_project(project_id: int,
     project_to_update = projects_crud.get(project_id)
     if project_to_update is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
-    for owned_project in current_admin_user.projects:
+    for owned_project in current_admin_user.projects_owned:
         if owned_project.id == project_id:
             break
     else:
@@ -92,7 +92,7 @@ def add_user(project_id: int,
     project = projects_crud.get(project_id)
     if project is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
-    for owned_project in current_admin_user.projects:
+    for owned_project in current_admin_user.projects_owned:
         if owned_project.id == project_id:
             break
     else:
@@ -101,7 +101,7 @@ def add_user(project_id: int,
     if user is None:
         raise UserNotFound(detail=f"No user found with id: {user_id}")
     for project_user in project.users:
-        if project_user.id == user_id:
+        if str(project_user.id) == user_id:
             raise UserExists(detail=f"User is already in the project.")
     projects_crud.add_user(project, user)
 
@@ -116,7 +116,7 @@ def remove_user(project_id: int,
     project = projects_crud.get(project_id)
     if project is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
-    for owned_project in current_admin_user.projects:
+    for owned_project in current_admin_user.projects_owned:
         if owned_project.id == project_id:
             break
     else:
@@ -125,7 +125,7 @@ def remove_user(project_id: int,
     if user is None:
         raise UserNotFound(detail=f"No user found with id: {user_id}")
     for project_user in project.users:
-        if project_user.id == user_id:
+        if str(project_user.id) == user_id:
             break
     else:
         raise UserNotFound(detail=f"User not in project")
@@ -138,7 +138,7 @@ def delete_project(project_id: int, current_admin_user: CurrentAdminUser, projec
     project = projects_crud.get(project_id)
     if project is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
-    for owned_project in current_admin_user.projects:
+    for owned_project in current_admin_user.projects_owned:
         if owned_project.id == project_id:
             break
     else:

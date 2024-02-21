@@ -97,7 +97,7 @@ class TestProjectEndpoints(unittest.TestCase):
                                      owner_id=self.current_user.id)
         self.mock_projects_crud.get.return_value = project_model
         self.mock_users_crud.get.return_value = self.current_user
-        self.current_user.projects = [project_model]
+        self.current_user.projects_owned = [project_model]
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/projects/1/{str(self.current_user.id)}")
         self.assertEqual(204, response.status_code)
         self.assertEqual(b'', response.content)
@@ -111,7 +111,7 @@ class TestProjectEndpoints(unittest.TestCase):
                                      owner_id=self.current_user.id)
         self.mock_projects_crud.get.return_value = project_model
         self.mock_users_crud.get.return_value = self.current_user
-        self.current_user.projects = [project_model]
+        self.current_user.projects_owned = [project_model]
         self.mock_users_crud.get.return_value = None
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/projects/1/{str(self.current_user.id)}")
         self.assertEqual(404, response.status_code)
