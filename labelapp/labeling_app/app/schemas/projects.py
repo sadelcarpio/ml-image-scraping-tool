@@ -28,7 +28,8 @@ class ProjectCreate(ProjectRead):
     labels: list["LabelModel"] = []
 
 
-class ProjectCreateWithUsers(ProjectCreate):
+class ProjectCreateWithUsers(ProjectBase):
+    labels: list["LabelRead"] = []
     user_ids: list[uuid.UUID]
 
     @field_validator("user_ids")

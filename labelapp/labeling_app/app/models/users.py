@@ -23,3 +23,4 @@ class UserModel(UserBase, table=True):
     )
     projects: list["ProjectModel"] = Relationship(back_populates="users",
                                                   link_model=UserProjectModel)
+    projects_owned: list["ProjectModel"] = Relationship(back_populates="owner")

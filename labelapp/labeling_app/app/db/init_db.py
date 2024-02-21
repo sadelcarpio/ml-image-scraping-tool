@@ -48,15 +48,15 @@ def init_db():
                                                                           description="This is a test",
                                                                           task_type=TaskType.sparse,
                                                                           labels=[label1, label2],
-                                                                          user_ids=[user_1.id],
-                                                                          owner_id=user.id))
+                                                                          user_ids=[user_1.id]),
+                                            owner_id=user.id)
             projects_crud.create_with_users(obj_in=ProjectCreateWithUsers(name="Airlplane Properties Prediction",
                                                                           keywords="airplanes",
                                                                           description="This is a test",
                                                                           task_type=TaskType.regression,
                                                                           labels=[label3, label4],
-                                                                          user_ids=[user_1.id, user_2.id],
-                                                                          owner_id=user.id))
+                                                                          user_ids=[user_1.id, user_2.id]),
+                                            owner_id=user.id)
             project = projects_crud.get(1)
             urls = [UrlModel(gcs_url=f"https://www.google.com/image_{i}",
                              hashed_url=f"abcdef{i}",

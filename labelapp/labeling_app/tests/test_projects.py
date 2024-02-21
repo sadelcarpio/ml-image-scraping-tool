@@ -89,18 +89,29 @@ class TestProjectEndpoints(unittest.TestCase):
         self.assertEqual("Method Not Allowed", response.json()["detail"])
 
     def test_add_user_no_body(self):
-        project_model = ProjectModel(name="test-proj",
+        project_model = ProjectModel(id=1,
+                                     name="test-proj",
                                      keywords="key1,key2",
-                                     description="Test get endpoint.",
+                                     description="Test put endpoint.",
                                      task_type="classification",
                                      owner_id=self.current_user.id)
         self.mock_projects_crud.get.return_value = project_model
         self.mock_users_crud.get.return_value = self.current_user
+        self.current_user.projects = [project_model]
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/projects/1/{str(self.current_user.id)}")
         self.assertEqual(204, response.status_code)
         self.assertEqual(b'', response.content)
 
     def test_add_user_no_id(self):
+        project_model = ProjectModel(id=1,
+                                     name="test-proj",
+                                     keywords="key1,key2",
+                                     description="Test put endpoint.",
+                                     task_type="classification",
+                                     owner_id=self.current_user.id)
+        self.mock_projects_crud.get.return_value = project_model
+        self.mock_users_crud.get.return_value = self.current_user
+        self.current_user.projects = [project_model]
         self.mock_users_crud.get.return_value = None
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/projects/1/{str(self.current_user.id)}")
         self.assertEqual(404, response.status_code)

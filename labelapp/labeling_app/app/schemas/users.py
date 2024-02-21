@@ -1,3 +1,5 @@
+import uuid
+
 from pydantic import EmailStr, field_validator
 from pydantic_core.core_schema import ValidationInfo
 from sqlmodel import SQLModel, Field, AutoString
@@ -10,6 +12,7 @@ class UserBase(SQLModel):
 
 
 class UserRead(SQLModel):
+    id: uuid.UUID
     username: str
     email: EmailStr
     full_name: str
@@ -22,7 +25,7 @@ class UserCreate(UserBase):
     @field_validator("password")
     @classmethod
     def validate_password(cls, password: str, values: ValidationInfo) -> str:
-        username = values.data.get("username"),
+        username = values.data.get("username")
         if password in username:
             raise ValueError("Password can't contain username information.")
         if len(password) < 8:

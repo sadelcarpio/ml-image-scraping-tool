@@ -1,3 +1,4 @@
+import uuid
 from typing import Annotated
 
 from fastapi import Depends
@@ -38,8 +39,10 @@ class CRUDProject(CRUD[ProjectModel, ProjectCreate, ProjectUpdate]):
                                   .offset(skip))
         return users
 
-    def create_with_users(self, obj_in: ProjectCreateWithUsers) -> ProjectModel:
-        project_create = ProjectCreate.model_validate(obj_in)
+    def create_with_users(self, obj_in: ProjectCreateWithUsers, owner_id: uuid.UUID) -> ProjectModel:
+        obj_create = obj_in.dict()
+        obj_create["owner_id"] = owner_id
+        project_create = ProjectCreate.model_validate(obj_create)
         user_ids = obj_in.user_ids
         created_project = self.create(project_create)
         project_users = self.session.exec(select(UserModel).where(UserModel.id.in_(user_ids))).all()

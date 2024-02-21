@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Column, DateTime, ForeignKey
 from sqlmodel import Field, Relationship, Enum
@@ -26,3 +26,4 @@ class ProjectModel(ProjectBase, table=True):
     users: list[UserModel] = Relationship(back_populates="projects", link_model=UserProjectModel)
     labels: list["LabelModel"] = Relationship(back_populates="project",
                                               sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+    owner: Optional[UserModel] = Relationship(back_populates="projects_owned")

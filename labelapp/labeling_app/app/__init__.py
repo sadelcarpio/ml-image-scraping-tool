@@ -12,8 +12,8 @@ def create_app(settings: Settings) -> FastAPI:
         redoc_url=f"{settings.API_V1_STR}/redoc"
     )
 
-    @app.get("/")
-    @app.get(f"{settings.API_V1_STR}/")
+    @app.get("/", include_in_schema=False)
+    @app.get(f"{settings.API_V1_STR}/", include_in_schema=False)
     def read_root():
         response = RedirectResponse(url=f"{settings.API_V1_STR}/docs")
         return response

@@ -3,13 +3,14 @@ from fastapi import APIRouter, status, Security
 from app.crud.crud_project import CRUDProjectDep
 from app.crud.crud_user import CRUDUserDep
 from app.exceptions.projects import ProjectNotFound
-from app.exceptions.users import UserNotFound
+from app.exceptions.users import UserNotFound, UserExists
 from app.models.projects import ProjectModel
 from app.models.urls import UrlModel
 from app.models.users import UserModel
 from app.schemas.projects import ProjectRead, ProjectCreateWithUsers, ProjectUpdate, ProjectReadWithUsers
 from app.schemas.urls import UrlRead
 from app.schemas.users import UserRead
+from app.security.auth import CurrentAdminUser
 from app.security.auth import get_current_user
 
 router = APIRouter(tags=["Projects Endpoints"], dependencies=[Security(get_current_user, scopes=["admin"])])
@@ -57,57 +58,89 @@ def read_users(project_id: int,
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProjectReadWithUsers)
 def create_project(project: ProjectCreateWithUsers,
+                   current_admin_user: CurrentAdminUser,
                    projects_crud: CRUDProjectDep) -> ProjectModel:
     """Create a new project."""
-    created_project = projects_crud.create_with_users(project)
+    created_project = projects_crud.create_with_users(project, current_admin_user.id)
     return created_project
 
 
 @router.put("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 def update_project(project_id: int,
+                   current_admin_user: CurrentAdminUser,
                    project_updates: ProjectUpdate,
                    projects_crud: CRUDProjectDep):
     """Edit some properties of a project"""
     project_to_update = projects_crud.get(project_id)
     if project_to_update is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
+    for owned_project in current_admin_user.projects:
+        if owned_project.id == project_id:
+            break
+    else:
+        raise ProjectNotFound(detail=f"Project not in user's owned projects.")
     projects_crud.update(project_to_update, project_updates)
 
 
 @router.put("/{project_id}/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def add_user(project_id: int,
              user_id: str,
+             current_admin_user: CurrentAdminUser,
              projects_crud: CRUDProjectDep,
              users_crud: CRUDUserDep):
     """Add a user to the project"""
     project = projects_crud.get(project_id)
     if project is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
+    for owned_project in current_admin_user.projects:
+        if owned_project.id == project_id:
+            break
+    else:
+        raise ProjectNotFound(detail=f"Project not in user's owned projects.")
     user = users_crud.get(user_id)
     if user is None:
         raise UserNotFound(detail=f"No user found with id: {user_id}")
+    for project_user in project.users:
+        if project_user.id == user_id:
+            raise UserExists(detail=f"User is already in the project.")
     projects_crud.add_user(project, user)
 
 
 @router.delete("/{project_id}/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_user(project_id: int,
                 user_id: str,
+                current_admin_user: CurrentAdminUser,
                 projects_crud: CRUDProjectDep,
                 users_crud: CRUDUserDep):
     """Remove a user from the project"""
     project = projects_crud.get(project_id)
     if project is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
+    for owned_project in current_admin_user.projects:
+        if owned_project.id == project_id:
+            break
+    else:
+        raise ProjectNotFound(detail=f"Project not in user's owned projects.")
     user = users_crud.get(user_id)
     if user is None:
         raise UserNotFound(detail=f"No user found with id: {user_id}")
+    for project_user in project.users:
+        if project_user.id == user_id:
+            break
+    else:
+        raise UserNotFound(detail=f"User not in project")
     projects_crud.remove_user(project, user)
 
 
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_project(project_id: int, projects_crud: CRUDProjectDep):
+def delete_project(project_id: int, current_admin_user: CurrentAdminUser, projects_crud: CRUDProjectDep):
     """Delete a project."""
     project = projects_crud.get(project_id)
     if project is None:
         raise ProjectNotFound(detail=f"No such project with id: {project_id}")
+    for owned_project in current_admin_user.projects:
+        if owned_project.id == project_id:
+            break
+    else:
+        raise ProjectNotFound(detail=f"Project not in user's owned projects.")
     projects_crud.remove(project)
