@@ -1,17 +1,20 @@
 from fastapi import APIRouter, status, Security
+from sqlalchemy import exc
+from sqlmodel import select
 
+from app.api.deps import SessionDep
 from app.crud.crud_project import CRUDProjectDep
 from app.crud.crud_user import CRUDUserDep
-from app.exceptions.projects import ProjectNotFound
+from app.exceptions.projects import ProjectNotFound, ProjectExists, InvalidTaskType
 from app.exceptions.users import UserNotFound, UserExists
 from app.models.projects import ProjectModel
 from app.models.urls import UrlModel
 from app.models.users import UserModel
+from app.schemas.extras import TaskType
 from app.schemas.projects import ProjectRead, ProjectCreateWithUsers, ProjectUpdate, ProjectReadWithUsers
 from app.schemas.urls import UrlRead
 from app.schemas.users import UserRead
-from app.security.auth import CurrentAdminUser
-from app.security.auth import get_current_user
+from app.security.auth import CurrentAdminUser, get_current_user
 
 router = APIRouter(tags=["Projects Endpoints"], dependencies=[Security(get_current_user, scopes=["admin"])])
 
@@ -58,9 +61,18 @@ def read_users(project_id: int,
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProjectReadWithUsers)
 def create_project(project: ProjectCreateWithUsers,
+                   session: SessionDep,
                    current_admin_user: CurrentAdminUser,
                    projects_crud: CRUDProjectDep) -> ProjectModel:
     """Create a new project."""
+    dup_project = session.exec(select(ProjectModel).where(ProjectModel.name == project.name)).first()
+    if dup_project is not None:
+        raise ProjectExists(detail=f"A project with this name already exists.")
+    for e in TaskType:
+        if e.value == project.task_type:
+            break
+    else:
+        raise InvalidTaskType()
     created_project = projects_crud.create_with_users(project, current_admin_user.id)
     return created_project
 

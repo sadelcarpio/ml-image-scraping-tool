@@ -26,7 +26,7 @@ class UserCreate(UserBase):
     @classmethod
     def validate_password(cls, password: str, values: ValidationInfo) -> str:
         username = values.data.get("username")
-        if password in username:
+        if username in password:
             raise ValueError("Password can't contain username information.")
         if len(password) < 8:
             raise ValueError("Password must be at least 8 characters.")

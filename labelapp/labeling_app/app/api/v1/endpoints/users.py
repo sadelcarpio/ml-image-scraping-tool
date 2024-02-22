@@ -1,8 +1,13 @@
 from fastapi import APIRouter
 from fastapi import status
+from sqlalchemy import exc
+from sqlmodel import select
 
+from app.api.deps import SessionDep
 from app.crud.crud_user import CRUDUserDep
+from app.exceptions.users import UserExists
 from app.models.projects import ProjectModel
+from app.models.users import UserModel
 from app.schemas.projects import ProjectRead
 from app.schemas.users import UserUpdate, UserRead, UserCreate
 from app.security.auth import CurrentUser, CurrentAdminUser
@@ -11,14 +16,18 @@ router = APIRouter(tags=["Users Endpoints"])
 
 
 @router.get("/me", status_code=status.HTTP_200_OK, response_model=UserRead)
-def read_own_user(current_user: CurrentUser):
+def read_own_user(current_user: CurrentUser) -> UserModel:
     """Gets own user."""
     return current_user
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=UserRead)
-def create_user(user: UserCreate, users_crud: CRUDUserDep):
+def create_user(user: UserCreate, session: SessionDep, users_crud: CRUDUserDep) -> UserModel:
     """Creates a new user"""
+    dup_user = session.exec(select(UserModel).where((UserModel.username == user.username) |
+                                                    (UserModel.email == user.email))).first()
+    if dup_user is not None:
+        raise UserExists(detail="A user already exists with this username or email.")
     created_user = users_crud.create_with_pwd_hashing(user)
     return created_user
 
