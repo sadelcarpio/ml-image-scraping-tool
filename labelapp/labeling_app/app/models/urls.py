@@ -1,10 +1,14 @@
 import uuid
 from datetime import datetime
+from typing import Optional, TYPE_CHECKING
 
 from sqlalchemy import Column, DateTime, ForeignKey
-from sqlmodel import Field
+from sqlmodel import Field, Relationship
 
 from app.schemas.urls import UrlBase
+
+if TYPE_CHECKING:
+    from app.models.extras import LabeledUrlModel
 
 
 class UrlModel(UrlBase, table=True):
@@ -17,3 +21,5 @@ class UrlModel(UrlBase, table=True):
     )
     user_id: uuid.UUID | None = Field(sa_column=Column('user_id', ForeignKey("users.id", ondelete="SET NULL")))
     project_id: int | None = Field(sa_column=Column('project_id', ForeignKey("projects.id", ondelete="CASCADE")))
+    labeled_url: Optional["LabeledUrlModel"] = Relationship(sa_relationship_kwargs={"uselist": False},
+                                                            back_populates="url")

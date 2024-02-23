@@ -5,10 +5,12 @@ from typing import TYPE_CHECKING, Optional
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlmodel import SQLModel, Field, Relationship
 
+from app.models.urls import UrlModel
 from app.schemas.extras import LabelRead
 
 if TYPE_CHECKING:
     from app.models.projects import ProjectModel
+    from app.models.urls import UrlModel
 
 
 class UserProjectModel(SQLModel, table=True):
@@ -26,3 +28,13 @@ class LabelModel(LabelRead, table=True):
                                                     Integer,
                                                     ForeignKey("projects.id", ondelete="CASCADE")))
     project: Optional["ProjectModel"] = Relationship(back_populates="labels")
+
+
+class LabeledUrlModel(SQLModel, table=True):
+    __tablename__ = "labeled_urls"
+    id: int | None = Field(default=None, primary_key=True, index=True)
+    url_id: int | None = Field(sa_column=Column('url_id', ForeignKey("urls.id", ondelete="CASCADE")))
+    url: Optional["UrlModel"] = Relationship(back_populates="labeled_url")
+    label: str | None = Field(default=None)  # label name
+    value_int: int | None = Field(default=None)  # 0-1 for multilabel classification, also for regression
+    value_float: float | None = Field(default=None)  # For regression
