@@ -34,7 +34,7 @@ class LabeledUrlModel(SQLModel, table=True):
     __tablename__ = "labeled_urls"
     id: int | None = Field(default=None, primary_key=True, index=True)
     url_id: int | None = Field(sa_column=Column('url_id', ForeignKey("urls.id", ondelete="CASCADE")))
+    label_id: int | None = Field(sa_column=Column('label_id', ForeignKey("labels.id", ondelete="CASCADE")))
     url: Optional["UrlModel"] = Relationship(back_populates="labeled_url")
-    label: str | None = Field(default=None)  # label name
     value_int: int | None = Field(default=None)  # 0-1 for multilabel classification, also for regression
     value_float: float | None = Field(default=None)  # For regression
