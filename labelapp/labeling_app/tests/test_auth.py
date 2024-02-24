@@ -1,9 +1,8 @@
 import unittest
 import uuid
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from fastapi import HTTPException
-from fastapi.security import SecurityScopes
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 

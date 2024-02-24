@@ -53,10 +53,10 @@ class TestUrlEndpoints(unittest.TestCase):
 
     def test_submit_url_no_current_url(self):
         """Tests that /submit endpoint called before /current-url gives an HTTP Exception."""
-        self.mock_db.exec.return_value.all.return_value = {"cat": 1, "dog": 0}
-        self.mock_db.exec.return_value.first.side_effect = ["multilabel_classification", None]
+        self.mock_db.exec.return_value.all.return_value = ["cat", "dog"]
+        self.mock_db.exec.return_value.first.return_value = None
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/urls/1/submit-url",
-                                        json={"cat": 1, "dog": 0})
+                                        json=["cat"])
         self.assertEqual("Error in selecting URL to submit. Be sure to have called"
                          " /current-url endpoint first", response.json()["detail"])
         self.assertEqual(404, response.status_code)
@@ -83,22 +83,22 @@ class TestUrlEndpoints(unittest.TestCase):
         """Test submit-url endpoint updates labeled status."""
         url_to_submit = UrlModel(id=1, gcs_url="https://test.jpg", hashed_url="abcdefg", labeled=False,
                                  user_id="uid1", project_id=1)
-        self.mock_db.exec.return_value.all.return_value = {"cat": 1, "dog": 0}
-        self.mock_db.exec.return_value.first.side_effect = ["multilabel_classification", url_to_submit]
+        self.mock_db.exec.return_value.all.return_value = ["cat", "dog"]
+        self.mock_db.exec.return_value.first.side_effect = [url_to_submit, 1, 2]
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/urls/1/submit-url",
-                                        json={"cat": 1, "dog": 0})
+                                        json=["cat"])
         self.assertEqual(204, response.status_code)
         self.assertEqual(b'', response.content)
         self.assertTrue(url_to_submit.labeled)
-        self.mock_db.add.assert_called_once_with(url_to_submit)
-        self.mock_db.commit.assert_called_once()
+        self.assertEqual(2, len(self.mock_db.add.call_args_list))
+        self.assertEqual(2, len(self.mock_db.commit.call_args_list))
         self.mock_db.refresh.assert_called_once_with(url_to_submit)
 
     def test_submit_labels_not_allowed(self):
         """Tests that /submit endpoint with wrong labels raises a 400 error"""
-        self.mock_db.exec.return_value.all.return_value = {"cat": 1, "dog": 0}
-        self.mock_db.exec.return_value.first.side_effect = ["multilabel_classification", None]
+        self.mock_db.exec.return_value.all.return_value = ["cat", "dog"]
+        self.mock_db.exec.return_value.first.return_value = None
         response = self.test_client.put(f"{self.mock_settings.API_V1_STR}/urls/1/submit-url",
-                                        json={"rex": 1, "bird": 0})
-        self.assertEqual("Labels not allowed. Valid labels are {'cat': 1, 'dog': 0}", response.json()["detail"])
+                                        json=["rex"])
+        self.assertEqual("Labels not allowed. Valid labels are ['cat', 'dog']", response.json()["detail"])
         self.assertEqual(400, response.status_code)

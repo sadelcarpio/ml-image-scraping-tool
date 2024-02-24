@@ -5,10 +5,11 @@ from typing import Optional, TYPE_CHECKING
 from sqlalchemy import Column, DateTime, ForeignKey
 from sqlmodel import Field, Relationship
 
+from app.models.extras import LabeledUrlModel
 from app.schemas.urls import UrlBase
 
 if TYPE_CHECKING:
-    from app.models.extras import LabeledUrlModel
+    pass
 
 
 class UrlModel(UrlBase, table=True):
