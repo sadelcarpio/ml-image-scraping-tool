@@ -1,9 +1,10 @@
 from fastapi import APIRouter, status, HTTPException, Body, Depends
+from sqlalchemy import exc
 from sqlmodel import select
 
 from app.api.deps import SessionDep, validate_labels
 from app.core.uploader import ObjectStorageUploader
-from app.models.extras import UserProjectModel
+from app.models.extras import UserProjectModel, LabeledUrlModel, LabelModel
 from app.models.urls import UrlModel
 from app.schemas.urls import UrlRead
 from app.security.auth import CurrentUser
@@ -32,11 +33,11 @@ def get_current_url(project_id: int, session: SessionDep, current_user: CurrentU
 @router.put("/{project_id}/submit-url",
             status_code=status.HTTP_204_NO_CONTENT,
             dependencies=[Depends(validate_labels)])
-async def submit_url(project_id: int,
-                     session: SessionDep,
-                     current_user: CurrentUser,
-                     uploader: ObjectStorageUploader,
-                     labels: dict = Body(...)):
+def submit_url(project_id: int,
+               session: SessionDep,
+               current_user: CurrentUser,
+               uploader: ObjectStorageUploader,
+               labels: list = Body(...)):
     url_to_submit = session.exec(
         select(UrlModel).join(UserProjectModel, UserProjectModel.current_url == UrlModel.id).where(
             UserProjectModel.project_id == project_id,
@@ -44,7 +45,18 @@ async def submit_url(project_id: int,
     if url_to_submit is None:
         raise HTTPException(status_code=404, detail="Error in selecting URL to submit. Be sure to have called"
                                                     " /current-url endpoint first")
-    uploader.upload_label(url_to_submit, labels)
+    if url_to_submit.labeled:
+        raise HTTPException(status_code=400, detail="Image URL has already been labeled")
+    uploader.upload_label(url_to_submit, labels)  # When labels are files like detection / segmentation
+    try:
+        for label in labels:
+            label_id = session.exec(select(LabelModel.id).where(LabelModel.name == label)).first()
+            labeled_url = LabeledUrlModel(url_id=url_to_submit.id,
+                                          label_id=label_id)
+            session.add(labeled_url)
+            session.commit()
+    except exc.IntegrityError:
+        raise HTTPException(status_code=400, detail="Image URL has already been labeled")
     url_to_submit.labeled = True
     session.add(url_to_submit)
     session.commit()

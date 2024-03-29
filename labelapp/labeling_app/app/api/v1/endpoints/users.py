@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from fastapi import status
-from sqlalchemy import exc
 from sqlmodel import select
 
 from app.api.deps import SessionDep

@@ -1,5 +1,4 @@
 from fastapi import APIRouter, status, Security
-from sqlalchemy import exc
 from sqlmodel import select
 
 from app.api.deps import SessionDep

@@ -30,6 +30,14 @@ CREATE TABLE projects
     FOREIGN KEY (owner_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
+CREATE TABLE labels (
+    id SERIAL NOT NULL,
+    project_id INTEGER,
+    name VARCHAR(64) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
+);
+
 CREATE TABLE urls
 (
     id         SERIAL      NOT NULL,
@@ -58,10 +66,17 @@ CREATE TABLE users_projects (
     FOREIGN KEY(current_url) REFERENCES urls (id)
 );
 
-CREATE TABLE labels (
-    id SERIAL NOT NULL,
-    project_id INTEGER,
-    name VARCHAR(64) NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
+CREATE TABLE labeled_urls (
+	url_id INTEGER NOT NULL,
+	label_id INTEGER NOT NULL,
+	labeled_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+	PRIMARY KEY (url_id, label_id),
+	FOREIGN KEY(url_id) REFERENCES urls (id) ON DELETE CASCADE,
+	FOREIGN KEY(label_id) REFERENCES labels (id) ON DELETE CASCADE
 );
+
+CREATE MATERIALIZED VIEW labels_for_processing
+AS SELECT u.gcs_url, l.name, lu.labeled_at
+FROM labeled_urls lu
+INNER JOIN urls u ON u.id = lu.url_id
+INNER JOIN labels l ON l.id = lu.label_id;
