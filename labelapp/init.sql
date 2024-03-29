@@ -1,4 +1,4 @@
-CREATE TYPE tasktype AS ENUM ('multilabel', 'sparse', 'regression', 'detection')
+CREATE TYPE tasktype AS ENUM ('multilabel', 'sparse', 'regression', 'detection');
 
 CREATE TABLE users
 (
@@ -75,7 +75,7 @@ CREATE TABLE labeled_urls (
 	FOREIGN KEY(label_id) REFERENCES labels (id) ON DELETE CASCADE
 );
 
-CREATE MATERIALIZED VIEW labels_for_processing
+CREATE VIEW labels_for_processing
 AS SELECT u.gcs_url, l.name, lu.labeled_at
 FROM labeled_urls lu
 INNER JOIN urls u ON u.id = lu.url_id

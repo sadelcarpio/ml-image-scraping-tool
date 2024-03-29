@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock
 import requests
 from airflow.models import DagBag
 
-from tasks import check_scraping_status
+from tasks.scrapy_tasks import check_scraping_status
 
 
 class TestScrapyDag(unittest.TestCase):

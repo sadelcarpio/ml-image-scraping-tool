@@ -2,7 +2,8 @@ from datetime import datetime
 
 from airflow.decorators import dag
 
-from tasks import schedule_spider, wait, check_scraping_status, notify_owner
+from tasks.common import notify_owner
+from tasks.scrapy_tasks import schedule_spider, wait, check_scraping_status
 from utils.dag_data import get_dag_metadata
 
 for dag_params in get_dag_metadata():
@@ -16,7 +17,7 @@ for dag_params in get_dag_metadata():
 
 
     @dag(
-        dag_params.project + "_scraping",
+        dag_params.project.replace(" ", "-").lower() + "_scraping",
         default_args=default_args,
         start_date=datetime(2023, 12, 1),
         schedule="@daily",
