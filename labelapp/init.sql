@@ -73,4 +73,10 @@ CREATE TABLE labeled_urls (
 	PRIMARY KEY (url_id, label_id),
 	FOREIGN KEY(url_id) REFERENCES urls (id) ON DELETE CASCADE,
 	FOREIGN KEY(label_id) REFERENCES labels (id) ON DELETE CASCADE
-)
+);
+
+CREATE MATERIALIZED VIEW labels_for_processing
+AS SELECT u.gcs_url, l.name, lu.labeled_at
+FROM labeled_urls lu
+INNER JOIN urls u ON u.id = lu.url_id
+INNER JOIN labels l ON l.id = lu.label_id;
