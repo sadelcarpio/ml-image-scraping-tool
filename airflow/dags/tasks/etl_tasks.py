@@ -3,7 +3,7 @@ import os
 from airflow.decorators import task
 from sqlalchemy import create_engine
 
-IMAGES_TO_PROCESS = 100
+IMAGES_TO_PROCESS = 1
 
 
 def count_labeled_unprocessed_urls():
@@ -13,9 +13,16 @@ def count_labeled_unprocessed_urls():
     with engine.connect() as connection:
         result = connection.execute("SELECT COUNT(*) FROM labels_for_processing")
         row_count = result.fetchone()[0]
-    return row_count >= 1
+    return row_count >= IMAGES_TO_PROCESS
 
 
 @task()
-def process_labeled_urls():
-    print("We have reached the number of URLs. Processing ...")
+def load_to_gcs():
+    print("This should be a BeamOperator that takes the function / procedure / view for the project"
+          " and uploads its content as a csv file to GCS.")
+
+
+@task()
+def convert_to_tfrecord():
+    print("This optional branch should convert the csv files to tfrecord (sample already done but need some"
+          " modification)")

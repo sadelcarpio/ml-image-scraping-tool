@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from airflow.decorators import dag
+from airflow.decorators import dag, task
 from airflow.operators.python import ShortCircuitOperator
 
 from tasks.common import notify_owner
-from tasks.etl_tasks import process_labeled_urls, count_labeled_unprocessed_urls
+from tasks.etl_tasks import count_labeled_unprocessed_urls, load_to_gcs, convert_to_tfrecord
 from utils.dag_data import get_dag_metadata
 
 for dag_params in get_dag_metadata():
@@ -30,6 +30,17 @@ for dag_params in get_dag_metadata():
             task_id="check_target_labels_reached",
             python_callable=count_labeled_unprocessed_urls
         )
-        reached_target_labels >> process_labeled_urls() >> notify_owner(dag_params)
+
+        @task.branch(task_id="should_convert_to_tfrecord")
+        def should_convert_tfrecord():
+            return "notify_owner"  # branch depending on task_id
+
+        tfrecord = should_convert_tfrecord()
+        notify = notify_owner(dag_params)
+
+        reached_target_labels >> load_to_gcs() >> tfrecord
+        tfrecord >> notify
+        tfrecord >> convert_to_tfrecord() >> notify
+
 
     beam_etl_dag()
