@@ -80,3 +80,4 @@ AS SELECT u.gcs_url, l.name, lu.labeled_at
 FROM labeled_urls lu
 INNER JOIN urls u ON u.id = lu.url_id
 INNER JOIN labels l ON l.id = lu.label_id;
+-- NEED TO FILTER BY PROJECT!!!
