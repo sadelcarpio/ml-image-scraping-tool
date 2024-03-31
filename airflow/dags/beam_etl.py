@@ -28,7 +28,8 @@ for dag_params in get_dag_metadata():
     def beam_etl_dag():
         reached_target_labels = ShortCircuitOperator(
             task_id="check_target_labels_reached",
-            python_callable=count_labeled_unprocessed_urls
+            python_callable=count_labeled_unprocessed_urls,
+            op_args=[dag_params.project]
         )
 
         @task.branch(task_id="should_convert_to_tfrecord")

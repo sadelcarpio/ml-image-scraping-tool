@@ -6,12 +6,12 @@ from sqlalchemy import create_engine
 IMAGES_TO_PROCESS = 1
 
 
-def count_labeled_unprocessed_urls():
+def count_labeled_unprocessed_urls(project_name):
     engine = create_engine(
         f"postgresql://{os.environ.get('POSTGRES_USER')}:{os.environ.get('POSTGRES_PASSWORD')}"
         f"@{os.environ.get('INSTANCE_NAME')}/{os.environ.get('POSTGRES_DB')}")
     with engine.connect() as connection:
-        result = connection.execute("SELECT COUNT(*) FROM labels_for_processing")
+        result = connection.execute(f"SELECT COUNT(*) FROM labels_for_processing WHERE project='{project_name}'")
         row_count = result.fetchone()[0]
     return row_count >= IMAGES_TO_PROCESS
 

@@ -4,7 +4,7 @@ from airflow.utils.trigger_rule import TriggerRule
 from utils.schemas import DagMetaData
 
 
-@task(task_id="notify_owner", trigger_rule=TriggerRule.ALWAYS)
+@task(task_id="notify_owner", trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS)
 def notify_owner(dag_params: DagMetaData):
     from airflow.utils.email import send_email
     send_email(to=dag_params.notify,

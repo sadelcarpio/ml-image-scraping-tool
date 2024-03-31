@@ -76,8 +76,8 @@ CREATE TABLE labeled_urls (
 );
 
 CREATE VIEW labels_for_processing
-AS SELECT u.gcs_url, l.name, lu.labeled_at
+AS SELECT u.gcs_url, l.name as label, lu.labeled_at, p.name AS project
 FROM labeled_urls lu
 INNER JOIN urls u ON u.id = lu.url_id
-INNER JOIN labels l ON l.id = lu.label_id;
--- NEED TO FILTER BY PROJECT!!!
+INNER JOIN labels l ON l.id = lu.label_id
+INNER JOIN projects p ON p.id = u.project_id;
