@@ -3,18 +3,18 @@ version: "3.9"
 name: beam_pipelines
 
 services:
-  beam:
-    container_name: beam
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    volumes:
-      - ./pipelines:/beam_pipelines/pipelines
-      - ./service_account.json:/beam_pipelines/service_account.json
-    depends_on:
-      - spark
+#  beam:
+#    container_name: beam
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    env_file:
+#      - .env
+#    volumes:
+#      - ./pipelines:/beam_pipelines/pipelines
+#      - ./service_account.json:/beam_pipelines/service_account.json
+#    depends_on:
+#      - spark
 
   spark:
     image: bitnami/spark:3
@@ -24,4 +24,4 @@ services:
     - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
     - SPARK_SSL_ENABLED=no
     ports:
-      - "8080:8080"
+      - "9080:8080"

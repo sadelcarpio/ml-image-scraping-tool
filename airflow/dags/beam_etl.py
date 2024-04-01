@@ -2,9 +2,10 @@ from datetime import datetime
 
 from airflow.decorators import dag, task
 from airflow.operators.python import ShortCircuitOperator
+from airflow.providers.docker.operators.docker import DockerOperator
 
 from tasks.common import notify_owner
-from tasks.etl_tasks import count_labeled_unprocessed_urls, load_to_gcs, convert_to_tfrecord
+from tasks.etl_tasks import count_labeled_unprocessed_urls, convert_to_tfrecord, load_to_gcs
 from utils.dag_data import get_dag_metadata
 
 for dag_params in get_dag_metadata():
