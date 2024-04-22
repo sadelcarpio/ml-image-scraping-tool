@@ -8,6 +8,11 @@ from sqlalchemy import create_engine
 IMAGES_TO_PROCESS = 1
 
 
+@task.branch(task_id="should_convert_to_tfrecord")
+def should_convert_tfrecord():
+    return "notify_owner"  # branch depending on task_id
+
+
 def count_labeled_unprocessed_urls(project_name):
     engine = create_engine(
         f"postgresql://{os.environ.get('POSTGRES_USER')}:{os.environ.get('POSTGRES_PASSWORD')}"
@@ -18,7 +23,7 @@ def count_labeled_unprocessed_urls(project_name):
     return row_count >= IMAGES_TO_PROCESS
 
 
-def load_to_gcs():
+def load_to_gcs(project_name: str):
     """
     Beam Docker operation to load the table of processed urls to a csv file on cloud storage
     :return:
@@ -30,7 +35,7 @@ def load_to_gcs():
         api_version="auto",
         auto_remove=True,
         docker_url="unix://var/run/docker.sock",
-        command="--project=test-project-full",
+        command=f"--project={project_name}",
         network_mode="mlist_default",
         environment={
             "POSTGRES_USER": os.environ.get("POSTGRES_USER"),

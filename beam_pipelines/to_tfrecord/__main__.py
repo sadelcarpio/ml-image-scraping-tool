@@ -3,7 +3,7 @@ from datetime import datetime
 
 import apache_beam as beam
 
-from pipelines.to_tfrecord.image_dofns import DecodeFromTextDoFn, ReadImagesDoFn, ImageToTfExampleDoFn
+from to_tfrecord.image_dofns import DecodeFromTextDoFn, ReadImagesDoFn, ImageToTfExampleDoFn
 
 
 class ToTFRecordPipeline(beam.PTransform):
