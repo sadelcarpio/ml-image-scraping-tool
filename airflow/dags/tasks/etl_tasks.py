@@ -2,6 +2,7 @@ import os
 
 from airflow.decorators import task
 from airflow.providers.docker.operators.docker import DockerOperator
+from docker.types import Mount
 from sqlalchemy import create_engine
 
 IMAGES_TO_PROCESS = 1
@@ -24,14 +25,26 @@ def load_to_gcs():
     """
     return DockerOperator(
         task_id="load_to_gcs",
-        image="hello-world",
-        container_name="gcs_load",
+        image="beam-upload-csv",
+        container_name="gcs_csv_load",
         api_version="auto",
         auto_remove=True,
         docker_url="unix://var/run/docker.sock",
+        command="--project=test-project-full",
+        network_mode="mlist_default",
+        environment={
+            "POSTGRES_USER": os.environ.get("POSTGRES_USER"),
+            "POSTGRES_PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+            "POSTGRES_DB": os.environ.get("POSTGRES_DB"),
+            "INSTANCE_NAME": os.environ.get("INSTANCE_NAME")
+        },
         tty=True,
         xcom_all=False,
-        mount_tmp_dir=False
+        mount_tmp_dir=False,
+        mounts=[
+            Mount(source=f"{os.getenv('PIPELINES_DIR')}/upload_csv_labels",
+                  target="/src/upload_csv_labels", type="bind")
+        ]
     )
 
 

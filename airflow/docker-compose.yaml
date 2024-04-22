@@ -54,6 +54,7 @@ x-airflow-common:
   # build: .
   environment:
     &airflow-common-env
+    PIPELINES_DIR: ${PWD}/beam_pipelines
     INSTANCE_NAME: ${INSTANCE_NAME}
     POSTGRES_USER: ${POSTGRES_USER}
     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -90,7 +91,6 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-    - ${AIRFLOW_PROJ_DIR:-.}/../beam_pipelines:/opt/airflow/beam_pipelines
     - /var/run/docker.sock:/var/run/docker.sock:ro
   user: "${AIRFLOW_UID:-50000}:0"
   group_add:

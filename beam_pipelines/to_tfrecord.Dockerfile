@@ -10,4 +10,4 @@ ENV GOOGLE_APPLICATION_CREDENTIALS /beam_pipelines/service_account.json
 
 
 RUN grep -v "tensorflow" requirements.txt | xargs pip install
-CMD ["python", "-m", "pipelines.upload_csv_labels", "--runner=SparkRunner", "--spark_master_url=spark://spark:7077"]
+CMD ["python", "-m", "upload_csv_labels", "--runner=DirectRunner"]

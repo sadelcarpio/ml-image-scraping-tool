@@ -4,9 +4,9 @@ LABEL authors="sergio.delcarpio"
 
 WORKDIR /src
 
-ENV GOOGLE_APPLICATION_CREDENTIALS /beam_pipelines/service_account.json
+ENV GOOGLE_APPLICATION_CREDENTIALS /src/service_account.json
 ENV JAVA_HOME /usr/local/openjdk-8
 RUN update-alternatives --install /usr/bin/java java /usr/local/openjdk-8/bin/java 1
 RUN pip install apache-beam
 
-CMD ["python", "-m", "upload_csv_labels", "--runner=DirectRunner"]
+ENTRYPOINT ["python", "-m", "upload_csv_labels", "--runner=DirectRunner"]
