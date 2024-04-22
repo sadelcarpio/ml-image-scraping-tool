@@ -9,4 +9,4 @@ ENV JAVA_HOME /usr/local/openjdk-8
 RUN update-alternatives --install /usr/bin/java java /usr/local/openjdk-8/bin/java 1
 RUN pip install apache-beam
 
-CMD ["python", "-m", "src.upload_csv_labels", "--runner=SparkRunner", "--spark_master_url=spark://spark:7077"]
+CMD ["python", "-m", "upload_csv_labels", "--runner=DirectRunner"]
