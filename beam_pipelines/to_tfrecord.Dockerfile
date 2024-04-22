@@ -1,13 +1,13 @@
 FROM tensorflow/tensorflow
 LABEL authors="sergio.delcarpio"
 
-WORKDIR beam_pipelines/
+WORKDIR /src
 
-COPY tests ./tests
-COPY pipelines ./pipelines
+COPY tests /src/tests
+COPY to_tfrecord /src/to_tfrecord
 COPY requirements.txt .
 ENV GOOGLE_APPLICATION_CREDENTIALS /beam_pipelines/service_account.json
 
 
 RUN grep -v "tensorflow" requirements.txt | xargs pip install
-CMD ["python", "-m", "upload_csv_labels", "--runner=DirectRunner"]
+CMD ["python", "-m", "to_tfrecord", "--runner=DirectRunner"]
