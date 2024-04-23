@@ -35,7 +35,7 @@ def load_to_gcs(project_name: str):
         api_version="auto",
         auto_remove=True,
         docker_url="unix://var/run/docker.sock",
-        command=f"--project={project_name}",
+        command=f"--project=\"{project_name}\"",
         network_mode="mlist_default",
         environment={
             "POSTGRES_USER": os.environ.get("POSTGRES_USER"),

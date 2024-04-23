@@ -1,3 +1,4 @@
+import re
 import uuid
 
 from pydantic import field_validator
@@ -13,6 +14,16 @@ class ProjectBase(SQLModel):
     keywords: str = Field(nullable=False)
     description: str
     task_type: str
+
+    @field_validator("name")
+    @classmethod
+    def validate_project_name(cls, project_name: str) -> str:
+        pattern = r"^\w+[\w-]+$"
+        if bool(re.match(pattern, project_name)):
+            return project_name
+        else:
+            raise ValueError("Invalid project name. Project name must have the format ^\w+[\w-]+$ "
+                             "(only letters, numbers, dash and underscores")
 
 
 class ProjectRead(ProjectBase):

@@ -11,6 +11,8 @@ services:
     depends_on:
       labelapp-postgres:
         condition: service_healthy
+    volumes:
+      - ./url_app/url_app:/url_app/url_app
     env_file:
       - .env
 
@@ -22,6 +24,8 @@ services:
     depends_on:
       labelapp-postgres:
         condition: service_healthy
+    volumes:
+      - ./dag_info/dag_info:/app/dag_info
     ports:
       - "3000:3000"
     env_file:
@@ -35,6 +39,8 @@ services:
     depends_on:
       labelapp-postgres:
         condition: service_healthy
+    volumes:
+      - ./labeling_app/app:/labeling_app/app
     ports:
       - "4000:4000"
     env_file:
