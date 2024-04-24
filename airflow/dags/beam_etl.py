@@ -36,7 +36,7 @@ for dag_params in get_dag_metadata():
         should_convert_tfrecord_instance = should_convert_tfrecord()
         notify_owner_instance = notify_owner(dag_params)
         load_to_gcs_instance = load_to_gcs(project_name=dag_params.project, last_processed=dag_params.last_processed)
-        reached_target_labels >> update_last_processed()
+        reached_target_labels >> update_last_processed(project_name=dag_params.project)
         reached_target_labels >> load_to_gcs_instance >> should_convert_tfrecord_instance
         should_convert_tfrecord_instance >> notify_owner_instance
         should_convert_tfrecord_instance >> convert_to_tfrecord() >> notify_owner_instance

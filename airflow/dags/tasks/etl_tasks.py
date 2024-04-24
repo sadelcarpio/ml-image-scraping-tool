@@ -24,9 +24,12 @@ def count_labeled_unprocessed_urls(project_name: str):
 
 
 @task
-def update_last_processed():
-    # TODO: implement a lambda (simple API) to call here and update last processed timestamp
-    print("Updated last processed")
+def update_last_processed(project_name: str):
+    import requests
+    from datetime import datetime
+    response = requests.patch(f"http://update-last-processed:5000/{project_name}",
+                              json={"date_str": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")})
+    response.raise_for_status()
 
 
 def load_to_gcs(project_name: str, last_processed: str):

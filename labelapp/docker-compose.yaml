@@ -31,6 +31,21 @@ services:
     env_file:
       - .env
 
+  update-last-processed:
+    container_name: update-last-processed
+    build:
+      context: ./update_last_processed
+      dockerfile: Dockerfile
+    depends_on:
+      labelapp-postgres:
+        condition: service_healthy
+    volumes:
+      - ./update_last_processed/update_last_processed:/app/update_last_processed
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+
   labeling-app:
     container_name: labeling-app
     build:
