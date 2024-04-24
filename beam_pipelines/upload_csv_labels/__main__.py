@@ -3,7 +3,7 @@ import os
 from dataclasses import dataclass
 
 import apache_beam as beam
-from apache_beam.io.jdbc import ReadFromJdbc
+from apache_beam.io.jdbc import ReadFromJdbc, WriteToJdbc
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.typehints.schemas import MillisInstant, LogicalType
 
@@ -32,8 +32,8 @@ class PsqlToCsvPipeline(beam.PTransform):
         # TODO: calculate latest timestamp and update it on the project record
         pipeline = (
                 p
-                | "Read label and gcs url from db" >> ReadFromJdbc(
-                    query=f"SELECT label, gcs_url FROM labels_for_processing "
+                | "Read from db" >> ReadFromJdbc(
+                    query=f"SELECT label, gcs_url, labeled_at FROM labels_for_processing "
                           f"WHERE project='{self.project}' AND labeled_at>='{self.last_processed}';",
                     table_name="users",
                     driver_class_name="org.postgresql.Driver",
@@ -42,8 +42,8 @@ class PsqlToCsvPipeline(beam.PTransform):
                     password=self.db_params.postgres_password
                 )
         )
-        format_csv = pipeline | beam.Map(lambda elem: f"{elem[0]},{elem[1]}")
 
+        format_csv = pipeline | beam.Map(lambda elem: f"{elem[0]},{elem[1]}")
         format_csv | beam.io.WriteToText("my_labels.csv", shard_name_template="")
         format_csv | "Show csv" >> beam.Map(print)
         return pipeline

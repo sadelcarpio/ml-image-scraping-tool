@@ -23,6 +23,12 @@ def count_labeled_unprocessed_urls(project_name: str):
     return row_count >= IMAGES_TO_PROCESS
 
 
+@task
+def update_last_processed():
+    # TODO: implement a lambda (simple API) to call here and update last processed timestamp
+    print("Updated last processed")
+
+
 def load_to_gcs(project_name: str, last_processed: str):
     """
     Beam Docker operation to load the table of processed urls to a csv file on cloud storage
