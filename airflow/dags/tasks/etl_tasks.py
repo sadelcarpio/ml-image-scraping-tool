@@ -13,7 +13,7 @@ def should_convert_tfrecord():
     return "notify_owner"  # branch depending on task_id
 
 
-def count_labeled_unprocessed_urls(project_name):
+def count_labeled_unprocessed_urls(project_name: str):
     engine = create_engine(
         f"postgresql://{os.environ.get('POSTGRES_USER')}:{os.environ.get('POSTGRES_PASSWORD')}"
         f"@{os.environ.get('INSTANCE_NAME')}/{os.environ.get('POSTGRES_DB')}")
@@ -23,7 +23,7 @@ def count_labeled_unprocessed_urls(project_name):
     return row_count >= IMAGES_TO_PROCESS
 
 
-def load_to_gcs(project_name: str):
+def load_to_gcs(project_name: str, last_processed: str):
     """
     Beam Docker operation to load the table of processed urls to a csv file on cloud storage
     :return:
@@ -35,7 +35,7 @@ def load_to_gcs(project_name: str):
         api_version="auto",
         auto_remove=True,
         docker_url="unix://var/run/docker.sock",
-        command=f"--project=\"{project_name}\"",
+        command=f"--project=\"{project_name}\" --last_labeled=\"{last_processed}\"",
         network_mode="mlist_default",
         environment={
             "POSTGRES_USER": os.environ.get("POSTGRES_USER"),

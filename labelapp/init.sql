@@ -25,6 +25,7 @@ CREATE TABLE projects
     task_type tasktype,
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    last_processed TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (name),
     FOREIGN KEY (owner_id) REFERENCES users (id) ON DELETE CASCADE

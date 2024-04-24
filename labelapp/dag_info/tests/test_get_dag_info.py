@@ -51,9 +51,12 @@ class TestGetDagInfo(unittest.TestCase):
     def test_fetch_project_information(self):
         results = fetch_project_information(self.session)
         self.assertEqual([
-            {"project": "test1", "keywords": "project1", "notify": "user1@mail.com"},
-            {"project": "test2", "keywords": "project2", "notify": "user2@mail.com"},
-            {"project": "test3", "keywords": "project3", "notify": "user2@mail.com"}], results)
+            {"project": "test1", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project1", "notify": "user1@mail.com"},
+            {"project": "test2", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project2", "notify": "user2@mail.com"},
+            {"project": "test3", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project3", "notify": "user2@mail.com"}], results)
 
     def test_get_dag_info(self):
         response = self.client.get("/")
