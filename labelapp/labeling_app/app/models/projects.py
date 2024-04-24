@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Column, DateTime, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, func
 from sqlmodel import Field, Relationship, Enum
 
 from app.models.extras import UserProjectModel
@@ -22,6 +22,7 @@ class ProjectModel(ProjectBase, table=True):
     updated_at: datetime = Field(
         sa_column=Column(DateTime, index=True, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     )
+    last_processed: datetime = Field(default_factory=lambda: datetime.utcfromtimestamp(0))
     owner_id: uuid.UUID = Field(sa_column=Column('owner_id', ForeignKey("users.id", ondelete="CASCADE")))
     users: list[UserModel] = Relationship(back_populates="projects", link_model=UserProjectModel)
     labels: list["LabelModel"] = Relationship(back_populates="project",

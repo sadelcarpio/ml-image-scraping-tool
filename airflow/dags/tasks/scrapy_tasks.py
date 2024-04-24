@@ -47,11 +47,3 @@ def check_scraping_status(*, ti=None):
     except requests.exceptions.RequestException as e:
         logger.error(f"Error on HTTP request: {e}")
         return
-
-
-@task()
-def notify_owner(dag_params: DagMetaData):
-    from airflow.utils.email import send_email
-    send_email(to=dag_params.notify,
-               subject=f"Dag for {dag_params.project} completed",
-               html_content=f"Dag finished successfully!")

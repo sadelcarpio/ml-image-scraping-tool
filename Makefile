@@ -6,7 +6,6 @@ BEAM := beam_pipelines
 LABELAPP := labelapp
 AIRFLOW_COMPOSE := $(AIRFLOW)/docker-compose.yaml
 SCRAPY_COMPOSE := $(SCRAPY)/docker-compose.yaml
-BEAM_COMPOSE := $(BEAM)/docker-compose.yaml
 LABELAPP_COMPOSE := $(LABELAPP)/docker-compose.yaml
 KAFKA_COMPOSE := kafka/docker-compose.yaml
 SPIDER := google_images_spider
@@ -32,9 +31,12 @@ kafka-run:
 labelapp-run:
 	docker compose --project-name mlist -f $(LABELAPP_COMPOSE) up -d --build
 
+beam-build:
+	docker build -f $(BEAM)/upload_csv_labels.Dockerfile -t beam-upload-csv .
+
 run-no-airflow: kafka-run scrapy-compose-run labelapp-run
 
-run: airflow-compose-run kafka-run scrapy-compose-run labelapp-run
+run: airflow-compose-run kafka-run scrapy-compose-run labelapp-run beam-build
 
 down:
 	docker compose --project-name mlist -f $(KAFKA_COMPOSE) down
@@ -46,9 +48,6 @@ down-no-airflow:
 	docker compose --project-name mlist -f $(KAFKA_COMPOSE) down
 	docker compose --project-name mlist -f $(SCRAPY_COMPOSE) down
 	docker compose --project-name mlist -f $(LABELAPP_COMPOSE) down
-
-beam-run:
-	docker compose -f $(BEAM_COMPOSE) up -d --build
 
 beam-down:
 	docker compose -f $(BEAM_COMPOSE) down

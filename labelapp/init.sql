@@ -1,4 +1,4 @@
-CREATE TYPE tasktype AS ENUM ('multilabel', 'sparse', 'regression', 'detection')
+CREATE TYPE tasktype AS ENUM ('multilabel', 'sparse', 'regression', 'detection');
 
 CREATE TABLE users
 (
@@ -25,6 +25,7 @@ CREATE TABLE projects
     task_type tasktype,
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    last_processed TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (name),
     FOREIGN KEY (owner_id) REFERENCES users (id) ON DELETE CASCADE
@@ -75,8 +76,9 @@ CREATE TABLE labeled_urls (
 	FOREIGN KEY(label_id) REFERENCES labels (id) ON DELETE CASCADE
 );
 
-CREATE MATERIALIZED VIEW labels_for_processing
-AS SELECT u.gcs_url, l.name, lu.labeled_at
+CREATE VIEW labels_for_processing
+AS SELECT u.gcs_url, l.name as label, lu.labeled_at, p.name AS project
 FROM labeled_urls lu
 INNER JOIN urls u ON u.id = lu.url_id
-INNER JOIN labels l ON l.id = lu.label_id;
+INNER JOIN labels l ON l.id = lu.label_id
+INNER JOIN projects p ON p.id = u.project_id;

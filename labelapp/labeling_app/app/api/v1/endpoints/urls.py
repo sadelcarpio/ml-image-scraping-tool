@@ -4,6 +4,7 @@ from sqlmodel import select
 
 from app.api.deps import SessionDep, validate_labels
 from app.core.uploader import ObjectStorageUploader
+from app.crud.crud_project import CRUDProjectDep
 from app.models.extras import UserProjectModel, LabeledUrlModel, LabelModel
 from app.models.urls import UrlModel
 from app.schemas.urls import UrlRead
@@ -36,6 +37,7 @@ def get_current_url(project_id: int, session: SessionDep, current_user: CurrentU
 def submit_url(project_id: int,
                session: SessionDep,
                current_user: CurrentUser,
+               projects_crud: CRUDProjectDep,
                uploader: ObjectStorageUploader,
                labels: list = Body(...)):
     url_to_submit = session.exec(

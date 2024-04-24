@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock
 import requests
 from airflow.models import DagBag
 
-from tasks import check_scraping_status
+from tasks.scrapy_tasks import check_scraping_status
 
 
 class TestScrapyDag(unittest.TestCase):
@@ -14,7 +14,10 @@ class TestScrapyDag(unittest.TestCase):
     @patch('requests.get')
     def test_dag_loads_with_no_errors(self, mock_get):
         """Test the dag loads without any import errors"""
-        mock_get.return_value.json.return_value = [{"project": "test", "keywords": "test", "notify": "a@b.com"}]
+        mock_get.return_value.json.return_value = [{"project": "test",
+                                                    "last_processed": "1970-01-01",
+                                                    "keywords": "test",
+                                                    "notify": "a@b.com"}]
         dag_bag = DagBag(include_examples=False)
         dag_bag.process_file('../dags/scrapy_dag.py')
         self.assertEqual(0, len(dag_bag.import_errors))

@@ -51,17 +51,23 @@ class TestGetDagInfo(unittest.TestCase):
     def test_fetch_project_information(self):
         results = fetch_project_information(self.session)
         self.assertEqual([
-            {"project": "test1", "keywords": "project1", "notify": "user1@mail.com"},
-            {"project": "test2", "keywords": "project2", "notify": "user2@mail.com"},
-            {"project": "test3", "keywords": "project3", "notify": "user2@mail.com"}], results)
+            {"project": "test1", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project1", "notify": "user1@mail.com"},
+            {"project": "test2", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project2", "notify": "user2@mail.com"},
+            {"project": "test3", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project3", "notify": "user2@mail.com"}], results)
 
     def test_get_dag_info(self):
         response = self.client.get("/")
         self.assertEqual(200, response.status_code)
         self.assertEqual([
-            {"project": "test1", "keywords": "project1", "notify": "user1@mail.com"},
-            {"project": "test2", "keywords": "project2", "notify": "user2@mail.com"},
-            {"project": "test3", "keywords": "project3", "notify": "user2@mail.com"}], response.json())
+            {"project": "test1", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project1", "notify": "user1@mail.com"},
+            {"project": "test2", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project2", "notify": "user2@mail.com"},
+            {"project": "test3", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project3", "notify": "user2@mail.com"}], response.json())
 
     def test_project_deleted(self):
         project1 = self.session.exec(select(ProjectModel).where(ProjectModel.name == "test1")).one()
@@ -71,8 +77,10 @@ class TestGetDagInfo(unittest.TestCase):
         data = response.json()
         self.assertEqual(2, len(data))
         self.assertEqual([
-            {"project": "test2", "keywords": "project2", "notify": "user2@mail.com"},
-            {"project": "test3", "keywords": "project3", "notify": "user2@mail.com"}], data)
+            {"project": "test2", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project2", "notify": "user2@mail.com"},
+            {"project": "test3", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project3", "notify": "user2@mail.com"}], data)
 
     def test_update_email(self):
         user2 = self.session.exec(select(UserModel).where(UserModel.email == "user2@mail.com")).one()
@@ -82,8 +90,10 @@ class TestGetDagInfo(unittest.TestCase):
         response = self.client.get("/")
         data = response.json()
         self.assertEqual([
-            {"project": "test2", "keywords": "project2", "notify": "user2@newmail.com"},
-            {"project": "test3", "keywords": "project3", "notify": "user2@newmail.com"}], data)
+            {"project": "test2", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project2", "notify": "user2@newmail.com"},
+            {"project": "test3", "last_processed": "1970-01-01 00:00:00.000000",
+             "keywords": "project3", "notify": "user2@newmail.com"}], data)
 
     def test_user_deleted(self):
         user2 = self.session.exec(select(UserModel).where(UserModel.email == "user2@newmail.com")).one()
