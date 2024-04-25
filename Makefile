@@ -32,7 +32,7 @@ labelapp-run:
 	docker compose --project-name mlist -f $(LABELAPP_COMPOSE) up -d --build
 
 beam-build:
-	docker build -f $(BEAM)/upload_csv_labels.Dockerfile -t beam-upload-csv .
+	docker build -f $(BEAM)/upload_csv_labels.Dockerfile -t beam-upload-csv beam_pipelines
 
 run-no-airflow: kafka-run scrapy-compose-run labelapp-run
 

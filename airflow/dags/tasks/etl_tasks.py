@@ -28,7 +28,7 @@ def update_last_processed(project_name: str):
     import requests
     from datetime import datetime
     response = requests.patch(f"http://update-last-processed:5000/{project_name}",
-                              json={"date_str": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")})
+                              json={"date_str": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")})
     response.raise_for_status()
 
 
@@ -44,13 +44,14 @@ def load_to_gcs(project_name: str, last_processed: str):
         api_version="auto",
         auto_remove=True,
         docker_url="unix://var/run/docker.sock",
-        command=f"--project=\"{project_name}\" --last_labeled=\"{last_processed}\"",
+        command=f'--project="{project_name}" --last_processed="{last_processed}"',
         network_mode="mlist_default",
         environment={
             "POSTGRES_USER": os.environ.get("POSTGRES_USER"),
             "POSTGRES_PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
             "POSTGRES_DB": os.environ.get("POSTGRES_DB"),
-            "INSTANCE_NAME": os.environ.get("INSTANCE_NAME")
+            "INSTANCE_NAME": os.environ.get("INSTANCE_NAME"),
+            "LABELS_BUCKET": os.environ.get("LABELS_BUCKET")
         },
         tty=True,
         xcom_all=False,

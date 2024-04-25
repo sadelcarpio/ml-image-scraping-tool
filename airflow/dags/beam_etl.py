@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from airflow.decorators import dag, task
+from airflow.decorators import dag
 from airflow.operators.python import ShortCircuitOperator
 
 from tasks.common import notify_owner

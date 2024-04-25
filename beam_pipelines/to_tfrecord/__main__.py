@@ -1,22 +1,27 @@
+import argparse
 import os
 from datetime import datetime
 
 import apache_beam as beam
+from apache_beam.options.pipeline_options import PipelineOptions
 
 from to_tfrecord.image_dofns import DecodeFromTextDoFn, ReadImagesDoFn, ImageToTfExampleDoFn
 
 
 class ToTFRecordPipeline(beam.PTransform):
-    def __init__(self, images_bucket, labels_bucket, tfrecord_bucket):
+    def __init__(self, images_bucket, labels_bucket, tfrecord_bucket, project):
         super().__init__()
         self.images_bucket = images_bucket
         self.labels_bucket = labels_bucket
         self.tfrecord_bucket = tfrecord_bucket
+        self.project = project
+        self.current_date = datetime.today().strftime("%Y-%m-%d")
 
     def expand(self, p):
         return (
                 p
-                | beam.io.ReadFromText(f'gs://{self.labels_bucket}/data_labeled.csv', skip_header_lines=1)
+                | beam.io.ReadFromText(f'gs://{self.labels_bucket}/{self.project}/labels-{self.current_date}.csv',
+                                       skip_header_lines=1)
                 | "Get path from gs filename" >> beam.ParDo(DecodeFromTextDoFn())
                 | "Read images from paths" >> beam.ParDo(ReadImagesDoFn(bucket_name=self.images_bucket))
                 | "Convert image bytes to TFRecord" >> beam.ParDo(ImageToTfExampleDoFn())
@@ -28,12 +33,23 @@ class ToTFRecordPipeline(beam.PTransform):
 
 
 def run_pipeline():
-    with beam.Pipeline() as p:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--project',
+        required=True,
+        help='Project to read labels from.')
+
+    known_args, pipeline_args = parser.parse_known_args()
+
+    pipeline_options = PipelineOptions(pipeline_args)
+
+    with beam.Pipeline(options=pipeline_options) as p:
         (
                 p
-                | ToTFRecordPipeline(os.environ["IMAGES_BUCKET_NAME"],
-                                     os.environ["LABELS_BUCKET"],
-                                     os.environ["TFRECORD_BUCKET"])
+                | ToTFRecordPipeline(images_bucket=os.environ["IMAGES_BUCKET_NAME"],
+                                     labels_bucket=os.environ["LABELS_BUCKET"],
+                                     tfrecord_bucket=os.environ["TFRECORD_BUCKET"],
+                                     project=known_args.project)
         )
 
 
