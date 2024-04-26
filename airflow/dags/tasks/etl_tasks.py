@@ -5,7 +5,7 @@ from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 from sqlalchemy import create_engine
 
-IMAGES_TO_PROCESS = 1
+IMAGES_TO_PROCESS = 10
 
 
 @task.branch(task_id="should_convert_to_tfrecord")
