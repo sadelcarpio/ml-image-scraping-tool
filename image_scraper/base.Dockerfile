@@ -13,12 +13,12 @@ ENV DISPLAY=:99
 
 WORKDIR /src
 
-# In the future replace with dockerignore
-COPY image_scraper /src/image_scraper
-COPY tests /src/tests
-COPY requirements.txt /src
-COPY scrapy.cfg /src
 COPY requirements.txt .
 
 ENV GOOGLE_APPLICATION_CREDENTIALS /src/service_account.json
 RUN pip install -r requirements.txt
+
+COPY image_scraper /src/image_scraper
+COPY tests /src/tests
+COPY requirements.txt /src
+COPY scrapy.cfg /src
