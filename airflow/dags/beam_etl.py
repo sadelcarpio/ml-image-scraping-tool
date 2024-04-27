@@ -30,7 +30,7 @@ for dag_params in get_dag_metadata():
         reached_target_labels = ShortCircuitOperator(
             task_id="check_target_labels_reached",
             python_callable=count_labeled_unprocessed_urls,
-            op_args=[dag_params.project]
+            op_args=[dag_params.project, dag_params.last_processed]
         )
 
         should_convert_tfrecord_instance = should_convert_tfrecord()

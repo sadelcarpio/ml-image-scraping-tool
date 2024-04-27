@@ -13,12 +13,13 @@ def should_convert_tfrecord():
     return "notify_owner"  # branch depending on task_id
 
 
-def count_labeled_unprocessed_urls(project_name: str):
+def count_labeled_unprocessed_urls(project_name: str, last_processed: str):
     engine = create_engine(
         f"postgresql://{os.environ.get('POSTGRES_USER')}:{os.environ.get('POSTGRES_PASSWORD')}"
         f"@{os.environ.get('INSTANCE_NAME')}/{os.environ.get('POSTGRES_DB')}")
     with engine.connect() as connection:
-        result = connection.execute(f"SELECT COUNT(*) FROM labels_for_processing WHERE project='{project_name}'")
+        result = connection.execute(f"SELECT COUNT(*) FROM labels_for_processing WHERE project='{project_name}' "
+                                    f"AND labeled_at>='{last_processed}'")
         row_count = result.fetchone()[0]
     return row_count >= IMAGES_TO_PROCESS
 
