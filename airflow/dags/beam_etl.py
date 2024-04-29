@@ -5,7 +5,7 @@ from airflow.operators.python import ShortCircuitOperator
 
 from tasks.common import notify_owner
 from tasks.etl_tasks import count_labeled_unprocessed_urls, convert_to_tfrecord, load_to_gcs, should_convert_tfrecord, \
-    update_last_processed
+    update_last_processed, revert_previous_timestamp
 from utils.dag_data import get_dag_metadata
 
 for dag_params in get_dag_metadata():
@@ -36,8 +36,11 @@ for dag_params in get_dag_metadata():
         should_convert_tfrecord_instance = should_convert_tfrecord()
         notify_owner_instance = notify_owner(dag_params)
         load_to_gcs_instance = load_to_gcs(project_name=dag_params.project, last_processed=dag_params.last_processed)
-        reached_target_labels >> update_last_processed(project_name=dag_params.project)
-        reached_target_labels >> load_to_gcs_instance >> should_convert_tfrecord_instance
+        reached_target_labels >> update_last_processed(project_name=dag_params.project,
+                                                       previous_timestamp=dag_params.last_processed)
+        reached_target_labels >> load_to_gcs_instance
+        load_to_gcs_instance >> should_convert_tfrecord_instance
+        load_to_gcs_instance >> revert_previous_timestamp()
         should_convert_tfrecord_instance >> notify_owner_instance
         should_convert_tfrecord_instance >> convert_to_tfrecord() >> notify_owner_instance
 

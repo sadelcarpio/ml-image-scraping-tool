@@ -4,7 +4,7 @@
 scrapyd > scrapyd.log 2>&1 &
 
 # Give Scrapyd some time to start
-sleep 5
+sleep 10
 
 # Run scrapyd-deploy
 scrapyd-deploy docker

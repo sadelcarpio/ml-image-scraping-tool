@@ -2,6 +2,7 @@ import os
 
 from airflow.decorators import task
 from airflow.providers.docker.operators.docker import DockerOperator
+from airflow.utils.trigger_rule import TriggerRule
 from docker.types import Mount
 from sqlalchemy import create_engine
 
@@ -25,12 +26,14 @@ def count_labeled_unprocessed_urls(project_name: str, last_processed: str):
 
 
 @task
-def update_last_processed(project_name: str):
+def update_last_processed(project_name: str, previous_timestamp: str):
     import requests
     from datetime import datetime
     response = requests.patch(f"http://update-last-processed:5000/{project_name}",
                               json={"date_str": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")})
     response.raise_for_status()
+    # Push previous timestamp to xcom in case Beam job fails
+    return project_name, previous_timestamp
 
 
 def load_to_gcs(project_name: str, last_processed: str):
@@ -62,6 +65,15 @@ def load_to_gcs(project_name: str, last_processed: str):
                   target="/src/upload_csv_labels", type="bind")
         ]
     )
+
+
+@task(trigger_rule=TriggerRule.ONE_FAILED)
+def revert_previous_timestamp(*, ti=None):
+    import requests
+    project_name, previous_timestamp = ti.xcom_pull(task_ids="update_last_processed")
+    response = requests.patch(f"http://update-last-processed:5000/{project_name}",
+                              json={"date_str": previous_timestamp})
+    response.raise_for_status()
 
 
 @task()
