@@ -8,23 +8,35 @@ from scrapy.exceptions import DropItem
 from scrapy.pipelines.images import ImagesPipeline
 from scrapy.utils.python import to_bytes
 
-from image_scraper.kafka.producer import KafkaProducer
+from image_scraper.events.publish import KafkaProducerCreator, PubSubPublisherCreator, MessagePublisher
 
 logger = logging.getLogger(__name__)
 
 
+def create_publisher(deployment_environment):
+    if deployment_environment == "kafka":
+        return KafkaProducerCreator().create_publisher(bootstrap_servers=os.environ['KAFKA_LISTENER'],
+                                                       client_id='scrapyd')
+    elif deployment_environment == "pubsub":
+        return PubSubPublisherCreator().create_publisher()
+    else:
+        raise ValueError(f"Invalid Deployment environment")
+
+
 class URLImagesPipeline(ImagesPipeline):
     gcs_url_prefix = 'https://storage.googleapis.com'
-    producer: KafkaProducer = None
+    publisher: MessagePublisher = None
     project_name = None
     spider_timestamp = None
 
     @classmethod
     def from_settings(cls, settings):
-        logger.info("Setting up Kafka Producer ...")
+        publisher_type = os.environ["PUBLISHER_TYPE"]
+        logger.info(f"Setting up Message Publisher: {publisher_type} ...")
         obj_from_settings = super().from_settings(settings)
-        obj_from_settings.producer = KafkaProducer(bootstrap_servers=os.environ['KAFKA_LISTENER'], client_id='scrapyd')
-        logger.info("Kafka Producer set up.")
+        publisher = create_publisher(publisher_type)
+        obj_from_settings.publisher = publisher
+        logger.info("Message Publisher set up.")
         return obj_from_settings
 
     def get_media_requests(self, item, info):
@@ -41,10 +53,8 @@ class URLImagesPipeline(ImagesPipeline):
             raise DropItem("Item contains no images")
         adapter = ItemAdapter(item)
         logger.info(f"Sending GCS URL for {image_paths} ...")
-        self.producer.produce_urls(topic=os.environ["MSG_TOPIC"],
-                                   filenames=image_paths,
-                                   scraping_project=self.project_name,
-                                   prefix=self.gcs_url_prefix)
+        self.publisher.send_urls(topic=os.environ["MSG_TOPIC"], filenames=image_paths,
+                                 scraping_project=self.project_name, prefix=self.gcs_url_prefix)
         logger.info("GCS URLs sent.")
         adapter["images"] = image_paths
         return item

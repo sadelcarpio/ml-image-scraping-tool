@@ -1,8 +1,10 @@
 import os
 import unittest
-from unittest.mock import patch, call
+from unittest.mock import patch, call, MagicMock
 
-from image_scraper.kafka.producer import KafkaProducer
+import confluent_kafka
+
+from image_scraper.events.publish import KafkaProducer
 
 
 class TestKafkaProducer(unittest.TestCase):
@@ -10,13 +12,14 @@ class TestKafkaProducer(unittest.TestCase):
     @patch.dict(os.environ, {"IMAGES_BUCKET_NAME": "test-kafka", "PROJECT_ID": "test-id"})
     def setUp(self):
         self.producer = KafkaProducer(bootstrap_servers="localhost:9092", client_id='my-kafka-client')
+        self.producer.client = MagicMock()
+        self.mock_client = self.producer.client
 
-    @patch("builtins.super")  # may behave strange when debugging
-    def test_produce_urls(self, mock_super):
+    def test_send_urls(self):
         filenames = ['a', 'b', 'c']
-        self.producer.produce_urls('test-topic', filenames, 'test-project', 'gs:')
-        self.assertEqual(len(filenames), mock_super.call_count)
-        mock_super().produce.assert_has_calls(
+        self.producer.send_urls('test-topic', filenames, 'test-project', 'gs:')
+        self.assertEqual(len(filenames), self.mock_client.produce.call_count)
+        self.mock_client.produce.assert_has_calls(
             [call(topic='test-topic', value=b'{"url": "gs:/test-kafka/a", "project": "test-project"}'),
              call(topic='test-topic', value=b'{"url": "gs:/test-kafka/b", "project": "test-project"}'),
              call(topic='test-topic', value=b'{"url": "gs:/test-kafka/c", "project": "test-project"}')]
