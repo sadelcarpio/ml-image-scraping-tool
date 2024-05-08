@@ -33,28 +33,19 @@ class GoogleImagesSpider(scrapy.Spider):
         # Extract the image URLs from the Google Images page.
         # Scrape the image data.
         self.driver: WebDriver = response.meta['driver']
-        time.sleep(5)
-        initial_load = len(response.xpath(f'{self.thumbnail_path}/div/div[2]/h3/a/div/div/div/g-img/img').getall())
+        time.sleep(10)
         additional_scrolls = 5
-        for i in range(1, initial_load + additional_scrolls + 1):  # more scrolls than this throw unrelated images
-            try:
+        prev_batch_size, batch_size = 0, 0
+        for scrolls in range(additional_scrolls):  # more scrolls than this throw unrelated images
+            prev_batch_size += batch_size
+            batch_size = len(response.xpath(f'{self.thumbnail_path}/div/div[2]/h3/a/div/div/div/g-img/img').getall())
+            print(batch_size)
+            for i in range(prev_batch_size + 1, prev_batch_size + batch_size + 1):
+                print(i)
                 thumbnail_img = self.driver.find_element(By.XPATH, f'{self.thumbnail_path}/div[{i}]/div[2]/h3/a/div/div/div/g-img/img')
                 self.driver.execute_script('arguments[0].click()', thumbnail_img)
-            # TODO: encontrar el xpath actualizado para el nuevo scroll
-            except NoSuchElementException:
-                loaded_in_scroll = len(
-                    self.driver.find_elements(By.XPATH, f'//*[@id="islrg"]/div[1]/div[{i}]/div/a[1]/div[1]/img'))
-                if not loaded_in_scroll:
-                    break
-                for j in range(1, loaded_in_scroll + 1):
-                    thumbnail_img = self.driver.find_element(By.XPATH,
-                                                             f'//*[@id="islrg"]/div[1]/div[{i}]/div[{j}]/a[1]/div[1]/img')
-                    self.driver.execute_script('arguments[0].click()', thumbnail_img)
-                    yield from self.scrape_image_url()
-            else:
                 yield from self.scrape_image_url()
-            finally:
-                if i >= initial_load:
+                if i == prev_batch_size + batch_size:
                     self.driver.execute_script("window.scrollBy(0, 1000);")
                     time.sleep(10)
 
