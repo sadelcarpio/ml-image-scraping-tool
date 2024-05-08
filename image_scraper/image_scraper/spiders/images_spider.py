@@ -39,9 +39,7 @@ class GoogleImagesSpider(scrapy.Spider):
         for scrolls in range(additional_scrolls):  # more scrolls than this throw unrelated images
             prev_batch_size += batch_size
             batch_size = len(response.xpath(f'{self.thumbnail_path}/div/div[2]/h3/a/div/div/div/g-img/img').getall())
-            print(batch_size)
             for i in range(prev_batch_size + 1, prev_batch_size + batch_size + 1):
-                print(i)
                 thumbnail_img = self.driver.find_element(By.XPATH, f'{self.thumbnail_path}/div[{i}]/div[2]/h3/a/div/div/div/g-img/img')
                 self.driver.execute_script('arguments[0].click()', thumbnail_img)
                 yield from self.scrape_image_url()
