@@ -18,6 +18,7 @@ class GoogleImagesSpider(scrapy.Spider):
     domain = "https://www.google.com/search?q="
     search_params = "&tbm=isch&tbs=qdr:d%2Cisz:l"
     base_path = '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div'
+    thumbnail_path = '//*[@id="rso"]/div/div/div[1]/div/div'
 
     def __init__(self, scraping_project, start_urls: str = "cats+images", *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,11 +34,11 @@ class GoogleImagesSpider(scrapy.Spider):
         # Scrape the image data.
         self.driver: WebDriver = response.meta['driver']
         time.sleep(5)
-        initial_load = len(response.xpath('//*[@id="rso"]/div/div/div[1]/div/div/div/div[2]/h3/a/div/div/div/g-img/img').getall())
+        initial_load = len(response.xpath(f'{self.thumbnail_path}/div/div[2]/h3/a/div/div/div/g-img/img').getall())
         additional_scrolls = 5
         for i in range(1, initial_load + additional_scrolls + 1):  # more scrolls than this throw unrelated images
             try:
-                thumbnail_img = self.driver.find_element(By.XPATH, f'//*[@id="rso"]/div/div/div[1]/div/div/div[{i}]/div[2]/h3/a/div/div/div/g-img/img')
+                thumbnail_img = self.driver.find_element(By.XPATH, f'{self.thumbnail_path}/div[{i}]/div[2]/h3/a/div/div/div/g-img/img')
                 self.driver.execute_script('arguments[0].click()', thumbnail_img)
             # TODO: encontrar el xpath actualizado para el nuevo scroll
             except NoSuchElementException:
