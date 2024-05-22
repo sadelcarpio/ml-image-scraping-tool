@@ -69,5 +69,5 @@ test-beam:
 test-all: test-airflow test-image-scraper test-url-app test-dag-info test-labeling-app test-beam
 
 # Integration Testing
-integration-url-app:
+integration-test-url-app:
 	cd $(LABELAPP)/url_app && ./integration_test/test.sh
