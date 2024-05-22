@@ -46,7 +46,7 @@ def load_to_gcs(project_name: str, last_processed: str):
         image="beam-upload-csv",
         container_name="gcs_csv_load",
         api_version="auto",
-        auto_remove=True,
+        auto_remove='success',
         docker_url="unix://var/run/docker.sock",
         command=f'--project="{project_name}" --last_processed="{last_processed}"',
         network_mode="mlist_default",
