@@ -19,7 +19,7 @@ class KafkaConsumer(MessageSubscriber):
         self.client.subscribe([self.topic])
 
     def receive_url(self):
-        msg = self.client.poll(0.1)
+        msg = self.client.poll(0.1)  # look into consumer.consume() for batch processing
         return msg.value().decode("utf-8") if msg else None
 
 
