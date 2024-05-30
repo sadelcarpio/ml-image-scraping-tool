@@ -50,11 +50,11 @@ class MessageSubscriberCreator:
         raise NotImplementedError()
 
 
-class KafkaProducerCreator(MessageSubscriberCreator):
+class KafkaConsumerCreator(MessageSubscriberCreator):
     def create_publisher(self, bootstrap_servers: str, group_id: str, topic: str) -> MessageSubscriber:
         return KafkaConsumer(bootstrap_servers=bootstrap_servers, group_id=group_id, topic=topic)
 
 
-class PubSubPublisherCreator(MessageSubscriberCreator):
+class PubSubSubscriberCreator(MessageSubscriberCreator):
     def create_publisher(self, **kwargs) -> MessageSubscriber:
         return PubSubSubscriber(**kwargs)
